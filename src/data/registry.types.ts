@@ -38,3 +38,31 @@ export interface RegistryData {
   /** All registered layout variants. */
   layouts: LayoutRegistryEntry[]
 }
+
+/**
+ * A single dead-key trigger entry in the global composition rules catalog.
+ * @example
+ * const t: CompositionTriggerEntry = { trigger: '´', name: 'acute', mode: 'tone' }
+ */
+export interface CompositionTriggerEntry {
+  /** The dead-key character that arms composition. */
+  trigger: string
+  /** Human-readable name for the trigger (e.g. 'acute'). */
+  name: string
+  /** Whether this trigger produces a tone mark or a nasal mark. */
+  mode: 'tone' | 'nasal'
+  /** Optional description shown in documentation. */
+  description?: string
+}
+
+/**
+ * Global catalog of dead-key triggers used across all language profiles.
+ * @example
+ * const catalog: CompositionRulesCatalog = { version: '1.0.0', triggers: [...] }
+ */
+export interface CompositionRulesCatalog {
+  /** Semantic version of the catalog. */
+  version: string
+  /** All registered dead-key triggers. */
+  triggers: CompositionTriggerEntry[]
+}

@@ -1,13 +1,16 @@
 import Ajv, { type ErrorObject } from 'ajv'
 import type { LayoutShape } from './layout.types.js'
 import type { LanguageProfile } from './language.types.js'
-import type { RegistryData } from './registry.types.js'
+import type { CompositionRulesCatalog, RegistryData } from './registry.types.js'
 
-// Schemas are handcrafted from the TypeScript interfaces and regenerated via
-// `npm run generate:schemas` when interfaces change.
+// Schemas are handcrafted from the TypeScript interfaces.
+// Use `npm run bootstrap:schemas` only as a one-time starting template —
+// the committed schemas are the authoritative source of truth and contain
+// hand-tuned constraints (minimum, pattern, enum) that the generator does not reproduce.
 import layoutShapeSchema from '../../data/schemas/layout-shape.schema.json' with { type: 'json' }
 import languageProfileSchema from '../../data/schemas/language-profile.schema.json' with { type: 'json' }
 import registrySchema from '../../data/schemas/registry.schema.json' with { type: 'json' }
+import compositionRulesSchema from '../../data/schemas/composition-rules.schema.json' with { type: 'json' }
 
 const ajv = new Ajv({ allErrors: true })
 
@@ -34,6 +37,7 @@ function buildErrorMessage(errors: ErrorObject[], title: string): string {
 const validateLayout = ajv.compile(layoutShapeSchema)
 const validateLanguage = ajv.compile(languageProfileSchema)
 const validateReg = ajv.compile(registrySchema)
+const validateCompositionRulesCatalog = ajv.compile(compositionRulesSchema)
 
 /**
  * Validates raw data against the {@link LayoutShape} schema.
@@ -66,4 +70,15 @@ export function validateRegistry(data: unknown): RegistryData {
     throw new ValidationError(buildErrorMessage(validateReg.errors ?? [], 'RegistryData'))
   }
   return data as unknown as RegistryData
+}
+
+/**
+ * Validates raw data against the {@link CompositionRulesCatalog} schema.
+ * @throws {ValidationError} with a multi-error report if invalid.
+ */
+export function validateCompositionRules(data: unknown): CompositionRulesCatalog {
+  if (!validateCompositionRulesCatalog(data)) {
+    throw new ValidationError(buildErrorMessage(validateCompositionRulesCatalog.errors ?? [], 'CompositionRulesCatalog'))
+  }
+  return data as unknown as CompositionRulesCatalog
 }

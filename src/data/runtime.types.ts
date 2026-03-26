@@ -49,8 +49,8 @@ export interface CompositionState {
  * const op = createInputOperation('insert', 'á')
  */
 export interface InputOperation {
-  /** What to do: insert text, delete selection, or replace a range. */
-  type: 'insert' | 'delete' | 'replace'
+  /** What to do: insert text or delete selection. */
+  type: 'insert' | 'delete'
   /** The text payload (empty string for delete). */
   data: string
   /** Optional cursor/selection position hint. */
@@ -73,7 +73,7 @@ export function createCompositionState(
 
 /** Creates an {@link InputOperation}. */
 export function createInputOperation(
-  type: 'insert' | 'delete' | 'replace',
+  type: 'insert' | 'delete',
   data: string,
   selectionStart?: number,
 ): InputOperation {

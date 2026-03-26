@@ -8,7 +8,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { validateLayoutShape, validateLanguageProfile, validateRegistry } from '../src/data/validator.js'
+import { validateLayoutShape, validateLanguageProfile, validateRegistry, validateCompositionRules } from '../src/data/validator.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -53,6 +53,12 @@ validateDir(join(ROOT, 'data', 'languages'), validateLanguageProfile)
 
 // Layout shapes
 validateDir(join(ROOT, 'data', 'layouts'), validateLayoutShape)
+
+// Composition rules catalog
+const compositionRulesPath = join(ROOT, 'data', 'composition-rules.json')
+if (existsSync(compositionRulesPath)) {
+  validateFile(compositionRulesPath, './data/composition-rules.json', validateCompositionRules)
+}
 
 // Summary
 const status = errors === 0 ? '✓' : '❌'
