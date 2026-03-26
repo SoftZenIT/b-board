@@ -9,9 +9,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/bboard.es.js",
-      "require": "./dist/bboard.umd.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/bboard.umd.js"
     }
   },
   "files": [
@@ -44,9 +44,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,vue,json,css}\"",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "vue-tsc --noEmit",
+    "generate:schemas": "tsx scripts/generate-schemas.ts",
+    "validate:data": "tsx scripts/validate-data.ts"
   },
   "dependencies": {
+    "ajv": "^8.18.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {
@@ -63,6 +66,8 @@
     "jsdom": "^29.0.1",
     "playwright": "^1.58.2",
     "prettier": "^3.8.1",
+    "ts-json-schema-generator": "^2.9.0",
+    "tsx": "^4.21.0",
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
     "vite-plugin-dts": "^4.5.4",

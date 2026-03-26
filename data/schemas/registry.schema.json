@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RegistryData",
+  "description": "Root index of all available language and layout data files.",
+  "type": "object",
+  "required": ["version", "languages", "layouts"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "description": "Semantic version of the data set.",
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "languages": {
+      "description": "All registered language profiles.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "path"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Language identifier.",
+            "type": "string",
+            "enum": ["yoruba", "fon-adja", "baatonum", "dendi"]
+          },
+          "path": {
+            "description": "Relative path to the language JSON file.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "layouts": {
+      "description": "All registered layout variants.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "path"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Layout variant identifier.",
+            "type": "string",
+            "enum": ["desktop-azerty", "mobile-default"]
+          },
+          "path": {
+            "description": "Relative path to the layout JSON file.",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

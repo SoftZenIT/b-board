@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LayoutShape",
+  "description": "The full shape of a keyboard layout variant.",
+  "type": "object",
+  "required": ["id", "variant", "layers", "theme"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "description": "Unique identifier for this layout variant.",
+      "type": "string",
+      "enum": ["desktop-azerty", "mobile-default"]
+    },
+    "variant": {
+      "description": "Platform type: desktop or mobile.",
+      "type": "string",
+      "enum": ["desktop", "mobile"]
+    },
+    "layers": {
+      "description": "Ordered layers; typically base + shift (+ altGr on desktop).",
+      "type": "array",
+      "items": { "$ref": "#/definitions/LayoutLayer" }
+    },
+    "theme": {
+      "description": "Default theme applied to this layout.",
+      "type": "string",
+      "enum": ["light", "dark", "auto"]
+    }
+  },
+  "definitions": {
+    "LayoutLayer": {
+      "title": "LayoutLayer",
+      "description": "A named keyboard layer (shift state) containing rows.",
+      "type": "object",
+      "required": ["name", "rows"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "The shift state this layer represents.",
+          "type": "string",
+          "enum": ["base", "shift", "altGr"]
+        },
+        "rows": {
+          "description": "Ordered rows, top to bottom.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/LayoutRow" }
+        }
+      }
+    },
+    "LayoutRow": {
+      "title": "LayoutRow",
+      "description": "A horizontal row of key slots.",
+      "type": "object",
+      "required": ["slots"],
+      "additionalProperties": false,
+      "properties": {
+        "slots": {
+          "description": "Ordered slots in the row, left to right.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/LayoutSlot" }
+        },
+        "height": {
+          "description": "Optional height in pixels.",
+          "type": "number"
+        }
+      }
+    },
+    "LayoutSlot": {
+      "title": "LayoutSlot",
+      "description": "A single key slot within a keyboard row.",
+      "type": "object",
+      "required": ["keyId", "width"],
+      "additionalProperties": false,
+      "properties": {
+        "keyId": {
+          "description": "The key this slot renders.",
+          "type": "string"
+        },
+        "width": {
+          "description": "Relative width multiplier (1 = standard key unit).",
+          "type": "number",
+          "minimum": 0.25
+        },
+        "label": {
+          "description": "Optional visible label override.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

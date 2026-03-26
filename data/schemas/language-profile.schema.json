@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LanguageProfile",
+  "description": "A full language profile including its key catalog and composition rules.",
+  "type": "object",
+  "required": ["languageId", "name", "nativeName", "characters", "compositionRules"],
+  "additionalProperties": false,
+  "properties": {
+    "languageId": {
+      "description": "Unique language identifier.",
+      "type": "string",
+      "enum": ["yoruba", "fon-adja", "baatonum", "dendi"]
+    },
+    "name": {
+      "description": "English name of the language.",
+      "type": "string",
+      "minLength": 1
+    },
+    "nativeName": {
+      "description": "Name in the language itself.",
+      "type": "string",
+      "minLength": 1
+    },
+    "characters": {
+      "description": "All keyed characters for this language.",
+      "type": "array",
+      "items": { "$ref": "#/definitions/KeyCatalogEntry" }
+    },
+    "compositionRules": {
+      "description": "Composition rules (tone marks, nasal marks, dead keys).",
+      "type": "array",
+      "items": { "$ref": "#/definitions/CompositionRule" }
+    }
+  },
+  "definitions": {
+    "KeyCatalogEntry": {
+      "title": "KeyCatalogEntry",
+      "description": "A single entry in a language's key catalog.",
+      "type": "object",
+      "required": ["keyId", "baseChar"],
+      "additionalProperties": false,
+      "properties": {
+        "keyId": {
+          "description": "The key this entry describes.",
+          "type": "string"
+        },
+        "baseChar": {
+          "description": "Character produced by the base layer.",
+          "type": "string"
+        },
+        "shiftChar": {
+          "description": "Character produced by the shift layer.",
+          "type": "string"
+        },
+        "altGrChar": {
+          "description": "Character produced by the AltGr layer.",
+          "type": "string"
+        },
+        "composition": {
+          "description": "Composition rules triggered from this key.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/CompositionRule" }
+        }
+      }
+    },
+    "CompositionRule": {
+      "title": "CompositionRule",
+      "description": "Maps a trigger + base character to a composed result.",
+      "type": "object",
+      "required": ["trigger", "base", "result", "mode"],
+      "additionalProperties": false,
+      "properties": {
+        "trigger": {
+          "description": "The dead key or modifier that arms composition.",
+          "type": "string"
+        },
+        "base": {
+          "description": "The base character to combine with.",
+          "type": "string"
+        },
+        "result": {
+          "description": "The resulting composed character.",
+          "type": "string"
+        },
+        "mode": {
+          "description": "Whether this is a tone or nasal composition.",
+          "type": "string",
+          "enum": ["tone", "nasal"]
+        }
+      }
+    }
+  }
+}
