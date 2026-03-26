@@ -3,7 +3,12 @@
  * Generates JSON Schema files from TypeScript interfaces.
  * Uses ts-json-schema-generator with tsconfig.schema.json.
  *
- * Usage: npm run generate:schemas
+ * Usage: npm run bootstrap:schemas
+ *
+ * WARNING: This script is a one-time bootstrap tool. The committed schemas in
+ * data/schemas/ are the authoritative source of truth. They contain hand-tuned
+ * constraints (minimum, pattern, enum, additionalProperties) that the generator
+ * does not reproduce. Do NOT replace committed schemas wholesale with this output.
  *
  * Output: data/schemas/{type}.schema.json
  */
@@ -34,6 +39,11 @@ const targets = [
     path: 'src/data/registry.types.ts',
     type: 'RegistryData',
     out: 'registry.schema.json',
+  },
+  {
+    path: 'src/data/registry.types.ts',
+    type: 'CompositionRulesCatalog',
+    out: 'composition-rules.schema.json',
   },
 ]
 
