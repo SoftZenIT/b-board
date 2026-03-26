@@ -43,10 +43,7 @@ function validateDir(dir: string, validator: (data: unknown) => unknown): void {
 console.log('Validating BBOARD data files...\n')
 
 // Registry
-const registryPath = join(ROOT, 'data', 'registry.json')
-if (existsSync(registryPath)) {
-  validateFile(registryPath, './data/registry.json', validateRegistry)
-}
+validateFile(join(ROOT, 'data', 'registry.json'), './data/registry.json', validateRegistry)
 
 // Language profiles
 validateDir(join(ROOT, 'data', 'languages'), validateLanguageProfile)
@@ -55,10 +52,7 @@ validateDir(join(ROOT, 'data', 'languages'), validateLanguageProfile)
 validateDir(join(ROOT, 'data', 'layouts'), validateLayoutShape)
 
 // Composition rules catalog
-const compositionRulesPath = join(ROOT, 'data', 'composition-rules.json')
-if (existsSync(compositionRulesPath)) {
-  validateFile(compositionRulesPath, './data/composition-rules.json', validateCompositionRules)
-}
+validateFile(join(ROOT, 'data', 'composition-rules.json'), './data/composition-rules.json', validateCompositionRules)
 
 // Summary
 const status = errors === 0 ? '✓' : '❌'

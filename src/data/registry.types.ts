@@ -1,4 +1,5 @@
 import type { LanguageId, LayoutVariantId } from '../public/types.js'
+import type { CompositionRuleMode } from './language.types.js'
 
 /**
  * A single entry in the registry pointing to a data file.
@@ -50,7 +51,7 @@ export interface CompositionTriggerEntry {
   /** Human-readable name for the trigger (e.g. 'acute'). */
   name: string
   /** Whether this trigger produces a tone mark or a nasal mark. */
-  mode: 'tone' | 'nasal'
+  mode: CompositionRuleMode
   /** Optional description shown in documentation. */
   description?: string
 }
