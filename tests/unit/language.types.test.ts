@@ -27,6 +27,10 @@ describe('createKeyEntry', () => {
     expect(entry.shiftChar).toBeUndefined()
     expect(entry.composition).toBeUndefined()
   })
+  it('creates an entry with altGrChar', () => {
+    const entry = createKeyEntry(createKeyId('key-e'), 'e', 'E', 'ɛ')
+    expect(entry.altGrChar).toBe('ɛ')
+  })
   it('creates a full key catalog entry', () => {
     const rule = createCompositionRule('´', 'a', 'á', 'tone')
     const entry = createKeyEntry(createKeyId('key-a'), 'a', 'A', undefined, [rule])
