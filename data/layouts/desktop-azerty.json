@@ -1,0 +1,178 @@
+{
+  "id": "desktop-azerty",
+  "variant": "desktop",
+  "theme": "light",
+  "layers": [
+    {
+      "name": "base",
+      "rows": [
+        {
+          "slots": [
+            { "keyId": "key-a", "width": 1 },
+            { "keyId": "key-z", "width": 1 },
+            { "keyId": "key-e", "width": 1 },
+            { "keyId": "key-r", "width": 1 },
+            { "keyId": "key-t", "width": 1 },
+            { "keyId": "key-y", "width": 1 },
+            { "keyId": "key-u", "width": 1 },
+            { "keyId": "key-i", "width": 1 },
+            { "keyId": "key-o", "width": 1 },
+            { "keyId": "key-p", "width": 1 }
+          ]
+        },
+        {
+          "slots": [
+            { "keyId": "key-q", "width": 1 },
+            { "keyId": "key-s", "width": 1 },
+            { "keyId": "key-d", "width": 1 },
+            { "keyId": "key-f", "width": 1 },
+            { "keyId": "key-g", "width": 1 },
+            { "keyId": "key-h", "width": 1 },
+            { "keyId": "key-j", "width": 1 },
+            { "keyId": "key-k", "width": 1 },
+            { "keyId": "key-l", "width": 1 },
+            { "keyId": "key-m", "width": 1 },
+            { "keyId": "key-backspace", "width": 1.5, "label": "⌫" }
+          ]
+        },
+        {
+          "slots": [
+            { "keyId": "key-shift", "width": 1.5, "label": "⇧" },
+            { "keyId": "key-w",     "width": 1 },
+            { "keyId": "key-x",     "width": 1 },
+            { "keyId": "key-c",     "width": 1 },
+            { "keyId": "key-v",     "width": 1 },
+            { "keyId": "key-b",     "width": 1 },
+            { "keyId": "key-n",     "width": 1 },
+            { "keyId": "key-e-dot", "width": 1 },
+            { "keyId": "key-o-dot", "width": 1 },
+            { "keyId": "key-enter", "width": 1.5, "label": "⏎" }
+          ]
+        },
+        {
+          "slots": [
+            { "keyId": "key-ctrl",  "width": 1.5, "label": "Ctrl" },
+            { "keyId": "key-alt",   "width": 1,   "label": "Alt" },
+            { "keyId": "key-space", "width": 5,   "label": " " },
+            { "keyId": "key-altgr", "width": 1,   "label": "AltGr" },
+            { "keyId": "key-shift-right", "width": 1.5, "label": "⇧" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "shift",
+      "rows": [
+        {
+          "slots": [
+            { "keyId": "key-a", "width": 1 },
+            { "keyId": "key-z", "width": 1 },
+            { "keyId": "key-e", "width": 1 },
+            { "keyId": "key-r", "width": 1 },
+            { "keyId": "key-t", "width": 1 },
+            { "keyId": "key-y", "width": 1 },
+            { "keyId": "key-u", "width": 1 },
+            { "keyId": "key-i", "width": 1 },
+            { "keyId": "key-o", "width": 1 },
+            { "keyId": "key-p", "width": 1 }
+          ]
+        },
+        {
+          "slots": [
+            { "keyId": "key-q", "width": 1 },
+            { "keyId": "key-s", "width": 1 },
+            { "keyId": "key-d", "width": 1 },
+            { "keyId": "key-f", "width": 1 },
+            { "keyId": "key-g", "width": 1 },
+            { "keyId": "key-h", "width": 1 },
+            { "keyId": "key-j", "width": 1 },
+            { "keyId": "key-k", "width": 1 },
+            { "keyId": "key-l", "width": 1 },
+            { "keyId": "key-m", "width": 1 },
+            { "keyId": "key-backspace", "width": 1.5, "label": "⌫" }
+          ]
+        },
+        {
+          "slots": [
+            { "keyId": "key-shift", "width": 1.5, "label": "⇧" },
+            { "keyId": "key-w",     "width": 1 },
+            { "keyId": "key-x",     "width": 1 },
+            { "keyId": "key-c",     "width": 1 },
+            { "keyId": "key-v",     "width": 1 },
+            { "keyId": "key-b",     "width": 1 },
+            { "keyId": "key-n",     "width": 1 },
+            { "keyId": "key-e-dot", "width": 1 },
+            { "keyId": "key-o-dot", "width": 1 },
+            { "keyId": "key-enter", "width": 1.5, "label": "⏎" }
+          ]
+        },
+        {
+          "slots": [
+            { "keyId": "key-ctrl",  "width": 1.5, "label": "Ctrl" },
+            { "keyId": "key-alt",   "width": 1,   "label": "Alt" },
+            { "keyId": "key-space", "width": 5,   "label": " " },
+            { "keyId": "key-altgr", "width": 1,   "label": "AltGr" },
+            { "keyId": "key-shift-right", "width": 1.5, "label": "⇧" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "altGr",
+      "rows": [
+        {
+          "slots": [
+            { "keyId": "key-a", "width": 1 },
+            { "keyId": "key-z", "width": 1 },
+            { "keyId": "key-e", "width": 1 },
+            { "keyId": "key-r", "width": 1 },
+            { "keyId": "key-t", "width": 1 },
+            { "keyId": "key-y", "width": 1 },
+            { "keyId": "key-u", "width": 1 },
+            { "keyId": "key-i", "width": 1 },
+            { "keyId": "key-o", "width": 1 },
+            { "keyId": "key-p", "width": 1 }
+          ]
+        },
+        {
+          "slots": [
+            { "keyId": "key-q", "width": 1 },
+            { "keyId": "key-s", "width": 1 },
+            { "keyId": "key-d", "width": 1 },
+            { "keyId": "key-f", "width": 1 },
+            { "keyId": "key-g", "width": 1 },
+            { "keyId": "key-h", "width": 1 },
+            { "keyId": "key-j", "width": 1 },
+            { "keyId": "key-k", "width": 1 },
+            { "keyId": "key-l", "width": 1 },
+            { "keyId": "key-m", "width": 1 },
+            { "keyId": "key-backspace", "width": 1.5, "label": "⌫" }
+          ]
+        },
+        {
+          "slots": [
+            { "keyId": "key-shift", "width": 1.5, "label": "⇧" },
+            { "keyId": "key-w",     "width": 1 },
+            { "keyId": "key-x",     "width": 1 },
+            { "keyId": "key-c",     "width": 1 },
+            { "keyId": "key-v",     "width": 1 },
+            { "keyId": "key-b",     "width": 1 },
+            { "keyId": "key-n",     "width": 1 },
+            { "keyId": "key-e-dot", "width": 1 },
+            { "keyId": "key-o-dot", "width": 1 },
+            { "keyId": "key-enter", "width": 1.5, "label": "⏎" }
+          ]
+        },
+        {
+          "slots": [
+            { "keyId": "key-ctrl",  "width": 1.5, "label": "Ctrl" },
+            { "keyId": "key-alt",   "width": 1,   "label": "Alt" },
+            { "keyId": "key-space", "width": 5,   "label": " " },
+            { "keyId": "key-altgr", "width": 1,   "label": "AltGr" },
+            { "keyId": "key-shift-right", "width": 1.5, "label": "⇧" }
+          ]
+        }
+      ]
+    }
+  ]
+}
