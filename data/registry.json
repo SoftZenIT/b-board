@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "languages": [
+    { "id": "yoruba",   "path": "data/languages/yoruba.json" },
+    { "id": "fon-adja", "path": "data/languages/fon-adja.json" },
+    { "id": "baatonum", "path": "data/languages/baatonum.json" },
+    { "id": "dendi",    "path": "data/languages/dendi.json" }
+  ],
+  "layouts": [
+    { "id": "desktop-azerty",  "path": "data/layouts/desktop-azerty.json" },
+    { "id": "mobile-default",  "path": "data/layouts/mobile-default.json" }
+  ]
+}

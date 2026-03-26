@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "triggers": [
+    {
+      "trigger": "´",
+      "name": "acute",
+      "mode": "tone",
+      "description": "High tone mark. Type ´ then a vowel to produce an acute-accented character (e.g. ´ + a = á)."
+    },
+    {
+      "trigger": "`",
+      "name": "grave",
+      "mode": "tone",
+      "description": "Low tone mark. Type ` then a vowel to produce a grave-accented character (e.g. ` + a = à)."
+    },
+    {
+      "trigger": "~",
+      "name": "tilde",
+      "mode": "nasal",
+      "description": "Nasal mark. Type ~ then a vowel to produce a nasalised character (e.g. ~ + a = ã). Used in Fon/Adja."
+    }
+  ]
+}
