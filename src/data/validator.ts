@@ -1,4 +1,4 @@
-import Ajv, { type ErrorObject } from 'ajv'
+import Ajv, { type ErrorObject, type ValidateFunction } from 'ajv'
 import type { LayoutShape } from './layout.types.js'
 import type { LanguageProfile } from './language.types.js'
 import type { CompositionRulesCatalog, RegistryData } from './registry.types.js'
@@ -6,7 +6,8 @@ import type { CompositionRulesCatalog, RegistryData } from './registry.types.js'
 // Schemas are handcrafted from the TypeScript interfaces.
 // Use `npm run bootstrap:schemas` only as a one-time starting template —
 // the committed schemas are the authoritative source of truth and contain
-// hand-tuned constraints (minimum, pattern, enum) that the generator does not reproduce.
+// hand-tuned constraints (minimum, pattern, enum, additionalProperties) that
+// the generator does not reproduce.
 import layoutShapeSchema from '../../data/schemas/layout-shape.schema.json' with { type: 'json' }
 import languageProfileSchema from '../../data/schemas/language-profile.schema.json' with { type: 'json' }
 import registrySchema from '../../data/schemas/registry.schema.json' with { type: 'json' }
@@ -34,51 +35,47 @@ function buildErrorMessage(errors: ErrorObject[], title: string): string {
   return lines.join('\n')
 }
 
-const validateLayout = ajv.compile(layoutShapeSchema)
-const validateLanguage = ajv.compile(languageProfileSchema)
-const validateReg = ajv.compile(registrySchema)
-const validateCompositionRulesCatalog = ajv.compile(compositionRulesSchema)
+function makeValidator<T>(compiled: ValidateFunction, title: string): (data: unknown) => T {
+  return (data: unknown): T => {
+    if (!compiled(data)) {
+      throw new ValidationError(buildErrorMessage(compiled.errors ?? [], title))
+    }
+    return data as unknown as T
+  }
+}
 
 /**
  * Validates raw data against the {@link LayoutShape} schema.
  * @throws {ValidationError} with a multi-error report if invalid.
  */
-export function validateLayoutShape(data: unknown): LayoutShape {
-  if (!validateLayout(data)) {
-    throw new ValidationError(buildErrorMessage(validateLayout.errors ?? [], 'LayoutShape'))
-  }
-  return data as unknown as LayoutShape
-}
+export const validateLayoutShape = makeValidator<LayoutShape>(
+  ajv.compile(layoutShapeSchema),
+  'LayoutShape',
+)
 
 /**
  * Validates raw data against the {@link LanguageProfile} schema.
  * @throws {ValidationError} with a multi-error report if invalid.
  */
-export function validateLanguageProfile(data: unknown): LanguageProfile {
-  if (!validateLanguage(data)) {
-    throw new ValidationError(buildErrorMessage(validateLanguage.errors ?? [], 'LanguageProfile'))
-  }
-  return data as unknown as LanguageProfile
-}
+export const validateLanguageProfile = makeValidator<LanguageProfile>(
+  ajv.compile(languageProfileSchema),
+  'LanguageProfile',
+)
 
 /**
  * Validates raw data against the {@link RegistryData} schema.
  * @throws {ValidationError} with a multi-error report if invalid.
  */
-export function validateRegistry(data: unknown): RegistryData {
-  if (!validateReg(data)) {
-    throw new ValidationError(buildErrorMessage(validateReg.errors ?? [], 'RegistryData'))
-  }
-  return data as unknown as RegistryData
-}
+export const validateRegistry = makeValidator<RegistryData>(
+  ajv.compile(registrySchema),
+  'RegistryData',
+)
 
 /**
  * Validates raw data against the {@link CompositionRulesCatalog} schema.
  * @throws {ValidationError} with a multi-error report if invalid.
  */
-export function validateCompositionRules(data: unknown): CompositionRulesCatalog {
-  if (!validateCompositionRulesCatalog(data)) {
-    throw new ValidationError(buildErrorMessage(validateCompositionRulesCatalog.errors ?? [], 'CompositionRulesCatalog'))
-  }
-  return data as unknown as CompositionRulesCatalog
-}
+export const validateCompositionRules = makeValidator<CompositionRulesCatalog>(
+  ajv.compile(compositionRulesSchema),
+  'CompositionRulesCatalog',
+)

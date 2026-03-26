@@ -1,6 +1,12 @@
 import type { KeyId, LanguageId } from '../public/types.js'
 
 /**
+ * The kind of composition a rule applies — shared by {@link CompositionRule}
+ * and {@link CompositionTriggerEntry} in the global catalog.
+ */
+export type CompositionRuleMode = 'tone' | 'nasal'
+
+/**
  * A composition rule — maps a trigger + base to a composed result.
  * @example
  * const rule = createCompositionRule('´', 'a', 'á', 'tone')
@@ -13,7 +19,7 @@ export interface CompositionRule {
   /** The resulting composed character. */
   result: string
   /** Whether this is a tone or nasal composition. */
-  mode: 'tone' | 'nasal'
+  mode: CompositionRuleMode
 }
 
 /**
