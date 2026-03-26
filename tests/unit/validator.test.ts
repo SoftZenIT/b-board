@@ -183,6 +183,11 @@ describe('validateCompositionRules', () => {
     expect(() => validateCompositionRules(bad)).toThrow()
   })
 
+  it('rejects empty triggers array', () => {
+    const bad = { ...validCatalog, triggers: [] }
+    expect(() => validateCompositionRules(bad)).toThrow()
+  })
+
   it('rejects non-object input', () => {
     expect(() => validateCompositionRules(null)).toThrow()
     expect(() => validateCompositionRules('bad')).toThrow()

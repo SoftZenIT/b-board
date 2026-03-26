@@ -1,7 +1,9 @@
 # BBOARD Data Schema Reference
 
 This document describes the JSON schemas used to validate BBOARD data files.
-All schemas live in `data/schemas/` and are regenerated via `npm run generate:schemas`.
+All schemas live in `data/schemas/` and are the **authoritative source of truth**.
+Use `npm run bootstrap:schemas` only as a one-time starting template — the committed schemas
+contain hand-tuned constraints that the generator does not reproduce.
 
 ---
 
@@ -10,9 +12,10 @@ All schemas live in `data/schemas/` and are regenerated via `npm run generate:sc
 1. [LanguageProfile](#languageprofile)
 2. [LayoutShape](#layoutshape)
 3. [RegistryData](#registrydata)
-4. [How to Add a Language](#how-to-add-a-language)
-5. [How to Add a Layout](#how-to-add-a-layout)
-6. [Common Mistakes](#common-mistakes)
+4. [CompositionRulesCatalog](#compositionrulescatalog)
+5. [How to Add a Language](#how-to-add-a-language)
+6. [How to Add a Layout](#how-to-add-a-layout)
+7. [Common Mistakes](#common-mistakes)
 
 ---
 
@@ -187,10 +190,49 @@ All schemas live in `data/schemas/` and are regenerated via `npm run generate:sc
 
 ---
 
+## CompositionRulesCatalog
+
+**Schema file:** `data/schemas/composition-rules.schema.json`
+**Data location:** `data/composition-rules.json`
+
+Global catalog of dead-key trigger characters used across all language profiles.
+Validated by `validateCompositionRules()` in `src/data/validator.ts`.
+
+### Fields
+
+| Field | Type | Required | Constraints | Description |
+|-------|------|----------|-------------|-------------|
+| `version` | string | ✅ | semver pattern | Catalog version |
+| `triggers` | CompositionTriggerEntry[] | ✅ | minItems: 1 | All dead-key triggers |
+
+### CompositionTriggerEntry
+
+| Field | Type | Required | Constraints | Description |
+|-------|------|----------|-------------|-------------|
+| `trigger` | string | ✅ | minLength: 1 | The dead-key character |
+| `name` | string | ✅ | minLength: 1 | Human-readable name (e.g. `acute`) |
+| `mode` | enum | ✅ | `tone` or `nasal` | Composition type |
+| `description` | string | ❌ | | Documentation string |
+
+### Example
+
+```json
+{
+  "version": "1.0.0",
+  "triggers": [
+    { "trigger": "´", "name": "acute",  "mode": "tone",  "description": "High tone mark." },
+    { "trigger": "`", "name": "grave",  "mode": "tone",  "description": "Low tone mark." },
+    { "trigger": "~", "name": "tilde",  "mode": "nasal", "description": "Nasal vowel mark." }
+  ]
+}
+```
+
+---
+
 ## How to Add a Language
 
 1. **Add the `LanguageId`** — update `LanguageId` union in `src/public/types.ts` and `isLanguageId()`
-2. **Regenerate schemas** — run `npm run generate:schemas`
+2. **Update registry enum** — run `npm run bootstrap:schemas` for a starting template, then hand-tune
 3. **Create the data file** — `data/languages/<id>.json` matching the `LanguageProfile` schema
 4. **Add to registry** — add an entry in `data/registry.json`
 5. **Validate** — run `npm run validate:data`
@@ -200,7 +242,7 @@ All schemas live in `data/schemas/` and are regenerated via `npm run generate:sc
 ## How to Add a Layout
 
 1. **Add the `LayoutVariantId`** — update the union in `src/public/types.ts` and `isLayoutVariantId()`
-2. **Regenerate schemas** — run `npm run generate:schemas`
+2. **Regenerate schemas** — run `npm run bootstrap:schemas`
 3. **Create the data file** — `data/layouts/<id>.json` matching the `LayoutShape` schema
 4. **Add to registry** — add an entry in `data/registry.json`
 5. **Validate** — run `npm run validate:data`
