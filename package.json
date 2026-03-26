@@ -45,7 +45,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,vue,json,css}\"",
     "type-check": "vue-tsc --noEmit",
-    "generate:schemas": "tsx scripts/generate-schemas.ts",
+    "bootstrap:schemas": "tsx scripts/bootstrap-schemas.ts",
     "validate:data": "tsx scripts/validate-data.ts"
   },
   "dependencies": {

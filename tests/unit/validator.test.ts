@@ -1,4 +1,4 @@
-import { validateLayoutShape, validateLanguageProfile, validateRegistry } from '@/data/validator.js'
+import { validateLayoutShape, validateLanguageProfile, validateRegistry, validateCompositionRules } from '@/data/validator.js'
 
 // ── LayoutShape ────────────────────────────────────────────────────────────────
 
@@ -141,5 +141,50 @@ describe('validateRegistry', () => {
     }
     // Should report more than one error
     expect(message.split('\n').length).toBeGreaterThan(1)
+  })
+})
+
+// ── CompositionRulesCatalog ────────────────────────────────────────────────────
+
+const validCatalog = {
+  version: '1.0.0',
+  triggers: [
+    { trigger: '´', name: 'acute', mode: 'tone', description: 'High tone mark.' },
+    { trigger: '`', name: 'grave', mode: 'tone' },
+    { trigger: '~', name: 'tilde', mode: 'nasal' },
+  ],
+}
+
+describe('validateCompositionRules', () => {
+  it('accepts valid catalog and returns typed value', () => {
+    const result = validateCompositionRules(validCatalog)
+    expect(result.version).toBe('1.0.0')
+    expect(result.triggers).toHaveLength(3)
+  })
+
+  it('rejects invalid semver version', () => {
+    const bad = { ...validCatalog, version: 'not-semver' }
+    expect(() => validateCompositionRules(bad)).toThrow()
+  })
+
+  it('rejects invalid mode value', () => {
+    const bad = {
+      ...validCatalog,
+      triggers: [{ trigger: '´', name: 'acute', mode: 'click' }],
+    }
+    expect(() => validateCompositionRules(bad)).toThrow()
+  })
+
+  it('rejects missing required trigger field', () => {
+    const bad = {
+      ...validCatalog,
+      triggers: [{ name: 'acute', mode: 'tone' }], // missing trigger
+    }
+    expect(() => validateCompositionRules(bad)).toThrow()
+  })
+
+  it('rejects non-object input', () => {
+    expect(() => validateCompositionRules(null)).toThrow()
+    expect(() => validateCompositionRules('bad')).toThrow()
   })
 })

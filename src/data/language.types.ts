@@ -1,22 +1,6 @@
 import type { KeyId, LanguageId } from '../public/types.js'
 
 /**
- * Metadata about a single character in a language's orthography.
- * @example
- * const ch: CharacterData = { char: 'ẹ', name: 'e-dot-below', level: 'A' }
- */
-export interface CharacterData {
-  /** The Unicode character. */
-  char: string
-  /** Human-readable name (e.g. 'e-dot-below'). */
-  name: string
-  /** Orthographic priority: A = core, B = extended. */
-  level: 'A' | 'B'
-  /** True if this character requires two keystrokes (digraph). */
-  digraph?: boolean
-}
-
-/**
  * A composition rule — maps a trigger + base to a composed result.
  * @example
  * const rule = createCompositionRule('´', 'a', 'á', 'tone')
