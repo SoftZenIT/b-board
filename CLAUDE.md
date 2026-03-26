@@ -59,3 +59,4 @@ Mohamed (ousmanesadjad@gmail.com), building **BBOARD** — a framework-agnostic 
 - One task at a time, fully verified before moving on
 - Verify with: npm run test + npm run lint + npm run build
 - Use Jira MCP to fetch task details before implementing
+- Never add Co-Authored-By lines to commit messages
