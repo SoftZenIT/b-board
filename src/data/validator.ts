@@ -27,7 +27,7 @@ function buildErrorMessage(errors: ErrorObject[], title: string): string {
   const lines = [`Invalid ${title}:`]
   for (const err of errors) {
     const path = err.instancePath || '(root)'
-    lines.push(`  ${path}: ${err.message ?? 'unknown error'}`)
+    lines.push(`  ${path}: ${err.message as string}`)
     if (err.keyword === 'enum' && err.params && 'allowedValues' in err.params) {
       lines.push(`    allowed: ${(err.params as { allowedValues: unknown[] }).allowedValues.join(', ')}`)
     }
@@ -38,7 +38,7 @@ function buildErrorMessage(errors: ErrorObject[], title: string): string {
 function makeValidator<T>(compiled: ValidateFunction, title: string): (data: unknown) => T {
   return (data: unknown): T => {
     if (!compiled(data)) {
-      throw new ValidationError(buildErrorMessage(compiled.errors ?? [], title))
+      throw new ValidationError(buildErrorMessage(compiled.errors as ErrorObject[], title))
     }
     return data as unknown as T
   }

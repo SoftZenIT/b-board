@@ -22,13 +22,13 @@ All primitives (identifiers, enums) live in `src/public/types.ts`.
 
 ### Step 1 — Add the `LanguageId`
 
-Open `src/public/types.ts` and add your language to the `LanguageId` union:
+Open `src/public/types.ts` and add your language to the `LANGUAGE_IDS` tuple:
 
 ```typescript
-export type LanguageId = 'yoruba' | 'fon-adja' | 'baatonum' | 'dendi' | 'my-language'
+const LANGUAGE_IDS = ['yoruba', 'fon-adja', 'baatonum', 'dendi', 'my-language'] as const
 ```
 
-Also add `'my-language'` to the `isLanguageId` guard function.
+That's all — `LanguageId` and `isLanguageId()` are derived from the tuple automatically.
 
 ---
 
@@ -74,11 +74,13 @@ export const yorubaProfile = createLanguageProfile(
 
 ### Step 1 — Add the `LayoutVariantId`
 
-If the layout is new (not `desktop-azerty` or `mobile-default`), add it to `src/public/types.ts`:
+If the layout is new (not `desktop-azerty` or `mobile-default`), add it to the `LAYOUT_VARIANT_IDS` tuple in `src/public/types.ts`:
 
 ```typescript
-export type LayoutVariantId = 'desktop-azerty' | 'mobile-default' | 'desktop-qwerty'
+const LAYOUT_VARIANT_IDS = ['desktop-azerty', 'mobile-default', 'desktop-qwerty'] as const
 ```
+
+`LayoutVariantId` and `isLayoutVariantId()` update automatically.
 
 ---
 

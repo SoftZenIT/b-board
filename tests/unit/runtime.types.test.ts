@@ -14,6 +14,13 @@ describe('createKeyOutput', () => {
     expect(out.char).toBe('a')
     expect(out.composition).toBeUndefined()
   })
+  it('creates a key output with a composition rule', () => {
+    // Import createCompositionRule inline to keep test self-contained
+    const rule = { trigger: '´', base: 'a', result: 'á', mode: 'tone' as const }
+    const out = createKeyOutput('á', rule)
+    expect(out.char).toBe('á')
+    expect(out.composition).toBe(rule)
+  })
 })
 
 describe('createCompositionState', () => {
