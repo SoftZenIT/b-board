@@ -25,7 +25,9 @@ export interface DataLoaderOptions {
 }
 
 export interface DataLoader {
-  /** Loads the registry index from the configured source. */
+  /** Loads the registry index from the configured source.
+   * @throws {DataLoaderError} on network/import failure or HTTP error.
+   * @throws {ValidationError} if the data fails schema validation. */
   loadRegistry(): Promise<RegistryData>
   /** Loads and validates a layout shape.
    * @throws {DataLoaderError} on network/import failure or HTTP error.
