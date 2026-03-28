@@ -11,7 +11,8 @@ export interface ResolverOptions {
 }
 
 export interface LayoutResolver {
-  /** Resolves a layout+language pair, with caching. */
+  /** Resolves a layout+language pair, with caching.
+   * @param catalog - Reserved for future trigger gating; not yet used in resolution. */
   resolve(
     shape: LayoutShape,
     profile: LanguageProfile,
@@ -36,7 +37,7 @@ export function createLayoutResolver(options?: ResolverOptions): LayoutResolver 
   const cache = new Map<string, ResolvedLayout>()
 
   return {
-    resolve(shape, profile, _catalog, layoutId, languageId) {
+    resolve(shape, profile, _catalog /* reserved for future trigger gating */, layoutId, languageId) {
       const cacheKey = `${layoutId}::${languageId}`
       const cached = cache.get(cacheKey)
       if (cached !== undefined) return cached

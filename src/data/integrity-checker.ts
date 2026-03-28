@@ -36,6 +36,8 @@ export function checkLayoutIntegrity(shape: LayoutShape): void {
 /**
  * Checks that all keyIds in the language profile exist in the layout, that
  * there are no duplicate trigger+base combinations, and no circular composition refs.
+ * @param profile - The language profile to validate.
+ * @param shape - The layout shape to validate against.
  * @throws {IntegrityError} on any violation.
  */
 export function checkLanguageIntegrity(profile: LanguageProfile, shape: LayoutShape): void {
