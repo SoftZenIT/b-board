@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { createDataLoader, DataLoaderError } from './loader.js'
+import { ValidationError } from './validator.js'
 
 // Minimal valid fixtures matching AJV schemas
 const validLayout = {
@@ -99,7 +100,7 @@ describe('createDataLoader — fetch transport', () => {
     vi.stubGlobal('fetch', mockFetchOk({ id: 'bad', variant: 'tablet' }))
     const loader = createDataLoader({ baseUrl: 'https://cdn.example.com' })
     // ValidationError is thrown by the validator — it will propagate
-    await expect(loader.loadLayoutShape('desktop-azerty')).rejects.toThrow()
+    await expect(loader.loadLayoutShape('desktop-azerty')).rejects.toThrow(ValidationError)
   })
 
   it('does not re-fetch when the same file is requested twice', async () => {
