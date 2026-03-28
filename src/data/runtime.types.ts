@@ -18,7 +18,7 @@ export interface KeyOutput {
  * A fully resolved keyboard — layout + language + key-to-output map.
  * Built at runtime by the data loader once a language + layout pair is selected.
  * @example
- * const resolved = createResolvedLayout(shape, profile, keyMap)
+ * const resolved = createResolvedLayout(shape, profile, keyMap, compositionMap)
  */
 export interface ResolvedLayout {
   /** The layout shape (structure). */
@@ -27,6 +27,8 @@ export interface ResolvedLayout {
   language: LanguageProfile
   /** Maps each KeyId to its current output character/rule. */
   keyMap: Map<KeyId, KeyOutput>
+  /** Maps each trigger character to all composition rules for that trigger. */
+  compositionMap: Map<string, CompositionRule[]>
 }
 
 /**
@@ -85,6 +87,7 @@ export function createResolvedLayout(
   layout: LayoutShape,
   language: LanguageProfile,
   keyMap: Map<KeyId, KeyOutput>,
+  compositionMap: Map<string, CompositionRule[]>,
 ): ResolvedLayout {
-  return { layout, language, keyMap }
+  return { layout, language, keyMap, compositionMap }
 }
