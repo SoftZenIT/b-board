@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { IntegrityError, checkLayoutIntegrity, checkLanguageIntegrity, checkCompositionIntegrity } from './integrity-checker.js'
+import { createKeyId } from '../public/types.js'
 import type { LayoutShape } from './layout.types.js'
 import type { LanguageProfile } from './language.types.js'
 import type { CompositionRulesCatalog } from './registry.types.js'
@@ -13,7 +14,7 @@ const validShape: LayoutShape = {
     {
       name: 'base',
       rows: [
-        { slots: [{ keyId: 'key-a' as any, width: 1 }, { keyId: 'key-b' as any, width: 1 }] },
+        { slots: [{ keyId: createKeyId('key-a'), width: 1 }, { keyId: createKeyId('key-b'), width: 1 }] },
       ],
     },
   ],
@@ -25,8 +26,8 @@ const validProfile: LanguageProfile = {
   name: 'Yoruba',
   nativeName: 'Yorùbá',
   characters: [
-    { keyId: 'key-a' as any, baseChar: 'a' },
-    { keyId: 'key-b' as any, baseChar: 'b' },
+    { keyId: createKeyId('key-a'), baseChar: 'a' },
+    { keyId: createKeyId('key-b'), baseChar: 'b' },
   ],
   compositionRules: [
     { trigger: '´', base: 'a', result: 'á', mode: 'tone' },
@@ -56,7 +57,7 @@ describe('checkLayoutIntegrity', () => {
         {
           name: 'base',
           rows: [
-            { slots: [{ keyId: 'key-a' as any, width: 1 }, { keyId: 'key-a' as any, width: 1 }] },
+            { slots: [{ keyId: createKeyId('key-a'), width: 1 }, { keyId: createKeyId('key-a'), width: 1 }] },
           ],
         },
       ],
@@ -69,8 +70,8 @@ describe('checkLayoutIntegrity', () => {
     const bad: LayoutShape = {
       ...validShape,
       layers: [
-        { name: 'base', rows: [{ slots: [{ keyId: 'key-a' as any, width: 1 }] }] },
-        { name: 'shift', rows: [{ slots: [{ keyId: 'key-a' as any, width: 1 }] }] },
+        { name: 'base', rows: [{ slots: [{ keyId: createKeyId('key-a'), width: 1 }] }] },
+        { name: 'shift', rows: [{ slots: [{ keyId: createKeyId('key-a'), width: 1 }] }] },
       ],
     }
     expect(() => checkLayoutIntegrity(bad)).toThrow(IntegrityError)
@@ -87,7 +88,7 @@ describe('checkLanguageIntegrity', () => {
   it('throws IntegrityError when profile references unknown keyId', () => {
     const bad: LanguageProfile = {
       ...validProfile,
-      characters: [{ keyId: 'key-z' as any, baseChar: 'z' }],
+      characters: [{ keyId: createKeyId('key-z'), baseChar: 'z' }],
     }
     expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(IntegrityError)
     expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(/unknown keyId 'key-z'/)
