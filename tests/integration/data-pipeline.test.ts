@@ -51,6 +51,7 @@ describe('Data pipeline — real files, no mocks', () => {
     expect(resolved).toHaveLength(8)
     for (const r of resolved) {
       expect(r.keyMap.size).toBeGreaterThan(0)
+      expect(r.compositionMap).toBeDefined()
       expect(r.layout).toBeDefined()
       expect(r.language).toBeDefined()
     }
