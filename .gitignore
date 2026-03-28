@@ -20,4 +20,4 @@ dist-ssr
 *.sln
 *.sw?
 firebase-debug.log*
-coverage/
+coverage/.worktrees
