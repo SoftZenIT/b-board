@@ -56,7 +56,7 @@ describe('createResolvedLayout', () => {
     const shape = createLayoutShape('desktop-azerty', 'desktop', [], 'light')
     const profile = createLanguageProfile('yoruba', 'Yoruba', 'Yorùbá', [], [])
     const keyMap = new Map([[createKeyId('key-a'), createKeyOutput('a')]])
-    const resolved = createResolvedLayout(shape, profile, keyMap)
+    const resolved = createResolvedLayout(shape, profile, keyMap, new Map())
     expect(resolved.layout).toBe(shape)
     expect(resolved.language).toBe(profile)
     expect(resolved.keyMap.size).toBe(1)
