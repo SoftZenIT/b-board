@@ -103,12 +103,12 @@ describe('createLifecycle', () => {
     const lc = createLifecycle()
     let syncVar = 0
 
-    lc.on('destroyed', async (_payload) => {
+    lc.on('destroyed', async () => {
       await new Promise((resolve) => setTimeout(resolve, 100))
       syncVar = 99 // should not be set by the time emit returns
     })
 
-    lc.on('destroyed', (_payload) => {
+    lc.on('destroyed', () => {
       syncVar = 1 // set synchronously
     })
 
