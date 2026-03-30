@@ -11,7 +11,7 @@ import type { LifecycleEventMap, LifecycleEventName, Unsubscribe, Lifecycle } fr
  * unsub()
  */
 export function createLifecycle(): Lifecycle {
-  const listeners = new Map<string, Set<Function>>()
+  const listeners = new Map<string, Set<(payload: unknown) => void | Promise<void>>>()
 
   return {
     on<K extends LifecycleEventName>(
