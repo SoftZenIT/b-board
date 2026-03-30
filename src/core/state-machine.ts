@@ -7,7 +7,7 @@ export class StateTransitionError extends Error {
     readonly to: KeyboardState,
     readonly reason: string,
   ) {
-    super(`[BBOARD] Invalid transition: '${from}' → '${to}'. ${reason}`)
+    super(`[StateTransitionError] Invalid transition: '${from}' → '${to}'. ${reason}`)
     this.name = 'StateTransitionError'
   }
 }
@@ -44,7 +44,7 @@ export function createStateMachine(): StateMachine {
 
     transition(to: KeyboardState) {
       const allowed = VALID_TRANSITIONS[state]
-      if (!(allowed as readonly string[]).includes(to)) {
+      if (!(allowed as readonly unknown[]).includes(to)) {
         throw new StateTransitionError(
           state,
           to,
