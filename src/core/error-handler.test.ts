@@ -44,7 +44,7 @@ describe('createErrorHandler', () => {
     const handler = createErrorHandler()
     const ke = handler.handle(42, 'fatal')
 
-    expect(ke.message).toBe('An unknown error occurred')
+    expect(ke.message).toBe('[KeyboardError] An unknown error occurred')
     expect(ke.cause).toBe(42)
   })
 
@@ -52,7 +52,7 @@ describe('createErrorHandler', () => {
     const handler = createErrorHandler()
     const ke = handler.handle(null, 'fatal')
 
-    expect(ke.message).toBe('An unknown error occurred')
+    expect(ke.message).toBe('[KeyboardError] An unknown error occurred')
   })
 
   it('handle(object, "recoverable") sets cause to the original object', () => {
