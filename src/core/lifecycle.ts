@@ -22,10 +22,12 @@ export function createLifecycle(): Lifecycle {
         listeners.set(event, new Set())
       }
       const set = listeners.get(event)!
-      set.add(listener)
+      type AnyListener = (payload: unknown) => void | Promise<void>
+      const stored = listener as unknown as AnyListener
+      set.add(stored)
 
       return () => {
-        set.delete(listener)
+        set.delete(stored)
       }
     },
 
