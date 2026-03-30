@@ -1,0 +1,41 @@
+import type { LifecycleEventMap, LifecycleEventName, Unsubscribe, Lifecycle } from './lifecycle.types.js'
+
+/**
+ * Creates a typed lifecycle event emitter.
+ * on() returns an Unsubscribe closure. emit() calls listeners synchronously.
+ * Async listeners are fire-and-forget. Payloads are frozen before delivery.
+ * @example
+ * const lc = createLifecycle()
+ * const unsub = lc.on('state-change', ({ from, to }) => console.log(from, to))
+ * lc.emit('state-change', { from: 'initializing', to: 'ready', timestamp: Date.now() })
+ * unsub()
+ */
+export function createLifecycle(): Lifecycle {
+  const listeners = new Map<string, Set<Function>>()
+
+  return {
+    on<K extends LifecycleEventName>(
+      event: K,
+      listener: (payload: LifecycleEventMap[K]) => void | Promise<void>
+    ): Unsubscribe {
+      if (!listeners.has(event)) {
+        listeners.set(event, new Set())
+      }
+      const set = listeners.get(event)!
+      set.add(listener)
+
+      return () => {
+        set.delete(listener)
+      }
+    },
+
+    emit<K extends LifecycleEventName>(event: K, payload: LifecycleEventMap[K]): void {
+      const frozen = Object.freeze({ ...payload })
+      const set = listeners.get(event)
+      if (set === undefined) return
+      for (const listener of set) {
+        listener(frozen)
+      }
+    },
+  }
+}
