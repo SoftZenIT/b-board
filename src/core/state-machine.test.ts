@@ -43,6 +43,13 @@ describe('createStateMachine', () => {
       expect(sm.getState()).toBe('error')
     })
 
+    it('initializing → destroyed', () => {
+      const sm = createStateMachine()
+      sm.transition('initializing')
+      sm.transition('destroyed')
+      expect(sm.getState()).toBe('destroyed')
+    })
+
     it('ready → error', () => {
       const sm = createStateMachine()
       sm.transition('initializing')
