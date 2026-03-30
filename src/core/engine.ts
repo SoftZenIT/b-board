@@ -70,13 +70,15 @@ export function createKeyboardEngine(options: KeyboardEngineOptions): KeyboardEn
   return {
     async initialize(): Promise<void> {
       try {
+        const fromInit = sm.getState()
         sm.transition('initializing')
-        lc.emit('state-change', { from: 'uninitialized', to: 'initializing', timestamp: Date.now() })
+        lc.emit('state-change', { from: fromInit, to: 'initializing', timestamp: Date.now() })
 
+        const fromReady = sm.getState()
         sm.transition('ready')
         checker.check(buildInvariantContext())
         const now = Date.now()
-        lc.emit('state-change', { from: 'initializing', to: 'ready', timestamp: now })
+        lc.emit('state-change', { from: fromReady, to: 'ready', timestamp: now })
         lc.emit('initialized', { state: sm.getState(), timestamp: now })
         lc.emit('ready', { state: sm.getState(), substates: ss.get(), timestamp: now })
       } catch (error) {
