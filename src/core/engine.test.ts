@@ -107,12 +107,14 @@ describe('createKeyboardEngine — destroy', () => {
 })
 
 describe('createKeyboardEngine — error path', () => {
-  it('calling initialize() a second time triggers recoverable error path and emits "error"', async () => {
+  it('calling initialize() a second time triggers recoverable error path and emits "error" + "state-change"', async () => {
     const engine = makeEngine()
     await engine.initialize()
 
     let errorPayload: LifecycleEventMap['error'] | undefined
+    const stateChanges: Array<{ from: string; to: string }> = []
     engine.on('error', (payload) => { errorPayload = payload })
+    engine.on('state-change', ({ from, to }) => { stateChanges.push({ from, to }) })
 
     // Second initialize() attempts uninitialized→initializing which is an invalid transition
     // from 'ready' — StateTransitionError is thrown and handled as recoverable
@@ -121,6 +123,7 @@ describe('createKeyboardEngine — error path', () => {
     expect(engine.getState()).toBe('error')
     expect(errorPayload).toBeDefined()
     expect(errorPayload!.recoverable).toBe(true)
+    expect(stateChanges).toContainEqual({ from: 'ready', to: 'error' })
   })
 })
 
