@@ -1,4 +1,5 @@
-export type ErrorSeverity = 'recoverable' | 'fatal' | 'unknown'
+export const ERROR_SEVERITIES = ['recoverable', 'fatal', 'unknown'] as const
+export type ErrorSeverity = (typeof ERROR_SEVERITIES)[number]
 
 export interface KeyboardError {
   readonly severity: ErrorSeverity
@@ -32,7 +33,7 @@ export function createErrorHandler(): ErrorHandler {
         message = error
         cause = error
       } else {
-        message = 'An unknown error occurred'
+        message = '[KeyboardError] An unknown error occurred'
         cause = error
       }
 
