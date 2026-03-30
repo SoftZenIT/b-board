@@ -16,6 +16,17 @@ const nonReadyCtx: InvariantContext = {
   hasTargetAdapter: false,
 }
 
+/** Runs check() once and returns the caught error, or throws if nothing was thrown. */
+function catchError(checker: ReturnType<typeof createInvariantsChecker>, ctx: InvariantContext): InvariantViolationError {
+  try {
+    checker.check(ctx)
+    throw new Error('Expected InvariantViolationError to be thrown but check() did not throw')
+  } catch (e) {
+    if (e instanceof InvariantViolationError) return e
+    throw e
+  }
+}
+
 describe('createInvariantsChecker', () => {
   describe('Invariant #1: when state is not ready, all substates must be at initial values', () => {
     it('throws InvariantViolationError #1 when non-ready state has non-initial substates', () => {
@@ -24,13 +35,9 @@ describe('createInvariantsChecker', () => {
         ...nonReadyCtx,
         substates: { ...nonReadyCtx.substates, attachment: 'attached' },
       }
-      expect(() => checker.check(ctx)).toThrow(InvariantViolationError)
-      try {
-        checker.check(ctx)
-      } catch (e) {
-        expect(e).toBeInstanceOf(InvariantViolationError)
-        expect((e as InvariantViolationError).invariantNumber).toBe(1)
-      }
+      const err = catchError(checker, ctx)
+      expect(err).toBeInstanceOf(InvariantViolationError)
+      expect(err.invariantNumber).toBe(1)
     })
 
     it('passes when non-ready state has all substates at initial values', () => {
@@ -48,12 +55,9 @@ describe('createInvariantsChecker', () => {
         hasResolvedLayout: true,
         hasTargetAdapter: false,
       }
-      expect(() => checker.check(ctx)).toThrow(InvariantViolationError)
-      try {
-        checker.check(ctx)
-      } catch (e) {
-        expect((e as InvariantViolationError).invariantNumber).toBe(2)
-      }
+      const err = catchError(checker, ctx)
+      expect(err).toBeInstanceOf(InvariantViolationError)
+      expect(err.invariantNumber).toBe(2)
     })
 
     it('passes when detached and focus is blurred', () => {
@@ -71,12 +75,9 @@ describe('createInvariantsChecker', () => {
         hasResolvedLayout: true,
         hasTargetAdapter: false,
       }
-      expect(() => checker.check(ctx)).toThrow(InvariantViolationError)
-      try {
-        checker.check(ctx)
-      } catch (e) {
-        expect((e as InvariantViolationError).invariantNumber).toBe(3)
-      }
+      const err = catchError(checker, ctx)
+      expect(err).toBeInstanceOf(InvariantViolationError)
+      expect(err.invariantNumber).toBe(3)
     })
 
     it('passes when detached and interaction is idle', () => {
@@ -94,12 +95,9 @@ describe('createInvariantsChecker', () => {
         hasResolvedLayout: true,
         hasTargetAdapter: false,
       }
-      expect(() => checker.check(ctx)).toThrow(InvariantViolationError)
-      try {
-        checker.check(ctx)
-      } catch (e) {
-        expect((e as InvariantViolationError).invariantNumber).toBe(4)
-      }
+      const err = catchError(checker, ctx)
+      expect(err).toBeInstanceOf(InvariantViolationError)
+      expect(err.invariantNumber).toBe(4)
     })
 
     it('passes when detached and composition is inactive', () => {
@@ -117,12 +115,9 @@ describe('createInvariantsChecker', () => {
         hasResolvedLayout: true,
         hasTargetAdapter: true,
       }
-      expect(() => checker.check(ctx)).toThrow(InvariantViolationError)
-      try {
-        checker.check(ctx)
-      } catch (e) {
-        expect((e as InvariantViolationError).invariantNumber).toBe(5)
-      }
+      const err = catchError(checker, ctx)
+      expect(err).toBeInstanceOf(InvariantViolationError)
+      expect(err.invariantNumber).toBe(5)
     })
 
     it('passes when surface is hidden and interaction is idle', () => {
@@ -146,12 +141,9 @@ describe('createInvariantsChecker', () => {
         hasResolvedLayout: true,
         hasTargetAdapter: true,
       }
-      expect(() => checker.check(ctx)).toThrow(InvariantViolationError)
-      try {
-        checker.check(ctx)
-      } catch (e) {
-        expect((e as InvariantViolationError).invariantNumber).toBe(6)
-      }
+      const err = catchError(checker, ctx)
+      expect(err).toBeInstanceOf(InvariantViolationError)
+      expect(err.invariantNumber).toBe(6)
     })
 
     it('passes when composing and focus is focused', () => {
@@ -169,16 +161,10 @@ describe('createInvariantsChecker', () => {
   describe('Invariant #7: when state is ready, hasResolvedLayout must be true', () => {
     it('throws InvariantViolationError #7 when state is ready but hasResolvedLayout is false', () => {
       const checker = createInvariantsChecker()
-      const ctx: InvariantContext = {
-        ...readyCtx,
-        hasResolvedLayout: false,
-      }
-      expect(() => checker.check(ctx)).toThrow(InvariantViolationError)
-      try {
-        checker.check(ctx)
-      } catch (e) {
-        expect((e as InvariantViolationError).invariantNumber).toBe(7)
-      }
+      const ctx: InvariantContext = { ...readyCtx, hasResolvedLayout: false }
+      const err = catchError(checker, ctx)
+      expect(err).toBeInstanceOf(InvariantViolationError)
+      expect(err.invariantNumber).toBe(7)
     })
 
     it('passes when state is ready and hasResolvedLayout is true', () => {
@@ -190,16 +176,10 @@ describe('createInvariantsChecker', () => {
   describe('Invariant #8: when attachment is attached, hasTargetAdapter must be true', () => {
     it('throws InvariantViolationError #8 when attached but hasTargetAdapter is false', () => {
       const checker = createInvariantsChecker()
-      const ctx: InvariantContext = {
-        ...readyCtx,
-        hasTargetAdapter: false,
-      }
-      expect(() => checker.check(ctx)).toThrow(InvariantViolationError)
-      try {
-        checker.check(ctx)
-      } catch (e) {
-        expect((e as InvariantViolationError).invariantNumber).toBe(8)
-      }
+      const ctx: InvariantContext = { ...readyCtx, hasTargetAdapter: false }
+      const err = catchError(checker, ctx)
+      expect(err).toBeInstanceOf(InvariantViolationError)
+      expect(err.invariantNumber).toBe(8)
     })
 
     it('passes when attached and hasTargetAdapter is true', () => {
@@ -224,22 +204,13 @@ describe('createInvariantsChecker', () => {
   describe('InvariantViolationError message format', () => {
     it('error message includes invariant number and invariant message', () => {
       const checker = createInvariantsChecker()
-      const ctx: InvariantContext = {
-        ...readyCtx,
-        hasResolvedLayout: false,
-      }
-      try {
-        checker.check(ctx)
-        expect.fail('expected InvariantViolationError to be thrown')
-      } catch (e) {
-        expect(e).toBeInstanceOf(InvariantViolationError)
-        const err = e as InvariantViolationError
-        expect(err.message).toContain('[InvariantViolationError]')
-        expect(err.message).toContain('Invariant #7')
-        expect(err.message).toContain(err.invariantMessage)
-        expect(err.invariantNumber).toBe(7)
-        expect(err.name).toBe('InvariantViolationError')
-      }
+      const ctx: InvariantContext = { ...readyCtx, hasResolvedLayout: false }
+      const err = catchError(checker, ctx)
+      expect(err.message).toContain('[InvariantViolationError]')
+      expect(err.message).toContain('Invariant #7')
+      expect(err.message).toContain(err.invariantMessage)
+      expect(err.invariantNumber).toBe(7)
+      expect(err.name).toBe('InvariantViolationError')
     })
   })
 })
