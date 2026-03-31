@@ -9,6 +9,7 @@ import { createSubstates } from './substates.js'
 import { createErrorHandler } from './error-handler.js'
 import { createLifecycle } from './lifecycle.js'
 import { createInvariantsChecker } from './invariants.js'
+import { logger } from '../utils/logger.js'
 
 export interface KeyboardEngineOptions {
   resolvedLayout: ResolvedLayout
@@ -52,15 +53,21 @@ export function createKeyboardEngine(options: KeyboardEngineOptions): KeyboardEn
 
   function handleError(error: unknown, severity: ErrorSeverity): void {
     const ke: KeyboardError = eh.handle(error, severity)
+    logger.error(`[Engine] Error encountered: ${ke.message}`, ke.cause)
+    if (ke.suggestion) {
+      logger.info(`[Engine] Suggestion: ${ke.suggestion}`)
+    }
     const fromState = sm.getState()  // capture BEFORE transition
     if (eh.isRecoverable(ke)) {
       sm.transition('error')
       ss.reset()
+      logger.debug(`[Engine] State transition: ${fromState} → error`)
       lc.emit('state-change', { from: fromState, to: 'error', timestamp: Date.now() })
       lc.emit('error', { error: ke, recoverable: true, timestamp: Date.now() })
     } else {
       sm.transition('destroyed')
       ss.reset()
+      logger.debug(`[Engine] State transition: ${fromState} → destroyed`)
       lc.emit('state-change', { from: fromState, to: 'destroyed', timestamp: Date.now() })
       lc.emit('error', { error: ke, recoverable: false, timestamp: Date.now() })
       lc.emit('destroyed', { timestamp: Date.now() })
@@ -72,12 +79,16 @@ export function createKeyboardEngine(options: KeyboardEngineOptions): KeyboardEn
       try {
         const fromInit = sm.getState()
         sm.transition('initializing')
+        logger.debug(`[Engine] State transition: ${fromInit} → initializing`)
         lc.emit('state-change', { from: fromInit, to: 'initializing', timestamp: Date.now() })
+
+        const nextCtx = { ...buildInvariantContext(), state: 'ready' as const }
+        checker.check(nextCtx)
 
         const fromReady = sm.getState()
         sm.transition('ready')
-        checker.check(buildInvariantContext())
         const now = Date.now()
+        logger.debug(`[Engine] State transition: ${fromReady} → ready`)
         lc.emit('state-change', { from: fromReady, to: 'ready', timestamp: now })
         lc.emit('initialized', { state: sm.getState(), timestamp: now })
         lc.emit('ready', { state: sm.getState(), substates: ss.get(), timestamp: now })
@@ -91,6 +102,7 @@ export function createKeyboardEngine(options: KeyboardEngineOptions): KeyboardEn
       const fromState = sm.getState()  // capture BEFORE transition
       sm.transition('destroyed')
       ss.reset()
+      logger.debug(`[Engine] State transition: ${fromState} → destroyed`)
       lc.emit('state-change', { from: fromState, to: 'destroyed', timestamp: Date.now() })
       lc.emit('destroyed', { timestamp: Date.now() })
     },
@@ -104,8 +116,10 @@ export function createKeyboardEngine(options: KeyboardEngineOptions): KeyboardEn
     },
 
     setSubstates(updates: Partial<ReadySubstates>): void {
+      const nextSubstates = { ...ss.get(), ...updates }
+      checker.check({ ...buildInvariantContext(), substates: nextSubstates })
       ss.set(updates)
-      checker.check(buildInvariantContext())
+      logger.debug(`[Engine] Substates updated:`, updates)
     },
 
     on<K extends LifecycleEventName>(
