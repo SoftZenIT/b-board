@@ -2,7 +2,7 @@ import { BaseAdapter } from './base-adapter.js'
 import type { NormalizedSelection, InputOperation, OperationResult, TargetHandle } from './types.js'
 
 export class InputElementAdapter extends BaseAdapter {
-  declare protected readonly element: HTMLInputElement
+  declare public readonly element: HTMLInputElement
 
   constructor(handle: TargetHandle, element: HTMLInputElement) {
     super(handle, element)

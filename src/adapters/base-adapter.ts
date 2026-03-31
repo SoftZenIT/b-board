@@ -3,7 +3,7 @@ import type { TargetAdapter, TargetHandle, NormalizedSelection, InputOperation, 
 export abstract class BaseAdapter implements TargetAdapter {
   constructor(
     public readonly handle: TargetHandle,
-    protected readonly element: HTMLElement
+    public readonly element: HTMLElement
   ) {}
 
   abstract getSelection(): NormalizedSelection | null
