@@ -1,3 +1,6 @@
+import { StateTransitionError } from './state-machine.js'
+import { InvariantViolationError } from './invariants.js'
+
 export const ERROR_SEVERITIES = ['recoverable', 'fatal', 'unknown'] as const
 export type ErrorSeverity = (typeof ERROR_SEVERITIES)[number]
 
@@ -25,10 +28,16 @@ export function createErrorHandler(): ErrorHandler {
     handle(error: unknown, severity: ErrorSeverity): KeyboardError {
       let message: string
       let cause: unknown
+      let suggestion: string | undefined
 
       if (error instanceof Error) {
         message = error.message
         cause = error
+        if (error instanceof StateTransitionError) {
+          suggestion = 'Check the valid transitions for the current state before calling transition().'
+        } else if (error instanceof InvariantViolationError) {
+          suggestion = 'Ensure all required substates and engine conditions are met before transitioning to ready or modifying substates.'
+        }
       } else if (typeof error === 'string') {
         message = error
         cause = error
@@ -40,6 +49,7 @@ export function createErrorHandler(): ErrorHandler {
       const ke: KeyboardError = {
         severity,
         message,
+        ...(suggestion && { suggestion }),
         ...(process.env['NODE_ENV'] !== 'production' && { cause }),
       }
 
