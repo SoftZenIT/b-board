@@ -44,11 +44,17 @@ const catalog: CompositionRulesCatalog = {
 }
 
 describe('createLayoutResolver — resolve', () => {
-  it('builds a keyMap mapping each keyId to its base character', () => {
+  it('builds a keyMap mapping each keyId to its multi-layer resolved behavior', () => {
     const resolver = createLayoutResolver()
     const resolved = resolver.resolve(shape, profile, catalog, 'desktop-azerty', 'yoruba')
-    expect(resolved.keyMap.get(keyA)?.char).toBe('a')
-    expect(resolved.keyMap.get(keyB)?.char).toBe('b')
+    
+    const resA = resolved.keyMap.get(keyA)
+    expect(resA?.layers.base.char).toBe('a')
+    expect(resA?.layers.shift.char).toBe('A')
+    
+    const resB = resolved.keyMap.get(keyB)
+    expect(resB?.layers.base.char).toBe('b')
+    expect(resB?.layers.shift.char).toBe('B') // auto-uppercase if shiftChar missing
   })
 
   it('keyMap contains all keys from the layout', () => {
