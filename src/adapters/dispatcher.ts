@@ -14,9 +14,9 @@ export class OperationDispatcher {
       return { success: false, error: { code: 'ADAPTER_NOT_FOUND', message: 'No adapter for handle' } }
     }
 
-    // Access the private element for validation. 
-    // Cast to any to get around protected scope for structural validation.
-    const element = (adapter as any).element as HTMLElement
+    // Access the protected element for validation. 
+    // Use a structural cast to avoid 'any' while accessing protected property.
+    const element = (adapter as unknown as { element: HTMLElement }).element
     if (element) {
       const validation = TargetValidator.validate(element)
       if (!validation.isValid) {

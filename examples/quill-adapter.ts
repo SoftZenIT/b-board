@@ -6,6 +6,7 @@ import { TargetHandle, InputOperation, OperationResult, NormalizedSelection } fr
  * Note: This assumes Quill is available in the environment.
  */
 export class QuillAdapter extends BaseAdapter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(handle: TargetHandle, private quill: any) {
     // quill.root is the contenteditable element
     super(handle, quill.root)
