@@ -2,7 +2,7 @@ import type { LayoutVariantId, LanguageId, KeyId } from '../public/types.js'
 import type { LayoutShape } from './layout.types.js'
 import type { LanguageProfile, CompositionRule } from './language.types.js'
 import type { CompositionRulesCatalog } from './registry.types.js'
-import { createKeyOutput, createResolvedLayout, type KeyOutput, type ResolvedLayout } from './runtime.types.js'
+import { createKeyOutput, createResolvedKey, createResolvedLayout, type ResolvedKey, type ResolvedLayout } from './runtime.types.js'
 import { checkLanguageIntegrity } from './integrity-checker.js'
 
 export interface ResolverOptions {
@@ -45,10 +45,16 @@ export function createLayoutResolver(options?: ResolverOptions): LayoutResolver 
       // Cross-file integrity: every language key must exist in the layout
       checkLanguageIntegrity(profile, shape)
 
-      // Build keyMap: keyId → base character output
-      const keyMap = new Map<KeyId, KeyOutput>()
+      // Build keyMap: keyId → multi-layer resolved behavior
+      const keyMap = new Map<KeyId, ResolvedKey>()
       for (const entry of profile.characters) {
-        keyMap.set(entry.keyId, createKeyOutput(entry.baseChar, entry.composition?.[0]))
+        const layers = {
+          base: createKeyOutput(entry.baseChar, entry.composition?.[0]),
+          shift: createKeyOutput(entry.shiftChar ?? entry.baseChar.toUpperCase()),
+          altGr: createKeyOutput(entry.altGrChar ?? ''),
+        }
+        // Note: Task 9.6 will add longPress here
+        keyMap.set(entry.keyId, createResolvedKey(entry.keyId, layers, []))
       }
 
       // Build compositionMap: trigger → all rules for that trigger
