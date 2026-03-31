@@ -52,6 +52,8 @@ export interface OperationResult {
 
 export interface TargetAdapter {
   readonly handle: TargetHandle
+  /** The underlying DOM element. Exposed for validation purposes. */
+  readonly element: HTMLElement
   getSelection(): NormalizedSelection | null
   applyOperation(operation: InputOperation): OperationResult
   focus(): void

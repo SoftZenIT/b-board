@@ -78,11 +78,13 @@ export function createKeyEntry(
   altGrChar?: string,
   composition?: CompositionRule[],
 ): KeyCatalogEntry {
-  const entry: KeyCatalogEntry = { keyId, baseChar }
-  if (shiftChar !== undefined) entry.shiftChar = shiftChar
-  if (altGrChar !== undefined) entry.altGrChar = altGrChar
-  if (composition !== undefined) entry.composition = composition
-  return entry
+  return {
+    keyId,
+    baseChar,
+    ...(shiftChar !== undefined && { shiftChar }),
+    ...(altGrChar !== undefined && { altGrChar }),
+    ...(composition !== undefined && { composition }),
+  }
 }
 
 /** Creates a {@link LanguageProfile}. */

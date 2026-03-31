@@ -1,5 +1,6 @@
 import {
   createKeyOutput,
+  createResolvedKey,
   createCompositionState,
   createInputOperation,
   createResolvedLayout,
@@ -55,7 +56,14 @@ describe('createResolvedLayout', () => {
   it('creates a resolved layout', () => {
     const shape = createLayoutShape('desktop-azerty', 'desktop', [], 'light')
     const profile = createLanguageProfile('yoruba', 'Yoruba', 'Yorùbá', [], [])
-    const keyMap = new Map([[createKeyId('key-a'), createKeyOutput('a')]])
+    const keyId = createKeyId('key-a')
+    const keyOutput = createKeyOutput('a')
+    const resolvedKey = createResolvedKey(keyId, {
+      base: keyOutput,
+      shift: createKeyOutput('A'),
+      altGr: createKeyOutput(''),
+    })
+    const keyMap = new Map([[keyId, resolvedKey]])
     const resolved = createResolvedLayout(shape, profile, keyMap, new Map())
     expect(resolved.layout).toBe(shape)
     expect(resolved.language).toBe(profile)

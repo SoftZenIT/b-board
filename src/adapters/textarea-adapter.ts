@@ -2,7 +2,7 @@ import { BaseAdapter } from './base-adapter.js'
 import type { NormalizedSelection, InputOperation, OperationResult, TargetHandle } from './types.js'
 
 export class TextareaAdapter extends BaseAdapter {
-  declare protected readonly element: HTMLTextAreaElement
+  declare public readonly element: HTMLTextAreaElement
 
   constructor(handle: TargetHandle, element: HTMLTextAreaElement) {
     super(handle, element)
