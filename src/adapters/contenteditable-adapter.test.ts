@@ -8,7 +8,7 @@ describe('ContenteditableAdapter', () => {
   beforeEach(() => {
     originalExecCommand = document.execCommand
     // Mock execCommand since JSDOM doesn't implement it fully
-    document.execCommand = vi.fn((commandId: string, showUI?: boolean, value?: string) => {
+    document.execCommand = vi.fn((commandId: string, _showUI?: boolean, value?: string) => {
       if (commandId === 'insertText' && value) {
         const selection = window.getSelection()
         if (selection && selection.rangeCount > 0) {
@@ -17,7 +17,7 @@ describe('ContenteditableAdapter', () => {
         }
       }
       return true
-    }) as any
+    }) as typeof document.execCommand
   })
 
   afterEach(() => {
