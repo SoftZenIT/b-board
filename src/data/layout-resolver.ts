@@ -53,8 +53,8 @@ export function createLayoutResolver(options?: ResolverOptions): LayoutResolver 
           shift: createKeyOutput(entry.shiftChar ?? entry.baseChar.toUpperCase()),
           altGr: createKeyOutput(entry.altGrChar ?? ''),
         }
-        // Note: Task 9.6 will add longPress here
-        keyMap.set(entry.keyId, createResolvedKey(entry.keyId, layers, []))
+        const longPress = entry.longPress ? [...entry.longPress] : []
+        keyMap.set(entry.keyId, createResolvedKey(entry.keyId, layers, longPress))
       }
 
       // Build compositionMap: trigger → all rules for that trigger
