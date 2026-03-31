@@ -1,4 +1,5 @@
 import type { LifecycleEventMap, LifecycleEventName, Unsubscribe, Lifecycle } from './lifecycle.types.js'
+import { logger } from '../utils/logger.js'
 
 /**
  * Creates a typed lifecycle event emitter.
@@ -36,7 +37,16 @@ export function createLifecycle(): Lifecycle {
       const set = listeners.get(event)
       if (set === undefined) return
       for (const listener of set) {
-        listener(frozen)
+        try {
+          const result = listener(frozen)
+          if (result instanceof Promise) {
+            result.catch((error) => {
+              logger.error(`Async listener for event '${event}' failed:`, error)
+            })
+          }
+        } catch (error) {
+          logger.error(`Listener for event '${event}' failed:`, error)
+        }
       }
     },
   }
