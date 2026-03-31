@@ -29,15 +29,17 @@ export interface CompositionRule {
  */
 export interface KeyCatalogEntry {
   /** The key this entry describes. */
-  keyId: KeyId
+  readonly keyId: KeyId
   /** Character produced by the base layer. */
-  baseChar: string
+  readonly baseChar: string
   /** Character produced by the shift layer. */
-  shiftChar?: string
+  readonly shiftChar?: string
   /** Character produced by the AltGr layer. */
-  altGrChar?: string
+  readonly altGrChar?: string
   /** Composition rules triggered from this key. */
-  composition?: CompositionRule[]
+  readonly composition?: CompositionRule[]
+  /** Related characters for long-press menus. */
+  readonly longPress?: readonly string[]
 }
 
 /**
