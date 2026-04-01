@@ -11,7 +11,8 @@ export abstract class BaseAdapter implements TargetAdapter {
 
   getSelection(): NormalizedSelection | null {
     const el = this.element as TextSelectionElement
-    if (el.selectionStart === null || el.selectionEnd === null) return null
+    // Elements like <div> don't have selectionStart/End (they are undefined)
+    if (el.selectionStart == null || el.selectionEnd == null) return null
     return {
       position: el.selectionStart,
       length: el.selectionEnd - el.selectionStart,
@@ -20,11 +21,11 @@ export abstract class BaseAdapter implements TargetAdapter {
   }
 
   applyOperation(operation: InputOperation): OperationResult {
-    const el = this.element as TextSelectionElement
-    const start = el.selectionStart ?? el.value.length
-    const end = el.selectionEnd ?? el.value.length
-
     try {
+      const el = this.element as TextSelectionElement
+      const start = el.selectionStart ?? el.value.length
+      const end = el.selectionEnd ?? el.value.length
+
       if (operation.type === 'insert') {
         el.setRangeText(operation.text, start, end, 'end')
       } else if (operation.type === 'delete') {
