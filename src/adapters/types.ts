@@ -41,11 +41,14 @@ export interface ReplaceOperation extends BaseOperation {
 
 export type InputOperation = InsertOperation | DeleteOperation | ReplaceOperation
 
+export const OPERATION_ERROR_CODES = ['OP_FAILED', 'ADAPTER_NOT_FOUND', 'INVALID_TARGET'] as const
+export type OperationErrorCode = (typeof OPERATION_ERROR_CODES)[number]
+
 export interface OperationResult {
   readonly success: boolean
   readonly selectionAfter?: NormalizedSelection
   readonly error?: {
-    code: string
+    code: OperationErrorCode
     message: string
   }
 }

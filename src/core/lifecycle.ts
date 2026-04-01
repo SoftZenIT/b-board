@@ -29,6 +29,7 @@ export function createLifecycle(): Lifecycle {
 
       return () => {
         set.delete(stored)
+        if (set.size === 0) listeners.delete(event)
       }
     },
 
