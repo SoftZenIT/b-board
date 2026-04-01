@@ -4,7 +4,7 @@ import type { TargetAdapter, TargetHandle } from './types.js';
 export type AdapterConstructor = new (handle: TargetHandle, element: any) => TargetAdapter;
 
 export class AdapterRegistry {
-  private adapters = new Map<string, AdapterConstructor>();
+  private readonly adapters = new Map<string, AdapterConstructor>();
 
   register(type: string, adapterClass: AdapterConstructor): void {
     this.adapters.set(type, adapterClass);
