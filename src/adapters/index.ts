@@ -6,3 +6,4 @@ export * from './textarea-adapter.js';
 export * from './contenteditable-adapter.js';
 export * from './adapter-registry.js';
 export * from './dispatcher.js';
+export * from './adapter-registry.js';
