@@ -23,8 +23,9 @@ export abstract class BaseAdapter implements TargetAdapter {
   applyOperation(operation: InputOperation): OperationResult {
     try {
       const el = this.element as TextSelectionElement
-      const start = el.selectionStart ?? el.value.length
-      const end = el.selectionEnd ?? el.value.length
+      const valueLength = el.value?.length ?? 0;
+      const start = el.selectionStart ?? valueLength
+      const end = el.selectionEnd ?? valueLength
 
       if (operation.type === 'insert') {
         el.setRangeText(operation.text, start, end, 'end')
