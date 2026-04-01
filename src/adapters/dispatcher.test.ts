@@ -34,4 +34,13 @@ describe('OperationDispatcher', () => {
     expect(result.success).toBe(false);
     expect(result.error?.message).toContain('Validation failed');
   });
+
+  it('fails if adapter is not found', () => {
+    const dispatcher = new OperationDispatcher();
+    const handle = createTargetHandle('non-existent');
+    const result = dispatcher.dispatch(handle, { type: 'insert', text: 'y' });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('ADAPTER_NOT_FOUND');
+  });
 });
