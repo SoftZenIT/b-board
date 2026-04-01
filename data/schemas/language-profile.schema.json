@@ -60,6 +60,11 @@
           "description": "Composition rules triggered from this key.",
           "type": "array",
           "items": { "$ref": "#/definitions/CompositionRule" }
+        },
+        "longPress": {
+          "description": "Related characters for long-press menus.",
+          "type": "array",
+          "items": { "type": "string" }
         }
       }
     },
