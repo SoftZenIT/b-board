@@ -1,5 +1,3 @@
-import type { EditorAdapter } from './types.js';
-
 export class AdapterRegistry {
   private adapters = new Map<string, any>();
 
