@@ -14,7 +14,6 @@ export class OperationDispatcher {
       return { success: false, error: { code: 'ADAPTER_NOT_FOUND', message: 'No adapter for handle' } }
     }
 
-    // Access the element from the adapter for validation.
     const validation = TargetValidator.validate(adapter.element)
     if (!validation.isValid) {
       return { success: false, error: { code: 'INVALID_TARGET', message: `Validation failed: ${validation.reason}` } }
