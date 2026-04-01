@@ -1,0 +1,14 @@
+graph TD
+    Public[Public API] --> Core
+    Public --> Data
+    Public --> Adapters
+    Public --> UI
+    
+    Core --> Data
+    Core --> Utils
+    
+    Adapters --> Core
+    Adapters --> Utils
+    
+    UI --> Core
+    UI --> Utils
