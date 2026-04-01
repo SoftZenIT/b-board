@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { DataLayerImpl } from '../../src/data/data-layer.js';
 
 describe('DataLayer', () => {
