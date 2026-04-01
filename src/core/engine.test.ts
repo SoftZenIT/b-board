@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { createKeyboardEngine } from './engine.js'
 import { InvariantViolationError } from './invariants.js'
+import * as errorHandlerModule from './error-handler.js'
 import { createResolvedLayout } from '../data/runtime.types.js'
 import type { ResolvedLayout } from '../data/runtime.types.js'
 import type { LifecycleEventMap } from './lifecycle.types.js'
@@ -124,6 +125,38 @@ describe('createKeyboardEngine — error path', () => {
     expect(errorPayload).toBeDefined()
     expect(errorPayload!.recoverable).toBe(true)
     expect(stateChanges).toContainEqual({ from: 'ready', to: 'error' })
+  })
+
+  it('handles fatal errors by transitioning to "destroyed" state', async () => {
+    const ehSpy = vi.spyOn(errorHandlerModule, 'createErrorHandler').mockReturnValue({
+      handle: (error: unknown) => ({
+        severity: 'fatal' as const,
+        message: String(error),
+      }),
+      isRecoverable: () => false,
+    })
+
+    // We need a new engine instance that uses the mocked error handler
+    const engine = makeEngine()
+    
+    let destroyedFired = false
+    engine.on('destroyed', () => { destroyedFired = true })
+
+    // Force an error in initialize
+    // We can do this by making the state machine transition fail or invariants fail
+    // But since initialize() catches everything, we just need ANY error to be thrown inside try block
+    
+    // Let's mock sm.transition to throw
+    // Actually, easier to just mock eh.handle to return fatal and then trigger ANY error.
+    // Transitioning to 'initializing' twice will throw.
+    
+    await engine.initialize() // first one succeeds
+    await engine.initialize() // second one fails, handled as fatal by mock
+
+    expect(engine.getState()).toBe('destroyed')
+    expect(destroyedFired).toBe(true)
+
+    ehSpy.mockRestore()
   })
 })
 
