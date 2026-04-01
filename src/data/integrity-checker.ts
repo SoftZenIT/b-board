@@ -1,6 +1,6 @@
-import type { LayoutShape } from './layout.types.js'
-import type { LanguageProfile } from './language.types.js'
-import type { CompositionRulesCatalog } from './registry.types.js'
+import type { LayoutShape } from './layout.types.js';
+import type { LanguageProfile } from './language.types.js';
+import type { CompositionRulesCatalog } from './registry.types.js';
 
 /**
  * Thrown when cross-file data consistency checks fail.
@@ -8,8 +8,8 @@ import type { CompositionRulesCatalog } from './registry.types.js'
  */
 export class IntegrityError extends Error {
   constructor(message: string) {
-    super(message)
-    this.name = 'IntegrityError'
+    super(message);
+    this.name = 'IntegrityError';
   }
 }
 
@@ -18,16 +18,16 @@ export class IntegrityError extends Error {
  * @throws {IntegrityError} if any keyId appears more than once.
  */
 export function checkLayoutIntegrity(shape: LayoutShape): void {
-  const seen = new Set<string>()
+  const seen = new Set<string>();
   for (const layer of shape.layers) {
     for (const row of layer.rows) {
       for (const slot of row.slots) {
         if (seen.has(slot.keyId)) {
           throw new IntegrityError(
-            `[IntegrityError] Layout '${shape.id}' has duplicate keyId '${slot.keyId}'`,
-          )
+            `[IntegrityError] Layout '${shape.id}' has duplicate keyId '${slot.keyId}'`
+          );
         }
-        seen.add(slot.keyId)
+        seen.add(slot.keyId);
       }
     }
   }
@@ -42,11 +42,11 @@ export function checkLayoutIntegrity(shape: LayoutShape): void {
  */
 export function checkLanguageIntegrity(profile: LanguageProfile, shape: LayoutShape): void {
   // Build layout keyId set
-  const layoutKeyIds = new Set<string>()
+  const layoutKeyIds = new Set<string>();
   for (const layer of shape.layers) {
     for (const row of layer.rows) {
       for (const slot of row.slots) {
-        layoutKeyIds.add(slot.keyId)
+        layoutKeyIds.add(slot.keyId);
       }
     }
   }
@@ -55,30 +55,30 @@ export function checkLanguageIntegrity(profile: LanguageProfile, shape: LayoutSh
   for (const entry of profile.characters) {
     if (!layoutKeyIds.has(entry.keyId)) {
       throw new IntegrityError(
-        `[IntegrityError] Language '${profile.languageId}' references unknown keyId '${entry.keyId}' not found in layout '${shape.id}'`,
-      )
+        `[IntegrityError] Language '${profile.languageId}' references unknown keyId '${entry.keyId}' not found in layout '${shape.id}'`
+      );
     }
   }
 
   // Check no duplicate trigger+base combos
-  const ruleSeen = new Set<string>()
+  const ruleSeen = new Set<string>();
   for (const rule of profile.compositionRules) {
-    const key = `${rule.trigger}+${rule.base}`
+    const key = `${rule.trigger}+${rule.base}`;
     if (ruleSeen.has(key)) {
       throw new IntegrityError(
-        `[IntegrityError] Language '${profile.languageId}' has duplicate composition rule for trigger '${rule.trigger}' + base '${rule.base}'`,
-      )
+        `[IntegrityError] Language '${profile.languageId}' has duplicate composition rule for trigger '${rule.trigger}' + base '${rule.base}'`
+      );
     }
-    ruleSeen.add(key)
+    ruleSeen.add(key);
   }
 
   // Check no circular refs: a rule's result must not be another rule's trigger
-  const triggers = new Set(profile.compositionRules.map((r) => r.trigger))
+  const triggers = new Set(profile.compositionRules.map((r) => r.trigger));
   for (const rule of profile.compositionRules) {
     if (triggers.has(rule.result)) {
       throw new IntegrityError(
-        `[IntegrityError] Language '${profile.languageId}' has circular composition: result '${rule.result}' is also a trigger`,
-      )
+        `[IntegrityError] Language '${profile.languageId}' has circular composition: result '${rule.result}' is also a trigger`
+      );
     }
   }
 }
@@ -88,13 +88,13 @@ export function checkLanguageIntegrity(profile: LanguageProfile, shape: LayoutSh
  * @throws {IntegrityError} if any trigger appears more than once.
  */
 export function checkCompositionIntegrity(catalog: CompositionRulesCatalog): void {
-  const seen = new Set<string>()
+  const seen = new Set<string>();
   for (const entry of catalog.triggers) {
     if (seen.has(entry.trigger)) {
       throw new IntegrityError(
-        `[IntegrityError] Composition catalog has duplicate trigger '${entry.trigger}'`,
-      )
+        `[IntegrityError] Composition catalog has duplicate trigger '${entry.trigger}'`
+      );
     }
-    seen.add(entry.trigger)
+    seen.add(entry.trigger);
   }
 }

@@ -1,9 +1,14 @@
-import { describe, it, expect } from 'vitest'
-import { IntegrityError, checkLayoutIntegrity, checkLanguageIntegrity, checkCompositionIntegrity } from './integrity-checker.js'
-import { createKeyId } from '../public/types.js'
-import type { LayoutShape } from './layout.types.js'
-import type { LanguageProfile } from './language.types.js'
-import type { CompositionRulesCatalog } from './registry.types.js'
+import { describe, it, expect } from 'vitest';
+import {
+  IntegrityError,
+  checkLayoutIntegrity,
+  checkLanguageIntegrity,
+  checkCompositionIntegrity,
+} from './integrity-checker.js';
+import { createKeyId } from '../public/types.js';
+import type { LayoutShape } from './layout.types.js';
+import type { LanguageProfile } from './language.types.js';
+import type { CompositionRulesCatalog } from './registry.types.js';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -14,12 +19,17 @@ const validShape: LayoutShape = {
     {
       name: 'base',
       rows: [
-        { slots: [{ keyId: createKeyId('key-a'), width: 1 }, { keyId: createKeyId('key-b'), width: 1 }] },
+        {
+          slots: [
+            { keyId: createKeyId('key-a'), width: 1 },
+            { keyId: createKeyId('key-b'), width: 1 },
+          ],
+        },
       ],
     },
   ],
   theme: 'light',
-}
+};
 
 const validProfile: LanguageProfile = {
   languageId: 'yoruba',
@@ -33,7 +43,7 @@ const validProfile: LanguageProfile = {
     { trigger: '´', base: 'a', result: 'á', mode: 'tone' },
     { trigger: '´', base: 'e', result: 'é', mode: 'tone' },
   ],
-}
+};
 
 const validCatalog: CompositionRulesCatalog = {
   version: '1.0.0',
@@ -41,14 +51,14 @@ const validCatalog: CompositionRulesCatalog = {
     { trigger: '´', name: 'acute', mode: 'tone' },
     { trigger: '`', name: 'grave', mode: 'tone' },
   ],
-}
+};
 
 // ── checkLayoutIntegrity ─────────────────────────────────────────────────────
 
 describe('checkLayoutIntegrity', () => {
   it('passes for a layout with unique keyIds', () => {
-    expect(() => checkLayoutIntegrity(validShape)).not.toThrow()
-  })
+    expect(() => checkLayoutIntegrity(validShape)).not.toThrow();
+  });
 
   it('throws IntegrityError for duplicate keyId within same layer', () => {
     const bad: LayoutShape = {
@@ -57,14 +67,19 @@ describe('checkLayoutIntegrity', () => {
         {
           name: 'base',
           rows: [
-            { slots: [{ keyId: createKeyId('key-a'), width: 1 }, { keyId: createKeyId('key-a'), width: 1 }] },
+            {
+              slots: [
+                { keyId: createKeyId('key-a'), width: 1 },
+                { keyId: createKeyId('key-a'), width: 1 },
+              ],
+            },
           ],
         },
       ],
-    }
-    expect(() => checkLayoutIntegrity(bad)).toThrow(IntegrityError)
-    expect(() => checkLayoutIntegrity(bad)).toThrow(/duplicate keyId 'key-a'/)
-  })
+    };
+    expect(() => checkLayoutIntegrity(bad)).toThrow(IntegrityError);
+    expect(() => checkLayoutIntegrity(bad)).toThrow(/duplicate keyId 'key-a'/);
+  });
 
   it('throws IntegrityError for duplicate keyId across layers', () => {
     const bad: LayoutShape = {
@@ -73,26 +88,26 @@ describe('checkLayoutIntegrity', () => {
         { name: 'base', rows: [{ slots: [{ keyId: createKeyId('key-a'), width: 1 }] }] },
         { name: 'shift', rows: [{ slots: [{ keyId: createKeyId('key-a'), width: 1 }] }] },
       ],
-    }
-    expect(() => checkLayoutIntegrity(bad)).toThrow(IntegrityError)
-  })
-})
+    };
+    expect(() => checkLayoutIntegrity(bad)).toThrow(IntegrityError);
+  });
+});
 
 // ── checkLanguageIntegrity ───────────────────────────────────────────────────
 
 describe('checkLanguageIntegrity', () => {
   it('passes when all character keyIds exist in layout', () => {
-    expect(() => checkLanguageIntegrity(validProfile, validShape)).not.toThrow()
-  })
+    expect(() => checkLanguageIntegrity(validProfile, validShape)).not.toThrow();
+  });
 
   it('throws IntegrityError when profile references unknown keyId', () => {
     const bad: LanguageProfile = {
       ...validProfile,
       characters: [{ keyId: createKeyId('key-z'), baseChar: 'z' }],
-    }
-    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(IntegrityError)
-    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(/unknown keyId 'key-z'/)
-  })
+    };
+    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(IntegrityError);
+    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(/unknown keyId 'key-z'/);
+  });
 
   it('throws IntegrityError for duplicate trigger+base in compositionRules', () => {
     const bad: LanguageProfile = {
@@ -101,10 +116,10 @@ describe('checkLanguageIntegrity', () => {
         { trigger: '´', base: 'a', result: 'á', mode: 'tone' },
         { trigger: '´', base: 'a', result: 'à', mode: 'tone' }, // duplicate ´+a
       ],
-    }
-    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(IntegrityError)
-    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(/duplicate.*´.*a/)
-  })
+    };
+    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(IntegrityError);
+    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(/duplicate.*´.*a/);
+  });
 
   it('throws IntegrityError when a composition result is also a trigger (circular)', () => {
     const bad: LanguageProfile = {
@@ -113,18 +128,18 @@ describe('checkLanguageIntegrity', () => {
         { trigger: '´', base: 'a', result: 'á', mode: 'tone' },
         { trigger: 'á', base: 'e', result: '´', mode: 'tone' }, // á is both trigger and result of ´
       ],
-    }
-    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(IntegrityError)
-    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(/circular/)
-  })
-})
+    };
+    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(IntegrityError);
+    expect(() => checkLanguageIntegrity(bad, validShape)).toThrow(/circular/);
+  });
+});
 
 // ── checkCompositionIntegrity ─────────────────────────────────────────────────
 
 describe('checkCompositionIntegrity', () => {
   it('passes for a catalog with unique triggers', () => {
-    expect(() => checkCompositionIntegrity(validCatalog)).not.toThrow()
-  })
+    expect(() => checkCompositionIntegrity(validCatalog)).not.toThrow();
+  });
 
   it('throws IntegrityError for duplicate trigger in catalog', () => {
     const bad: CompositionRulesCatalog = {
@@ -133,8 +148,8 @@ describe('checkCompositionIntegrity', () => {
         { trigger: '´', name: 'acute', mode: 'tone' },
         { trigger: '´', name: 'acute-alt', mode: 'tone' },
       ],
-    }
-    expect(() => checkCompositionIntegrity(bad)).toThrow(IntegrityError)
-    expect(() => checkCompositionIntegrity(bad)).toThrow(/duplicate trigger '´'/)
-  })
-})
+    };
+    expect(() => checkCompositionIntegrity(bad)).toThrow(IntegrityError);
+    expect(() => checkCompositionIntegrity(bad)).toThrow(/duplicate trigger '´'/);
+  });
+});

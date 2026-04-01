@@ -1,10 +1,10 @@
-import type { KeyId, LanguageId } from '../public/types.js'
+import type { KeyId, LanguageId } from '../public/types.js';
 
 /**
  * The kind of composition a rule applies — shared by {@link CompositionRule}
  * and {@link CompositionTriggerEntry} in the global catalog.
  */
-export type CompositionRuleMode = 'tone' | 'nasal'
+export type CompositionRuleMode = 'tone' | 'nasal';
 
 /**
  * A composition rule — maps a trigger + base to a composed result.
@@ -13,13 +13,13 @@ export type CompositionRuleMode = 'tone' | 'nasal'
  */
 export interface CompositionRule {
   /** The dead key or modifier that arms composition. */
-  trigger: string
+  trigger: string;
   /** The base character to combine with. */
-  base: string
+  base: string;
   /** The resulting composed character. */
-  result: string
+  result: string;
   /** Whether this is a tone or nasal composition. */
-  mode: CompositionRuleMode
+  mode: CompositionRuleMode;
 }
 
 /**
@@ -29,17 +29,17 @@ export interface CompositionRule {
  */
 export interface KeyCatalogEntry {
   /** The key this entry describes. */
-  readonly keyId: KeyId
+  readonly keyId: KeyId;
   /** Character produced by the base layer. */
-  readonly baseChar: string
+  readonly baseChar: string;
   /** Character produced by the shift layer. */
-  readonly shiftChar?: string
+  readonly shiftChar?: string;
   /** Character produced by the AltGr layer. */
-  readonly altGrChar?: string
+  readonly altGrChar?: string;
   /** Composition rules triggered from this key. */
-  readonly composition?: CompositionRule[]
+  readonly composition?: CompositionRule[];
   /** Related characters for long-press menus. */
-  readonly longPress?: readonly string[]
+  readonly longPress?: readonly string[];
 }
 
 /**
@@ -49,15 +49,15 @@ export interface KeyCatalogEntry {
  */
 export interface LanguageProfile {
   /** Unique language identifier. */
-  languageId: LanguageId
+  languageId: LanguageId;
   /** English name of the language. */
-  name: string
+  name: string;
   /** Name in the language itself. */
-  nativeName: string
+  nativeName: string;
   /** All keyed characters for this language. */
-  characters: KeyCatalogEntry[]
+  characters: KeyCatalogEntry[];
   /** Composition rules (tone marks, nasal marks, dead keys). */
-  compositionRules: CompositionRule[]
+  compositionRules: CompositionRule[];
 }
 
 /** Creates a {@link CompositionRule}. */
@@ -65,9 +65,9 @@ export function createCompositionRule(
   trigger: string,
   base: string,
   result: string,
-  mode: 'tone' | 'nasal',
+  mode: 'tone' | 'nasal'
 ): CompositionRule {
-  return { trigger, base, result, mode }
+  return { trigger, base, result, mode };
 }
 
 /** Creates a {@link KeyCatalogEntry}. */
@@ -76,7 +76,7 @@ export function createKeyEntry(
   baseChar: string,
   shiftChar?: string,
   altGrChar?: string,
-  composition?: CompositionRule[],
+  composition?: CompositionRule[]
 ): KeyCatalogEntry {
   return {
     keyId,
@@ -84,7 +84,7 @@ export function createKeyEntry(
     ...(shiftChar !== undefined && { shiftChar }),
     ...(altGrChar !== undefined && { altGrChar }),
     ...(composition !== undefined && { composition }),
-  }
+  };
 }
 
 /** Creates a {@link LanguageProfile}. */
@@ -93,7 +93,7 @@ export function createLanguageProfile(
   name: string,
   nativeName: string,
   characters: KeyCatalogEntry[],
-  compositionRules: CompositionRule[],
+  compositionRules: CompositionRule[]
 ): LanguageProfile {
-  return { languageId, name, nativeName, characters, compositionRules }
+  return { languageId, name, nativeName, characters, compositionRules };
 }

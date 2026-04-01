@@ -1,5 +1,5 @@
-import type { LanguageId, LayoutVariantId } from '../public/types.js'
-import type { CompositionRuleMode } from './language.types.js'
+import type { LanguageId, LayoutVariantId } from '../public/types.js';
+import type { CompositionRuleMode } from './language.types.js';
 
 /**
  * A single entry in the registry pointing to a data file.
@@ -8,9 +8,9 @@ import type { CompositionRuleMode } from './language.types.js'
  */
 export interface LanguageRegistryEntry {
   /** Language identifier. */
-  id: LanguageId
+  id: LanguageId;
   /** Relative path to the language JSON file. */
-  path: string
+  path: string;
 }
 
 /**
@@ -20,9 +20,9 @@ export interface LanguageRegistryEntry {
  */
 export interface LayoutRegistryEntry {
   /** Layout variant identifier. */
-  id: LayoutVariantId
+  id: LayoutVariantId;
   /** Relative path to the layout JSON file. */
-  path: string
+  path: string;
 }
 
 /**
@@ -33,11 +33,11 @@ export interface LayoutRegistryEntry {
  */
 export interface RegistryData {
   /** Semantic version of the data set. */
-  version: string
+  version: string;
   /** All registered language profiles. */
-  languages: LanguageRegistryEntry[]
+  languages: LanguageRegistryEntry[];
   /** All registered layout variants. */
-  layouts: LayoutRegistryEntry[]
+  layouts: LayoutRegistryEntry[];
 }
 
 /**
@@ -47,13 +47,13 @@ export interface RegistryData {
  */
 export interface CompositionTriggerEntry {
   /** The dead-key character that arms composition. */
-  trigger: string
+  trigger: string;
   /** Human-readable name for the trigger (e.g. 'acute'). */
-  name: string
+  name: string;
   /** Whether this trigger produces a tone mark or a nasal mark. */
-  mode: CompositionRuleMode
+  mode: CompositionRuleMode;
   /** Optional description shown in documentation. */
-  description?: string
+  description?: string;
 }
 
 /**
@@ -63,7 +63,7 @@ export interface CompositionTriggerEntry {
  */
 export interface CompositionRulesCatalog {
   /** Semantic version of the catalog. */
-  version: string
+  version: string;
   /** All registered dead-key triggers. */
-  triggers: CompositionTriggerEntry[]
+  triggers: CompositionTriggerEntry[];
 }
