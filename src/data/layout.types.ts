@@ -1,4 +1,4 @@
-import type { KeyId, LayerId, LayoutVariantId, ThemeId } from '../public/types.js'
+import type { KeyId, LayerId, LayoutVariantId, ThemeId } from '../public/types.js';
 
 /**
  * A single key slot within a keyboard row.
@@ -7,11 +7,11 @@ import type { KeyId, LayerId, LayoutVariantId, ThemeId } from '../public/types.j
  */
 export interface LayoutSlot {
   /** The key this slot renders. */
-  keyId: KeyId
+  keyId: KeyId;
   /** Relative width multiplier (1 = standard key unit). */
-  width: number
+  width: number;
   /** Optional visible label override. */
-  label?: string
+  label?: string;
 }
 
 /**
@@ -21,9 +21,9 @@ export interface LayoutSlot {
  */
 export interface LayoutRow {
   /** Ordered slots in the row, left to right. */
-  slots: LayoutSlot[]
+  slots: LayoutSlot[];
   /** Optional height in pixels. */
-  height?: number
+  height?: number;
 }
 
 /**
@@ -33,9 +33,9 @@ export interface LayoutRow {
  */
 export interface LayoutLayer {
   /** The shift state this layer represents. */
-  name: LayerId
+  name: LayerId;
   /** Ordered rows, top to bottom. */
-  rows: LayoutRow[]
+  rows: LayoutRow[];
 }
 
 /**
@@ -45,28 +45,28 @@ export interface LayoutLayer {
  */
 export interface LayoutShape {
   /** Unique identifier for this variant. */
-  id: LayoutVariantId
+  id: LayoutVariantId;
   /** Platform type: desktop or mobile. */
-  variant: 'desktop' | 'mobile'
+  variant: 'desktop' | 'mobile';
   /** Ordered layers; typically base + shift (+ altGr on desktop). */
-  layers: LayoutLayer[]
+  layers: LayoutLayer[];
   /** Default theme applied to this layout. */
-  theme: ThemeId
+  theme: ThemeId;
 }
 
 /** Creates a {@link LayoutSlot}. */
 export function createLayoutSlot(keyId: KeyId, width: number, label?: string): LayoutSlot {
-  return label !== undefined ? { keyId, width, label } : { keyId, width }
+  return label !== undefined ? { keyId, width, label } : { keyId, width };
 }
 
 /** Creates a {@link LayoutRow}. */
 export function createLayoutRow(slots: LayoutSlot[], height?: number): LayoutRow {
-  return height !== undefined ? { slots, height } : { slots }
+  return height !== undefined ? { slots, height } : { slots };
 }
 
 /** Creates a {@link LayoutLayer}. */
 export function createLayoutLayer(name: LayerId, rows: LayoutRow[]): LayoutLayer {
-  return { name, rows }
+  return { name, rows };
 }
 
 /** Creates a {@link LayoutShape}. */
@@ -74,7 +74,7 @@ export function createLayoutShape(
   id: LayoutVariantId,
   variant: 'desktop' | 'mobile',
   layers: LayoutLayer[],
-  theme: ThemeId,
+  theme: ThemeId
 ): LayoutShape {
-  return { id, variant, layers, theme }
+  return { id, variant, layers, theme };
 }
