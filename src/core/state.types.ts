@@ -4,31 +4,31 @@ export const KEYBOARD_STATES = [
   'ready',
   'error',
   'destroyed',
-] as const
+] as const;
 
 /** The top-level lifecycle state of the keyboard engine. */
-export type KeyboardState = (typeof KEYBOARD_STATES)[number]
+export type KeyboardState = (typeof KEYBOARD_STATES)[number];
 
 /** A point-in-time snapshot of the state machine. */
 export interface StateSnapshot {
   /** Current state. */
-  state: KeyboardState
+  state: KeyboardState;
   /** State before the last transition, or null if no transition has occurred. */
-  previous: KeyboardState | null
+  previous: KeyboardState | null;
   /** Unix timestamp (ms) of the last transition. */
-  timestamp: number
+  timestamp: number;
 }
 
 /** The state machine interface returned by {@link createStateMachine}. */
 export interface StateMachine {
   /** Returns the current state. */
-  getState(): KeyboardState
+  getState(): KeyboardState;
   /** Returns a frozen snapshot of current state, previous state, and timestamp. */
-  getSnapshot(): Readonly<StateSnapshot>
+  getSnapshot(): Readonly<StateSnapshot>;
   /**
    * Transitions to `to`. Throws {@link StateTransitionError} if the transition
    * is not in the valid transition table.
    * @throws {StateTransitionError}
    */
-  transition(to: KeyboardState): void
+  transition(to: KeyboardState): void;
 }

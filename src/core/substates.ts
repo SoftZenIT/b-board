@@ -1,4 +1,4 @@
-import { INITIAL_SUBSTATES, type ReadySubstates, type Substates } from './substate.types.js'
+import { INITIAL_SUBSTATES, type ReadySubstates, type Substates } from './substate.types.js';
 
 /**
  * Creates a substates store for the five ready-state dimensions.
@@ -9,19 +9,19 @@ import { INITIAL_SUBSTATES, type ReadySubstates, type Substates } from './substa
  * ss.get() // { attachment: 'attached', focus: 'focused', surface: 'hidden', ... }
  */
 export function createSubstates(): Substates {
-  let current: ReadySubstates = { ...INITIAL_SUBSTATES }
+  let current: ReadySubstates = { ...INITIAL_SUBSTATES };
 
   return {
     get(): Readonly<ReadySubstates> {
-      return Object.freeze({ ...current })
+      return Object.freeze({ ...current });
     },
 
     set(updates: Partial<ReadySubstates>): void {
-      current = { ...current, ...updates }
+      current = { ...current, ...updates };
     },
 
     reset(): void {
-      current = { ...INITIAL_SUBSTATES }
+      current = { ...INITIAL_SUBSTATES };
     },
-  }
+  };
 }
