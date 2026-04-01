@@ -108,11 +108,11 @@ describe('BaseAdapter', () => {
       const el = document.createElement('input');
       el.value = 'abc';
       const adapter = new DummyAdapter(createTargetHandle('test'), el);
-      
+
       // Force selectionStart/End to null for this test
       Object.defineProperty(el, 'selectionStart', { value: null, configurable: true });
       Object.defineProperty(el, 'selectionEnd', { value: null, configurable: true });
-      
+
       const res = adapter.applyOperation({ type: 'insert', text: 'X' });
       expect(res.success).toBe(true);
       expect(el.value).toBe('abcX');

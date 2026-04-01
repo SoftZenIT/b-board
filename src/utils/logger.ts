@@ -1,4 +1,4 @@
-const isProduction = typeof process !== 'undefined' && process.env['NODE_ENV'] === 'production'
+const isProduction = typeof process !== 'undefined' && process.env['NODE_ENV'] === 'production';
 
 /**
  * Lightweight logger that only outputs in non-production environments.
@@ -6,16 +6,16 @@ const isProduction = typeof process !== 'undefined' && process.env['NODE_ENV'] =
 export const logger = {
   debug(...args: unknown[]): void {
     if (!isProduction) {
-      console.debug('[B-BOARD]', ...args)
+      console.debug('[B-BOARD]', ...args);
     }
   },
   error(...args: unknown[]): void {
     // Errors are logged even in production, but prefixed
-    console.error('[B-BOARD ERROR]', ...args)
+    console.error('[B-BOARD ERROR]', ...args);
   },
   info(...args: unknown[]): void {
     if (!isProduction) {
-      console.info('[B-BOARD]', ...args)
+      console.info('[B-BOARD]', ...args);
     }
   },
-}
+};
