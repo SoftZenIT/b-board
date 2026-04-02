@@ -31,4 +31,15 @@ describe('BeninKeyboard Custom Element', () => {
     el.setAttribute('language', 'invalid-lang');
     expect(el.language).toBe('yoruba'); // Remains unchanged
   });
+
+  it('exposes attach and detach methods', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const target = document.createElement('input');
+
+    // Just verifying existence and signature for now
+    expect(typeof el.attach).toBe('function');
+    expect(typeof el.detach).toBe('function');
+
+    expect(() => el.attach(target)).not.toThrow();
+  });
 });
