@@ -1,4 +1,4 @@
-import type { KeyboardState, StateSnapshot, StateMachine } from './state.types.js';
+import type { KeyboardState, StateSnapshot, StateMachine } from '../state.types.js';
 
 /** Thrown when a requested state transition is not in the valid transition table. */
 export class StateTransitionError extends Error {

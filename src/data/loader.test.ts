@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { createDataLoader, DataLoaderError } from './loader.js';
-import { ValidationError } from './validator.js';
+import { ValidationError } from './_internal/validator.js';
 
 // Minimal valid fixtures matching AJV schemas
 const validLayout = {

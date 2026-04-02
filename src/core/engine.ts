@@ -1,19 +1,19 @@
 import type { ResolvedLayout } from '../data/runtime.types.js';
 import type { KeyboardState, StateSnapshot, StateMachine } from './state.types.js';
 import type { ReadySubstates, Substates } from './substate.types.js';
-import type { ErrorSeverity, ErrorHandler, KeyboardError } from './error-handler.js';
+import type { ErrorSeverity, ErrorHandler, KeyboardError } from './_internal/error-handler.js';
 import type {
   LifecycleEventName,
   LifecycleEventMap,
   Unsubscribe,
   Lifecycle,
 } from './lifecycle.types.js';
-import type { InvariantsChecker } from './invariants.js';
-import { createStateMachine } from './state-machine.js';
-import { createSubstates } from './substates.js';
-import { createErrorHandler } from './error-handler.js';
-import { createLifecycle } from './lifecycle.js';
-import { createInvariantsChecker } from './invariants.js';
+import type { InvariantsChecker } from './_internal/invariants.js';
+import { createStateMachine } from './_internal/state-machine.js';
+import { createSubstates } from './_internal/substates.js';
+import { createErrorHandler } from './_internal/error-handler.js';
+import { createLifecycle } from './_internal/lifecycle.js';
+import { createInvariantsChecker } from './_internal/invariants.js';
 import { logger } from '../utils/logger.js';
 
 export interface KeyboardEngineOptions {
