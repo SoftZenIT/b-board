@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createLifecycle } from './lifecycle.js';
 import type { KeyboardError } from './error-handler.js';
-import type { ReadySubstates } from './substate.types.js';
+import type { ReadySubstates } from '../substate.types.js';
 
 const ke: KeyboardError = { severity: 'recoverable', message: 'test' };
 

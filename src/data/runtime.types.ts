@@ -62,9 +62,9 @@ export interface CompositionState {
 /**
  * A single operation to apply to the host input element.
  * @example
- * const op = createInputOperation('insert', 'á')
+ * const op = createEngineOperation('insert', 'á')
  */
-export interface InputOperation {
+export interface EngineOperation {
   /** What to do: insert text or delete selection. */
   readonly type: 'insert' | 'delete';
   /** The text payload (empty string for delete). */
@@ -96,12 +96,12 @@ export function createCompositionState(
   return { mode, buffer, armed };
 }
 
-/** Creates an {@link InputOperation}. */
-export function createInputOperation(
+/** Creates an {@link EngineOperation}. */
+export function createEngineOperation(
   type: 'insert' | 'delete',
   data: string,
   selectionStart?: number
-): InputOperation {
+): EngineOperation {
   return selectionStart !== undefined ? { type, data, selectionStart } : { type, data };
 }
 

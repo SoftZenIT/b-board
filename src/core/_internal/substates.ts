@@ -1,4 +1,4 @@
-import { INITIAL_SUBSTATES, type ReadySubstates, type Substates } from './substate.types.js';
+import { INITIAL_SUBSTATES, type ReadySubstates, type Substates } from '../substate.types.js';
 
 /**
  * Creates a substates store for the five ready-state dimensions.

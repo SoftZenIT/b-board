@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createKeyboardEngine } from './engine.js';
-import { InvariantViolationError } from './invariants.js';
-import * as errorHandlerModule from './error-handler.js';
+import { InvariantViolationError } from './_internal/invariants.js';
+import * as errorHandlerModule from './_internal/error-handler.js';
 import { createResolvedLayout } from '../data/runtime.types.js';
 import type { ResolvedLayout } from '../data/runtime.types.js';
 import type { LifecycleEventMap } from './lifecycle.types.js';

@@ -1,17 +1,17 @@
 import Ajv, { type ErrorObject, type ValidateFunction } from 'ajv';
-import type { LayoutShape } from './layout.types.js';
-import type { LanguageProfile } from './language.types.js';
-import type { CompositionRulesCatalog, RegistryData } from './registry.types.js';
+import type { LayoutShape } from '../layout.types.js';
+import type { LanguageProfile } from '../language.types.js';
+import type { CompositionRulesCatalog, RegistryData } from '../registry.types.js';
 
 // Schemas are handcrafted from the TypeScript interfaces.
 // Use `npm run bootstrap:schemas` only as a one-time starting template —
 // the committed schemas are the authoritative source of truth and contain
 // hand-tuned constraints (minimum, pattern, enum, additionalProperties) that
 // the generator does not reproduce.
-import layoutShapeSchema from '../../data/schemas/layout-shape.schema.json' with { type: 'json' };
-import languageProfileSchema from '../../data/schemas/language-profile.schema.json' with { type: 'json' };
-import registrySchema from '../../data/schemas/registry.schema.json' with { type: 'json' };
-import compositionRulesSchema from '../../data/schemas/composition-rules.schema.json' with { type: 'json' };
+import layoutShapeSchema from '../../../data/schemas/layout-shape.schema.json' with { type: 'json' };
+import languageProfileSchema from '../../../data/schemas/language-profile.schema.json' with { type: 'json' };
+import registrySchema from '../../../data/schemas/registry.schema.json' with { type: 'json' };
+import compositionRulesSchema from '../../../data/schemas/composition-rules.schema.json' with { type: 'json' };
 
 const ajv = new Ajv({ allErrors: true });
 
