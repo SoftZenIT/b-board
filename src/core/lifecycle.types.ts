@@ -1,6 +1,6 @@
 import type { KeyboardState } from './state.types.js';
 import type { ReadySubstates } from './substate.types.js';
-import type { KeyboardError } from './error-handler.js';
+import type { KeyboardError } from './_internal/error-handler.js';
 
 export interface LifecycleEventMap {
   initialized: { state: KeyboardState; timestamp: number };

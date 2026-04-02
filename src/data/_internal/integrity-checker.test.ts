@@ -5,10 +5,10 @@ import {
   checkLanguageIntegrity,
   checkCompositionIntegrity,
 } from './integrity-checker.js';
-import { createKeyId } from '../public/types.js';
-import type { LayoutShape } from './layout.types.js';
-import type { LanguageProfile } from './language.types.js';
-import type { CompositionRulesCatalog } from './registry.types.js';
+import { createKeyId } from '../../public/types.js';
+import type { LayoutShape } from '../layout.types.js';
+import type { LanguageProfile } from '../language.types.js';
+import type { CompositionRulesCatalog } from '../registry.types.js';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

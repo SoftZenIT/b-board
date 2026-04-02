@@ -1,6 +1,6 @@
-import type { KeyboardState } from './state.types.js';
-import type { ReadySubstates } from './substate.types.js';
-import { INITIAL_SUBSTATES } from './substate.types.js';
+import type { KeyboardState } from '../state.types.js';
+import type { ReadySubstates } from '../substate.types.js';
+import { INITIAL_SUBSTATES } from '../substate.types.js';
 
 export interface InvariantContext {
   state: KeyboardState;

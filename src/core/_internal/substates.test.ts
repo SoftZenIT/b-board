@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createSubstates } from './substates.js';
-import { INITIAL_SUBSTATES } from './substate.types.js';
+import { INITIAL_SUBSTATES } from '../substate.types.js';
 
 describe('createSubstates', () => {
   let ss: ReturnType<typeof createSubstates>;

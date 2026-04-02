@@ -7,8 +7,8 @@ import {
   validateLanguageProfile,
   validateRegistry,
   validateCompositionRules,
-} from './validator.js';
-import { checkLayoutIntegrity, checkCompositionIntegrity } from './integrity-checker.js';
+} from './_internal/validator.js';
+import { checkLayoutIntegrity, checkCompositionIntegrity } from './_internal/integrity-checker.js';
 
 /** Thrown when a data file cannot be fetched or imported. */
 export class DataLoaderError extends Error {

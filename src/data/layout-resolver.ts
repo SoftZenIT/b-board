@@ -9,7 +9,7 @@ import {
   type ResolvedKey,
   type ResolvedLayout,
 } from './runtime.types.js';
-import { checkLanguageIntegrity } from './integrity-checker.js';
+import { checkLanguageIntegrity } from './_internal/integrity-checker.js';
 
 export interface ResolverOptions {
   /** Maximum number of resolved layouts to cache. Defaults to 16. */
