@@ -4,9 +4,9 @@ import {
   validateRegistry,
   validateCompositionRules,
 } from './validator.js';
-import type { LayoutShape } from './layout.types.js';
-import type { LanguageProfile } from './language.types.js';
-import type { RegistryData, CompositionRulesCatalog } from './registry.types.js';
+import type { LayoutShape } from '../layout.types.js';
+import type { LanguageProfile } from '../language.types.js';
+import type { RegistryData, CompositionRulesCatalog } from '../registry.types.js';
 
 /** Returns `true` if `data` is a valid {@link LayoutShape}. Never throws. */
 export function isLayoutShape(data: unknown): data is LayoutShape {

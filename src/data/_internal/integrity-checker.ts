@@ -1,6 +1,6 @@
-import type { LayoutShape } from './layout.types.js';
-import type { LanguageProfile } from './language.types.js';
-import type { CompositionRulesCatalog } from './registry.types.js';
+import type { LayoutShape } from '../layout.types.js';
+import type { LanguageProfile } from '../language.types.js';
+import type { CompositionRulesCatalog } from '../registry.types.js';
 
 /**
  * Thrown when cross-file data consistency checks fail.

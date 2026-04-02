@@ -3,8 +3,8 @@ import type {
   LifecycleEventName,
   Unsubscribe,
   Lifecycle,
-} from './lifecycle.types.js';
-import { logger } from '../utils/logger.js';
+} from '../lifecycle.types.js';
+import { logger } from '../../utils/logger.js';
 
 /**
  * Creates a typed lifecycle event emitter.
