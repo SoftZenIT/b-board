@@ -12,4 +12,23 @@ describe('BeninKeyboard Custom Element', () => {
     const el = document.createElement('benin-keyboard') as any;
     expect(el.language).toBe('yoruba'); // default
   });
+
+  it('reflects language property to attribute', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.language = 'fon-adja';
+    expect(el.getAttribute('language')).toBe('fon-adja');
+  });
+
+  it('updates language property when attribute changes', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.setAttribute('language', 'baatonum');
+    expect(el.language).toBe('baatonum');
+  });
+
+  it('ignores invalid language attributes', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.language = 'yoruba';
+    el.setAttribute('language', 'invalid-lang');
+    expect(el.language).toBe('yoruba'); // Remains unchanged
+  });
 });
