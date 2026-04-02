@@ -39,6 +39,37 @@ export class BeninKeyboard extends HTMLElement {
       // Event emission will be wired here later
     }
   }
+
+  /**
+   * Attaches the keyboard to a specific DOM target.
+   * @param target The HTML element to receive input.
+   */
+  attach(target: HTMLElement): void {
+    // Will delegate to engine.setSubstates({ attachment: 'attached' })
+    // and dispatcher logic once fully wired.
+    console.debug('[BeninKeyboard] attach() called', target);
+  }
+
+  /**
+   * Detaches the keyboard from the current target.
+   */
+  detach(): void {
+    console.debug('[BeninKeyboard] detach() called');
+  }
+
+  /**
+   * Opens the virtual keyboard UI.
+   */
+  openKeyboard(): void {
+    console.debug('[BeninKeyboard] openKeyboard() called');
+  }
+
+  /**
+   * Closes the virtual keyboard UI.
+   */
+  closeKeyboard(): void {
+    console.debug('[BeninKeyboard] closeKeyboard() called');
+  }
 }
 
 if (!customElements.get('benin-keyboard')) {
