@@ -8,10 +8,11 @@ import {
   type TargetKind,
 } from '../public/types.js';
 import { dispatchBBoardEvent } from './events.js';
+import { ThemeManager } from '../theme/theme-manager.js';
 
 export class BeninKeyboard extends HTMLElement {
   private _language: LanguageId = 'yoruba';
-  private _theme: ThemeId = 'auto';
+  private _themeManager: ThemeManager;
   private _layoutVariant: LayoutVariantId = 'mobile-default';
   private _open = false;
   private _disabled = false;
@@ -20,7 +21,11 @@ export class BeninKeyboard extends HTMLElement {
 
   constructor() {
     super();
-    // Lifecycle setup will go here
+    this._themeManager = new ThemeManager();
+    this._themeManager.subscribe((detail) => {
+      this._applyTheme(detail.effectiveTheme);
+      dispatchBBoardEvent(this, 'bboard-theme-change', detail);
+    });
   }
 
   static get observedAttributes(): string[] {
@@ -28,11 +33,13 @@ export class BeninKeyboard extends HTMLElement {
   }
 
   connectedCallback(): void {
+    // Apply initial theme
+    this._applyTheme(this._themeManager.effectiveTheme);
     // Engine initialization will happen here
   }
 
   disconnectedCallback(): void {
-    // Cleanup
+    this._themeManager.destroy();
   }
 
   attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
@@ -73,13 +80,28 @@ export class BeninKeyboard extends HTMLElement {
   }
 
   get theme(): ThemeId {
-    return this._theme;
+    return this._themeManager.theme;
+  }
+
+  /**
+   * The actual theme currently applied (light or dark).
+   */
+  get effectiveTheme(): 'light' | 'dark' {
+    return this._themeManager.effectiveTheme;
   }
 
   set theme(value: ThemeId) {
-    if (isThemeId(value) && this._theme !== value) {
-      this._theme = value;
+    if (isThemeId(value)) {
+      this._themeManager.theme = value;
       this.setAttribute('theme', value);
+    }
+  }
+
+  private _applyTheme(effectiveTheme: 'light' | 'dark'): void {
+    if (effectiveTheme === 'dark') {
+      this.classList.add('theme-dark');
+    } else {
+      this.classList.remove('theme-dark');
     }
   }
 
@@ -141,6 +163,14 @@ export class BeninKeyboard extends HTMLElement {
 
   get activeTargetKind(): TargetKind | null {
     return this._activeTargetKind;
+  }
+
+  /**
+   * Sets the keyboard theme.
+   * @param value The theme ID ('light', 'dark', or 'auto').
+   */
+  setTheme(value: ThemeId): void {
+    this.theme = value;
   }
 
   /**
