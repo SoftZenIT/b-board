@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B-Board Theming Example</title>
+  <!-- In a real app, you would import the built library -->
+  <!-- For this example, we assume the custom element is defined elsewhere or via a script tag -->
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 2rem;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+    .theme-dark body {
+      background-color: #121212;
+      color: white;
+    }
+    .theme-dark .controls {
+      background: #333;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>B-Board Theming Example</h1>
+    
+    <div class="controls">
+      <button onclick="setTheme('light')">Light Mode</button>
+      <button onclick="setTheme('dark')">Dark Mode</button>
+      <button onclick="setTheme('auto')">Auto (System)</button>
+    </div>
+
+    <p>Current Mode: <strong id="mode">auto</strong></p>
+    <p>Effective Theme: <strong id="effective">light</strong></p>
+
+    <!-- The custom element -->
+    <benin-keyboard id="kb"></benin-keyboard>
+  </div>
+
+  <script type="module">
+    // Mock or Import library here
+    import '../../src/index.js';
+
+    const kb = document.getElementById('kb');
+    const modeEl = document.getElementById('mode');
+    const effectiveEl = document.getElementById('effective');
+
+    window.setTheme = (theme) => {
+      kb.theme = theme;
+    };
+
+    kb.addEventListener('bboard-theme-change', (e) => {
+      const { theme, effectiveTheme } = e.detail;
+      modeEl.textContent = theme;
+      effectiveEl.textContent = effectiveTheme;
+      
+      // Optionally sync the page theme with the keyboard theme
+      if (effectiveTheme === 'dark') {
+        document.documentElement.classList.add('theme-dark');
+      } else {
+        document.documentElement.classList.remove('theme-dark');
+      }
+    });
+  </script>
+</body>
+</html>

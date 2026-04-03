@@ -8,6 +8,11 @@ export interface BBoardLanguageChangeEventDetail {
   readonly languageId: string;
 }
 
+export interface BBoardThemeChangeEventDetail {
+  readonly theme: 'light' | 'dark' | 'auto';
+  readonly effectiveTheme: 'light' | 'dark';
+}
+
 export interface BBoardErrorEventDetail {
   readonly severity: ErrorSeverity;
   readonly message: string;
@@ -16,5 +21,6 @@ export interface BBoardErrorEventDetail {
 export type BBoardEventMap = {
   'bboard-ready': CustomEvent<BBoardReadyEventDetail>;
   'bboard-language-change': CustomEvent<BBoardLanguageChangeEventDetail>;
+  'bboard-theme-change': CustomEvent<BBoardThemeChangeEventDetail>;
   'bboard-error': CustomEvent<BBoardErrorEventDetail>;
 };
