@@ -77,13 +77,29 @@ export class BeninKeyboard extends LitElement {
     }
 
     /* Wide keys */
+    .key.wide-1_25x {
+      flex: 1.25 1 calc(var(--bboard-size-key-width) * 1.25);
+      max-width: 75px;
+    }
+    .key.wide-1_5x {
+      flex: 1.5 1 calc(var(--bboard-size-key-width) * 1.5);
+      max-width: 90px;
+    }
+    .key.wide-1_75x {
+      flex: 1.75 1 calc(var(--bboard-size-key-width) * 1.75);
+      max-width: 105px;
+    }
     .key.wide-2x {
       flex: 2 1 calc(var(--bboard-size-key-width) * 2);
       max-width: 120px;
     }
-    .key.wide-3x {
-      flex: 3 1 calc(var(--bboard-size-key-width) * 3);
-      max-width: 180px;
+    .key.wide-2_25x {
+      flex: 2.25 1 calc(var(--bboard-size-key-width) * 2.25);
+      max-width: 135px;
+    }
+    .key.wide-2_75x {
+      flex: 2.75 1 calc(var(--bboard-size-key-width) * 2.75);
+      max-width: 165px;
     }
     .key.space {
       flex: 6 1 auto;
@@ -218,12 +234,22 @@ export class BeninKeyboard extends LitElement {
   };
 
   render() {
-    // Mock layout for initial rendering foundation
+    // Standard 5-row layout
     const rows = [
-      ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-      ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-      ['{shift}', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '{backspace}'],
-      ['{altgr}', '{space}', '{enter}'],
+      ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '{backspace}'],
+      ['{tab}', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+      ['{capslock}', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", '{enter}'],
+      ['{shiftleft}', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '{shiftright}'],
+      [
+        '{ctrlleft}',
+        '{winleft}',
+        '{altleft}',
+        '{space}',
+        '{altright}',
+        '{winright}',
+        '{del}',
+        '{ctrlright}',
+      ],
     ];
 
     return html`
@@ -240,39 +266,73 @@ export class BeninKeyboard extends LitElement {
     let label: unknown = key;
     let secondaryLabel = '';
 
-    if (key.length === 1 && this.modifierDisplayMode === 'hint') {
+    if (key.length === 1 && this.modifierDisplayMode === 'hint' && /[a-z]/.test(key)) {
       secondaryLabel = key.toUpperCase();
     }
 
     if (key === '{space}') {
-      classes += ' space';
+      classes += ' space action-key';
       label = '';
-    } else if (key === '{shift}') {
-      classes += ' wide-2x action-key';
-      label = html`<svg viewBox="0 0 24 24"><path d="M12 4l-8 10h5v6h6v-6h5z" /></svg>`;
     } else if (key === '{backspace}') {
       classes += ' wide-2x action-key';
-      label = html`<svg viewBox="0 0 24 24">
-        <path
-          d="M21 4H8l-7 8 7 8h13V4zM18 15l-1.4 1.4-2.6-2.6-2.6 2.6L10 15l2.6-2.6L10 9.8l1.4-1.4 2.6 2.6 2.6-2.6L18 9.8l-2.6 2.6L18 15z"
-        />
-      </svg>`;
+      label = 'backspace';
+    } else if (key === '{tab}') {
+      classes += ' wide-1_5x action-key';
+      label = 'tab';
+    } else if (key === '{capslock}') {
+      classes += ' wide-1_75x action-key';
+      label = 'caps lock';
     } else if (key === '{enter}') {
-      classes += ' wide-2x action-key action-primary';
-      label = html`<svg viewBox="0 0 24 24">
-        <path d="M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z" />
-      </svg>`;
-    } else if (key === '{altgr}') {
-      classes += ' wide-2x action-key';
-      label = 'AltGr';
+      classes += ' wide-2_25x action-key action-primary';
+      label = 'enter';
+    } else if (key === '{shiftleft}') {
+      classes += ' wide-2_25x action-key';
+      label = 'shift';
+    } else if (key === '{shiftright}') {
+      classes += ' wide-2_75x action-key';
+      label = 'shift';
+    } else if (key.match(/^{(ctrl|win|alt|del)(left|right)?}$/)) {
+      classes += ' wide-1_25x action-key';
+      label = key.replace(/[{}]/g, '').replace(/(left|right)$/, '');
+    } else if (key === '\\') {
+      classes += ' wide-1_5x';
     }
 
     if (this.disabled) {
       classes += ' disabled';
     }
 
+    const codeMap: Record<string, string> = {
+      '{backspace}': 'backspace',
+      '{tab}': 'tab',
+      '{capslock}': 'capslock',
+      '{enter}': 'enter',
+      '{shiftleft}': 'shiftleft',
+      '{shiftright}': 'shiftright',
+      '{ctrlleft}': 'controlleft',
+      '{ctrlright}': 'controlright',
+      '{altleft}': 'altleft',
+      '{altright}': 'altright',
+      '{winleft}': 'metaleft',
+      '{winright}': 'metaright',
+      '{space}': 'space',
+      '{del}': 'delete',
+      '-': 'minus',
+      '=': 'equal',
+      '[': 'bracketleft',
+      ']': 'bracketright',
+      '\\': 'backslash',
+      ';': 'semicolon',
+      "'": 'quote',
+      ',': 'comma',
+      '.': 'period',
+      '/': 'slash',
+      '`': 'backquote',
+    };
+    const code = codeMap[key] || key;
+
     // Check if held
-    if (this.showPhysicalEcho && this._physicalKeysHeld.has(key)) {
+    if (this.showPhysicalEcho && this._physicalKeysHeld.has(code)) {
       classes += ' active';
     }
 
