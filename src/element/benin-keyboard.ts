@@ -1,23 +1,140 @@
+import { LitElement, html, css } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import {
-  isLanguageId,
   type LanguageId,
-  isThemeId,
   type ThemeId,
-  isLayoutVariantId,
   type LayoutVariantId,
-  type TargetKind,
+  type ModifierDisplayMode,
 } from '../public/types.js';
 import { dispatchBBoardEvent } from './events.js';
 import { ThemeManager } from '../theme/theme-manager.js';
 
-export class BeninKeyboard extends HTMLElement {
-  private _language: LanguageId = 'yoruba';
-  private _themeManager: ThemeManager;
-  private _layoutVariant: LayoutVariantId = 'mobile-default';
-  private _open = false;
-  private _disabled = false;
-  private _showPhysicalEcho = false;
-  private _activeTargetKind: TargetKind | null = null;
+@customElement('benin-keyboard')
+export class BeninKeyboard extends LitElement {
+  @property({ type: String }) language: LanguageId = 'yoruba';
+  @property({ type: String }) theme: ThemeId = 'auto';
+  @property({ type: String, attribute: 'layout-variant' }) layoutVariant: LayoutVariantId =
+    'mobile-default';
+  @property({ type: Boolean, reflect: true }) open = false;
+  @property({ type: Boolean, reflect: true }) disabled = false;
+  @property({ type: Boolean, attribute: 'show-physical-echo' }) showPhysicalEcho = false;
+  @property({ type: String, attribute: 'modifier-display-mode' })
+  modifierDisplayMode: ModifierDisplayMode = 'transition';
+
+  @state() private _physicalKeysHeld = new Set<string>();
+
+  private _themeManager!: ThemeManager;
+
+  static styles = css`
+    :host {
+      display: block;
+      width: 100%;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: var(--bboard-font-family);
+    }
+
+    .keyboard-container {
+      background: var(--bboard-color-surface-base);
+      padding: var(--bboard-space-padding);
+      border-radius: var(--bboard-size-radius-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--bboard-space-gap-row);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: var(--bboard-space-gap-key);
+    }
+
+    .key {
+      background: var(--bboard-color-surface-key);
+      color: var(--bboard-color-text-primary);
+      border-radius: var(--bboard-size-radius-md);
+      height: var(--bboard-size-key-height);
+      flex: 1 1 var(--bboard-size-key-width);
+      max-width: 60px; /* Base width constraint */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--bboard-font-size-base);
+      font-weight: var(--bboard-font-weight-label);
+      box-shadow: var(--bboard-shadow-key);
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* Active state for keys */
+    .key:active,
+    .key.active {
+      background: var(--bboard-color-surface-active);
+      box-shadow: var(--bboard-shadow-key-pressed);
+      transform: translateY(1px);
+    }
+
+    /* Wide keys */
+    .key.wide-2x {
+      flex: 2 1 calc(var(--bboard-size-key-width) * 2);
+      max-width: 120px;
+    }
+    .key.wide-3x {
+      flex: 3 1 calc(var(--bboard-size-key-width) * 3);
+      max-width: 180px;
+    }
+    .key.space {
+      flex: 6 1 auto;
+      max-width: 400px;
+    }
+
+    /* Action Keys */
+    .key.action-key {
+      background: var(--bboard-color-surface-special);
+    }
+
+    .key.action-primary {
+      background: var(--bboard-color-primary-base);
+      color: var(--bboard-color-text-on-primary);
+    }
+
+    .key.action-primary:active,
+    .key.action-primary.active {
+      background: var(--bboard-color-primary-active);
+    }
+
+    .key svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .secondary-label {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: var(--bboard-font-size-sm);
+      color: var(--bboard-color-text-secondary);
+    }
+
+    .key.action-primary .secondary-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Focus & Disabled */
+    .key:focus-visible {
+      outline: 2px solid var(--bboard-color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    .key.disabled {
+      opacity: var(--bboard-opacity-disabled);
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+  `;
 
   constructor() {
     super();
@@ -28,72 +145,26 @@ export class BeninKeyboard extends HTMLElement {
     });
   }
 
-  static get observedAttributes(): string[] {
-    return ['language', 'theme', 'layout-variant', 'open', 'disabled', 'show-physical-echo'];
-  }
-
-  connectedCallback(): void {
-    // Apply initial theme
+  connectedCallback() {
+    super.connectedCallback();
     this._applyTheme(this._themeManager.effectiveTheme);
-    // Engine initialization will happen here
+    window.addEventListener('keydown', this._handleKeydown);
+    window.addEventListener('keyup', this._handleKeyup);
   }
 
-  disconnectedCallback(): void {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     this._themeManager.destroy();
+    window.removeEventListener('keydown', this._handleKeydown);
+    window.removeEventListener('keyup', this._handleKeyup);
   }
 
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
-    if (oldValue === newValue) return;
-
-    switch (name) {
-      case 'language':
-        if (isLanguageId(newValue)) this.language = newValue;
-        break;
-      case 'theme':
-        if (isThemeId(newValue)) this.theme = newValue;
-        break;
-      case 'layout-variant':
-        if (isLayoutVariantId(newValue)) this.layoutVariant = newValue;
-        break;
-      case 'open':
-        this.open = newValue !== null;
-        break;
-      case 'disabled':
-        this.disabled = newValue !== null;
-        break;
-      case 'show-physical-echo':
-        this.showPhysicalEcho = newValue !== null;
-        break;
+  protected updated(changedProperties: Map<string | number | symbol, unknown>) {
+    if (changedProperties.has('language')) {
+      dispatchBBoardEvent(this, 'bboard-language-change', { languageId: this.language });
     }
-  }
-
-  get language(): LanguageId {
-    return this._language;
-  }
-
-  set language(value: LanguageId) {
-    if (isLanguageId(value) && this._language !== value) {
-      this._language = value;
-      this.setAttribute('language', value);
-      dispatchBBoardEvent(this, 'bboard-language-change', { languageId: value });
-    }
-  }
-
-  get theme(): ThemeId {
-    return this._themeManager.theme;
-  }
-
-  /**
-   * The actual theme currently applied (light or dark).
-   */
-  get effectiveTheme(): 'light' | 'dark' {
-    return this._themeManager.effectiveTheme;
-  }
-
-  set theme(value: ThemeId) {
-    if (isThemeId(value)) {
-      this._themeManager.theme = value;
-      this.setAttribute('theme', value);
+    if (changedProperties.has('theme')) {
+      this._themeManager.theme = this.theme;
     }
   }
 
@@ -105,106 +176,123 @@ export class BeninKeyboard extends HTMLElement {
     }
   }
 
-  get layoutVariant(): LayoutVariantId {
-    return this._layoutVariant;
+  get effectiveTheme(): 'light' | 'dark' {
+    return this._themeManager.effectiveTheme;
   }
 
-  set layoutVariant(value: LayoutVariantId) {
-    if (isLayoutVariantId(value) && this._layoutVariant !== value) {
-      this._layoutVariant = value;
-      this.setAttribute('layout-variant', value);
-    }
-  }
-
-  get open(): boolean {
-    return this._open;
-  }
-
-  set open(value: boolean) {
-    if (this._open !== value) {
-      this._open = value;
-      if (value) {
-        this.setAttribute('open', '');
-      } else {
-        this.removeAttribute('open');
-      }
-    }
-  }
-
-  get disabled(): boolean {
-    return this._disabled;
-  }
-
-  set disabled(value: boolean) {
-    if (this._disabled !== value) {
-      this._disabled = value;
-      if (value) {
-        this.setAttribute('disabled', '');
-      } else {
-        this.removeAttribute('disabled');
-      }
-    }
-  }
-
-  get showPhysicalEcho(): boolean {
-    return this._showPhysicalEcho;
-  }
-
-  set showPhysicalEcho(value: boolean) {
-    if (this._showPhysicalEcho !== value) {
-      this._showPhysicalEcho = value;
-      if (value) {
-        this.setAttribute('show-physical-echo', '');
-      } else {
-        this.removeAttribute('show-physical-echo');
-      }
-    }
-  }
-
-  get activeTargetKind(): TargetKind | null {
-    return this._activeTargetKind;
-  }
-
-  /**
-   * Sets the keyboard theme.
-   * @param value The theme ID ('light', 'dark', or 'auto').
-   */
   setTheme(value: ThemeId): void {
     this.theme = value;
   }
 
-  /**
-   * Attaches the keyboard to a specific DOM target.
-   * @param target The HTML element to receive input.
-   */
   attach(target: HTMLElement): void {
-    // Will delegate to engine.setSubstates({ attachment: 'attached' })
-    // and dispatcher logic once fully wired.
     console.debug('[BeninKeyboard] attach() called', target);
   }
 
-  /**
-   * Detaches the keyboard from the current target.
-   */
   detach(): void {
     console.debug('[BeninKeyboard] detach() called');
   }
 
-  /**
-   * Opens the virtual keyboard UI.
-   */
   openKeyboard(): void {
-    console.debug('[BeninKeyboard] openKeyboard() called');
+    this.open = true;
   }
 
-  /**
-   * Closes the virtual keyboard UI.
-   */
   closeKeyboard(): void {
-    console.debug('[BeninKeyboard] closeKeyboard() called');
+    this.open = false;
+  }
+
+  private _handleKeydown = (e: KeyboardEvent) => {
+    const code = e.code.toLowerCase().replace('key', '');
+    if (this._physicalKeysHeld.has(code)) return;
+
+    // We create a new Set so Lit recognizes the state change
+    const newKeys = new Set(this._physicalKeysHeld);
+    newKeys.add(code);
+    this._physicalKeysHeld = newKeys;
+  };
+
+  private _handleKeyup = (e: KeyboardEvent) => {
+    const code = e.code.toLowerCase().replace('key', '');
+    const newKeys = new Set(this._physicalKeysHeld);
+    newKeys.delete(code);
+    this._physicalKeysHeld = newKeys;
+  };
+
+  render() {
+    // Mock layout for initial rendering foundation
+    const rows = [
+      ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+      ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+      ['{shift}', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '{backspace}'],
+      ['{altgr}', '{space}', '{enter}'],
+    ];
+
+    return html`
+      <div class="keyboard-container">
+        ${rows.map(
+          (row) => html` <div class="keyboard-row">${row.map((key) => this.renderKey(key))}</div> `
+        )}
+      </div>
+    `;
+  }
+
+  private renderKey(key: string) {
+    let classes = 'key';
+    let label: unknown = key;
+    let secondaryLabel = '';
+
+    if (key.length === 1 && this.modifierDisplayMode === 'hint') {
+      secondaryLabel = key.toUpperCase();
+    }
+
+    if (key === '{space}') {
+      classes += ' space';
+      label = '';
+    } else if (key === '{shift}') {
+      classes += ' wide-2x action-key';
+      label = html`<svg viewBox="0 0 24 24"><path d="M12 4l-8 10h5v6h6v-6h5z" /></svg>`;
+    } else if (key === '{backspace}') {
+      classes += ' wide-2x action-key';
+      label = html`<svg viewBox="0 0 24 24">
+        <path
+          d="M21 4H8l-7 8 7 8h13V4zM18 15l-1.4 1.4-2.6-2.6-2.6 2.6L10 15l2.6-2.6L10 9.8l1.4-1.4 2.6 2.6 2.6-2.6L18 9.8l-2.6 2.6L18 15z"
+        />
+      </svg>`;
+    } else if (key === '{enter}') {
+      classes += ' wide-2x action-key action-primary';
+      label = html`<svg viewBox="0 0 24 24">
+        <path d="M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z" />
+      </svg>`;
+    } else if (key === '{altgr}') {
+      classes += ' wide-2x action-key';
+      label = 'AltGr';
+    }
+
+    if (this.disabled) {
+      classes += ' disabled';
+    }
+
+    // Check if held
+    if (this.showPhysicalEcho && this._physicalKeysHeld.has(key)) {
+      classes += ' active';
+    }
+
+    return html`
+      <div
+        class="${classes}"
+        data-key="${key}"
+        tabindex="${this.disabled ? -1 : 0}"
+        aria-disabled="${this.disabled ? 'true' : 'false'}"
+        role="button"
+      >
+        <span>${label}</span>
+        ${secondaryLabel ? html`<span class="secondary-label">${secondaryLabel}</span>` : ''}
+      </div>
+    `;
   }
 }
 
-if (!customElements.get('benin-keyboard')) {
-  customElements.define('benin-keyboard', BeninKeyboard);
+declare global {
+  interface HTMLElementTagNameMap {
+    'benin-keyboard': BeninKeyboard;
+  }
 }
