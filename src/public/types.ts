@@ -63,6 +63,12 @@ export function isThemeId(val: unknown): val is ThemeId {
   return (THEME_IDS as readonly unknown[]).includes(val);
 }
 
+export const MODIFIER_DISPLAY_MODES = ['transition', 'hint'] as const;
+export type ModifierDisplayMode = (typeof MODIFIER_DISPLAY_MODES)[number];
+export function isModifierDisplayMode(val: unknown): val is ModifierDisplayMode {
+  return (MODIFIER_DISPLAY_MODES as readonly unknown[]).includes(val);
+}
+
 const TARGET_KINDS = ['input', 'textarea', 'contenteditable', 'editor'] as const;
 /**
  * The kind of DOM element the keyboard targets.
