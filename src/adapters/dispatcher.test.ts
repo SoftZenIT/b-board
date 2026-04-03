@@ -32,7 +32,7 @@ describe('OperationDispatcher', () => {
     const result = dispatcher.dispatch(handle, { type: 'insert', text: 'y' });
 
     expect(result.success).toBe(false);
-    expect(result.error?.message).toContain('Validation failed');
+    expect(result.error?.message).toContain('Target validation failed');
   });
 
   it('fails if adapter is not found', () => {
