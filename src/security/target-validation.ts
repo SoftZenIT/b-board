@@ -5,7 +5,7 @@ export interface ValidationResult {
   reason: ValidationReason;
 }
 
-export const TargetValidator = {
+export const TargetValidation = {
   validate(element: HTMLElement): ValidationResult {
     if (!document.body.contains(element)) {
       return { isValid: false, reason: 'stale' };
