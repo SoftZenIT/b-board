@@ -1,5 +1,5 @@
 import type { TargetHandle, TargetAdapter, InputOperation, OperationResult } from './types.js';
-import { TargetValidator } from './target-validator.js';
+import { InsertionPipeline } from '../security/insertion-pipeline.js';
 
 export class OperationDispatcher {
   private adapters = new Map<TargetHandle, TargetAdapter>();
@@ -17,14 +17,6 @@ export class OperationDispatcher {
       };
     }
 
-    const validation = TargetValidator.validate(adapter.element);
-    if (!validation.isValid) {
-      return {
-        success: false,
-        error: { code: 'INVALID_TARGET', message: `Validation failed: ${validation.reason}` },
-      };
-    }
-
-    return adapter.applyOperation(operation);
+    return InsertionPipeline.execute(adapter, operation);
   }
 }

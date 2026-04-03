@@ -5,57 +5,73 @@
  *
  * Usage: npm run validate:data
  */
-import { readFileSync, readdirSync, existsSync } from 'node:fs'
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { validateLayoutShape, validateLanguageProfile, validateRegistry, validateCompositionRules } from '../src/data/validator.js'
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {
+  validateLayoutShape,
+  validateLanguageProfile,
+  validateRegistry,
+  validateCompositionRules,
+} from '../src/data/_internal/validator.js';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-let errors = 0
-let checked = 0
+let errors = 0;
+let checked = 0;
 
-function validateFile(filePath: string, label: string, validator: (data: unknown) => unknown): void {
+function validateFile(
+  filePath: string,
+  label: string,
+  validator: (data: unknown) => unknown
+): void {
   try {
-    const raw = readFileSync(filePath, 'utf-8')
-    const data: unknown = JSON.parse(raw)
-    validator(data)
-    console.log(`  ✓  ${label}`)
+    const raw = readFileSync(filePath, 'utf-8');
+    const data: unknown = JSON.parse(raw);
+    validator(data);
+    console.log(`  ✓  ${label}`);
   } catch (err) {
-    const message = (err as Error).message
+    const message = (err as Error).message;
     // Indent each line for readability
-    const indented = message.split('\n').map(l => `     ${l}`).join('\n')
-    console.error(`  ❌ ${label}`)
-    console.error(indented)
-    errors++
+    const indented = message
+      .split('\n')
+      .map((l) => `     ${l}`)
+      .join('\n');
+    console.error(`  ❌ ${label}`);
+    console.error(indented);
+    errors++;
   }
-  checked++
+  checked++;
 }
 
 function validateDir(dir: string, validator: (data: unknown) => unknown): void {
-  if (!existsSync(dir)) return
-  const files = readdirSync(dir).filter(f => f.endsWith('.json'))
+  if (!existsSync(dir)) return;
+  const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
   for (const file of files) {
-    validateFile(join(dir, file), `${dir.replace(ROOT, '.')}/${file}`, validator)
+    validateFile(join(dir, file), `${dir.replace(ROOT, '.')}/${file}`, validator);
   }
 }
 
-console.log('Validating BBOARD data files...\n')
+console.log('Validating BBOARD data files...\n');
 
 // Registry
-validateFile(join(ROOT, 'data', 'registry.json'), './data/registry.json', validateRegistry)
+validateFile(join(ROOT, 'data', 'registry.json'), './data/registry.json', validateRegistry);
 
 // Language profiles
-validateDir(join(ROOT, 'data', 'languages'), validateLanguageProfile)
+validateDir(join(ROOT, 'data', 'languages'), validateLanguageProfile);
 
 // Layout shapes
-validateDir(join(ROOT, 'data', 'layouts'), validateLayoutShape)
+validateDir(join(ROOT, 'data', 'layouts'), validateLayoutShape);
 
 // Composition rules catalog
-validateFile(join(ROOT, 'data', 'composition-rules.json'), './data/composition-rules.json', validateCompositionRules)
+validateFile(
+  join(ROOT, 'data', 'composition-rules.json'),
+  './data/composition-rules.json',
+  validateCompositionRules
+);
 
 // Summary
-const status = errors === 0 ? '✓' : '❌'
-console.log(`\n${status}  ${checked} file(s) checked — ${errors} error(s)`)
+const status = errors === 0 ? '✓' : '❌';
+console.log(`\n${status}  ${checked} file(s) checked — ${errors} error(s)`);
 
-if (errors > 0) process.exit(1)
+if (errors > 0) process.exit(1);

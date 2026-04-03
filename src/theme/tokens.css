@@ -1,0 +1,62 @@
+/**
+ * B-Board Design Tokens
+ * Prefix: --bboard-
+ * Naming: --bboard-[category]-[role]-[state/variant]
+ */
+
+:root {
+  /* Colors - Light Theme (Default) */
+  --bboard-color-surface-base: #e2e4e9;
+  --bboard-color-surface-key: #ffffff;
+  --bboard-color-surface-special: #b4bbc3;
+  --bboard-color-text-primary: #000000;
+  --bboard-color-text-secondary: #4b5563;
+  --bboard-color-primary-base: #007aff;
+  --bboard-color-primary-hover: #0063e6;
+  --bboard-color-border-subtle: rgba(0, 0, 0, 0.1);
+  --bboard-color-focus-ring: #007aff;
+
+  /* Sizing & Spacing */
+  --bboard-size-touch-min: 44px;
+  --bboard-size-key-height: 3rem;
+  --bboard-size-radius-sm: 4px;
+  --bboard-size-radius-md: 6px;
+  --bboard-space-gap-row: 8px;
+  --bboard-space-gap-key: 6px;
+  --bboard-space-padding: 4px;
+
+  /* Typography & Effects */
+  --bboard-font-family: system-ui, -apple-system, sans-serif;
+  --bboard-font-size-base: 1rem;
+  --bboard-font-weight-label: 500;
+  --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.2);
+  --bboard-shadow-key-pressed: none;
+}
+
+/* Dark Theme Overrides */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bboard-color-surface-base: #1c1c1e;
+    --bboard-color-surface-key: #3a3a3c;
+    --bboard-color-surface-special: #2c2c2e;
+    --bboard-color-text-primary: #ffffff;
+    --bboard-color-text-secondary: #9ca3af;
+    --bboard-color-primary-base: #0a84ff;
+    --bboard-color-primary-hover: #409cff;
+    --bboard-color-border-subtle: rgba(255, 255, 255, 0.1);
+    --bboard-color-focus-ring: #0a84ff;
+  }
+}
+
+/* Explicit Dark Theme Class */
+.theme-dark {
+  --bboard-color-surface-base: #1c1c1e;
+  --bboard-color-surface-key: #3a3a3c;
+  --bboard-color-surface-special: #2c2c2e;
+  --bboard-color-text-primary: #ffffff;
+  --bboard-color-text-secondary: #9ca3af;
+  --bboard-color-primary-base: #0a84ff;
+  --bboard-color-primary-hover: #409cff;
+  --bboard-color-border-subtle: rgba(255, 255, 255, 0.1);
+  --bboard-color-focus-ring: #0a84ff;
+}
