@@ -75,15 +75,16 @@ describe('createDesktopRenderModel', () => {
     const model = createDesktopRenderModel(makeResolvedLayout(), {
       activeLayer: 'base',
       modifierDisplayMode: 'hint',
-      heldPhysicalKeys: new Set(),
-      hiddenKeys: new Set(),
-      disabledKeys: new Set(),
-      focusedKeyId: null,
+      heldPhysicalKeys: new Set([createKeyId('key-a')]),
+      hiddenKeys: new Set([createKeyId('key-z')]),
+      disabledKeys: new Set([createKeyId('key-enter')]),
+      focusedKeyId: createKeyId('key-a'),
     });
 
     expect(model.rows).toHaveLength(2);
     expect(model.rows[0].keys[0].primaryLabel).toBe('a');
     expect(model.rows[0].keys[0].secondaryLabel).toBe('A');
     expect(model.rows[1].keys[0].width).toBe(1.5);
+    expect(model.rows[0].keys[0].active).toBe(true);
   });
 });
