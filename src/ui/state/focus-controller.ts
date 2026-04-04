@@ -23,7 +23,8 @@ export function createFocusController(grid: FocusGrid) {
       }
       if (direction === 'shift-tab') {
         const flat = grid.flat();
-        const index = flat.indexOf(current as KeyId);
+        if (current === null) return flat[flat.length - 1] ?? null;
+        const index = flat.indexOf(current);
         return flat[index - 1] ?? flat[flat.length - 1] ?? null;
       }
       if (direction === 'arrow-down') {
