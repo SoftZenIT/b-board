@@ -97,6 +97,11 @@ export class BeninKeyboard extends LitElement {
       outline-offset: 2px;
     }
 
+    .bboard-key-action {
+      background: var(--bboard-color-surface-special);
+      font-size: var(--bboard-font-size-sm);
+    }
+
     .bboard-key__secondary {
       position: absolute;
       top: 4px;
