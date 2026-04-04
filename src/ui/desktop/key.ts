@@ -19,8 +19,9 @@ export function renderDesktopKey(key: DesktopRenderKey): TemplateResult | null {
       style="--bboard-key-width-multiplier:${key.width};"
       data-key-id=${key.keyId}
       aria-label=${key.overrideLabel ? key.overrideLabel : key.primaryLabel}
+      aria-pressed=${key.active}
       ?disabled=${key.disabled}
-      tabindex=${key.disabled ? -1 : 0}
+      tabindex=${key.tabStop ? 0 : -1}
     >
       <span class="bboard-key__primary">${key.primaryLabel}</span>
       ${key.secondaryLabel
