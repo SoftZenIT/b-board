@@ -1,0 +1,29 @@
+.bboard-row {
+  display: flex;
+  justify-content: center;
+  gap: var(--bboard-space-gap-key);
+}
+
+.bboard-key {
+  flex: 0 0 calc(var(--bboard-size-key-width) * var(--bboard-key-width-multiplier, 1));
+  min-height: var(--bboard-size-key-height);
+  border-radius: var(--bboard-size-radius-md);
+  background: var(--bboard-color-surface-key);
+  box-shadow: var(--bboard-shadow-key);
+}
+
+.bboard-key.is-active {
+  background: var(--bboard-color-surface-active);
+  box-shadow: var(--bboard-shadow-key-pressed);
+}
+
+.bboard-key.is-disabled {
+  opacity: var(--bboard-opacity-disabled);
+  pointer-events: none;
+}
+
+.bboard-key:focus-visible,
+.bboard-key.is-focused {
+  outline: 2px solid var(--bboard-color-focus-ring);
+  outline-offset: 2px;
+}
