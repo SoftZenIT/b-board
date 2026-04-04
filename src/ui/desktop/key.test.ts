@@ -14,6 +14,7 @@ describe('renderDesktopKey', () => {
       disabled: false,
       focused: false,
       active: false,
+      tabStop: true,
     });
     expect(String((result as TemplateResult).strings?.[0] ?? '')).toContain('bboard-key');
   });
@@ -28,6 +29,7 @@ describe('renderDesktopKey', () => {
       disabled: false,
       focused: false,
       active: false,
+      tabStop: false,
     });
     expect(result).toBeNull();
   });
@@ -42,6 +44,7 @@ describe('renderDesktopKey', () => {
       disabled: false,
       focused: false,
       active: true,
+      tabStop: false,
     }) as TemplateResult;
     // The active class is dynamic — check via the values array
     expect(result.values).toContain('bboard-key-character is-active');
