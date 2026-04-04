@@ -1,13 +1,22 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import {
   type LanguageId,
   type ThemeId,
   type LayoutVariantId,
   type ModifierDisplayMode,
+  isLayoutVariantId,
+  isLanguageId,
 } from '../public/types.js';
+import type { ResolvedLayout } from '../public/index.js';
 import { dispatchBBoardEvent } from './events.js';
 import { ThemeManager } from '../theme/theme-manager.js';
+import { createDataLoader } from '../data/loader.js';
+import { createLayoutResolver } from '../data/layout-resolver.js';
+import { createDesktopRenderModel } from '../ui/desktop/render-model.js';
+import { renderDesktopRows } from '../ui/desktop/rows.js';
+import { createDesktopState } from '../ui/state/desktop-state.js';
+import { mapPhysicalCodeToLogicalKey } from '../ui/desktop/physical-key-map.js';
 
 @customElement('benin-keyboard')
 export class BeninKeyboard extends LitElement {
@@ -21,9 +30,11 @@ export class BeninKeyboard extends LitElement {
   @property({ type: String, attribute: 'modifier-display-mode' })
   modifierDisplayMode: ModifierDisplayMode = 'transition';
 
-  @state() private _physicalKeysHeld = new Set<string>();
-
   private _themeManager!: ThemeManager;
+  private readonly _desktopState = createDesktopState();
+  private _resolvedLayout: ResolvedLayout | null = null;
+  private _dataLoadPromise: Promise<void> | undefined;
+  private _layoutKey = '';
 
   static styles = css`
     :host {
@@ -45,110 +56,53 @@ export class BeninKeyboard extends LitElement {
       margin: 0 auto;
     }
 
-    .keyboard-row {
+    .bboard-row {
       display: flex;
       justify-content: center;
       gap: var(--bboard-space-gap-key);
     }
 
-    .key {
+    .bboard-key {
+      flex: 0 0 calc(var(--bboard-size-key-width) * var(--bboard-key-width-multiplier, 1));
+      min-height: var(--bboard-size-key-height);
+      border-radius: var(--bboard-size-radius-md);
       background: var(--bboard-color-surface-key);
       color: var(--bboard-color-text-primary);
-      border-radius: var(--bboard-size-radius-md);
-      height: var(--bboard-size-key-height);
-      flex: 1 1 var(--bboard-size-key-width);
-      max-width: 60px; /* Base width constraint */
+      box-shadow: var(--bboard-shadow-key);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       font-size: var(--bboard-font-size-base);
       font-weight: var(--bboard-font-weight-label);
-      box-shadow: var(--bboard-shadow-key);
+      border: none;
       cursor: pointer;
       position: relative;
     }
 
-    /* Active state for keys */
-    .key:active,
-    .key.active {
+    .bboard-key.is-active {
       background: var(--bboard-color-surface-active);
       box-shadow: var(--bboard-shadow-key-pressed);
       transform: translateY(1px);
     }
 
-    /* Wide keys */
-    .key.wide-1_25x {
-      flex: 1.25 1 calc(var(--bboard-size-key-width) * 1.25);
-      max-width: 75px;
-    }
-    .key.wide-1_5x {
-      flex: 1.5 1 calc(var(--bboard-size-key-width) * 1.5);
-      max-width: 90px;
-    }
-    .key.wide-1_75x {
-      flex: 1.75 1 calc(var(--bboard-size-key-width) * 1.75);
-      max-width: 105px;
-    }
-    .key.wide-2x {
-      flex: 2 1 calc(var(--bboard-size-key-width) * 2);
-      max-width: 120px;
-    }
-    .key.wide-2_25x {
-      flex: 2.25 1 calc(var(--bboard-size-key-width) * 2.25);
-      max-width: 135px;
-    }
-    .key.wide-2_75x {
-      flex: 2.75 1 calc(var(--bboard-size-key-width) * 2.75);
-      max-width: 165px;
-    }
-    .key.space {
-      flex: 6 1 auto;
-      max-width: 400px;
+    .bboard-key.is-disabled {
+      opacity: var(--bboard-opacity-disabled);
+      pointer-events: none;
     }
 
-    /* Action Keys */
-    .key.action-key {
-      background: var(--bboard-color-surface-special);
+    .bboard-key:focus-visible,
+    .bboard-key.is-focused {
+      outline: 2px solid var(--bboard-color-focus-ring);
+      outline-offset: 2px;
     }
 
-    .key.action-primary {
-      background: var(--bboard-color-primary-base);
-      color: var(--bboard-color-text-on-primary);
-    }
-
-    .key.action-primary:active,
-    .key.action-primary.active {
-      background: var(--bboard-color-primary-active);
-    }
-
-    .key svg {
-      width: 20px;
-      height: 20px;
-      fill: currentColor;
-    }
-
-    .secondary-label {
+    .bboard-key__secondary {
       position: absolute;
       top: 4px;
       right: 6px;
       font-size: var(--bboard-font-size-sm);
       color: var(--bboard-color-text-secondary);
-    }
-
-    .key.action-primary .secondary-label {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    /* Focus & Disabled */
-    .key:focus-visible {
-      outline: 2px solid var(--bboard-color-focus-ring);
-      outline-offset: 2px;
-    }
-
-    .key.disabled {
-      opacity: var(--bboard-opacity-disabled);
-      pointer-events: none;
-      cursor: not-allowed;
     }
   `;
 
@@ -173,6 +127,38 @@ export class BeninKeyboard extends LitElement {
     this._themeManager.destroy();
     window.removeEventListener('keydown', this._handleKeydown);
     window.removeEventListener('keyup', this._handleKeyup);
+  }
+
+  protected override async scheduleUpdate(): Promise<unknown> {
+    const newKey = `${this.layoutVariant}:${this.language}`;
+    if (newKey !== this._layoutKey) {
+      this._layoutKey = newKey;
+      this._dataLoadPromise = this._loadLayout(newKey);
+    }
+    await this._dataLoadPromise;
+    return super.scheduleUpdate();
+  }
+
+  private async _loadLayout(expectedKey: string): Promise<void> {
+    if (!isLayoutVariantId(this.layoutVariant) || !isLanguageId(this.language)) {
+      return;
+    }
+    const loader = createDataLoader();
+    const [shape, profile, catalog] = await Promise.all([
+      loader.loadLayoutShape(this.layoutVariant),
+      loader.loadLanguageProfile(this.language),
+      loader.loadCompositionRules(),
+    ]);
+    if (`${this.layoutVariant}:${this.language}` === expectedKey) {
+      const resolver = createLayoutResolver();
+      this._resolvedLayout = resolver.resolve(
+        shape,
+        profile,
+        catalog,
+        this.layoutVariant,
+        this.language
+      );
+    }
   }
 
   protected updated(changedProperties: Map<string | number | symbol, unknown>) {
@@ -217,137 +203,41 @@ export class BeninKeyboard extends LitElement {
   }
 
   private _handleKeydown = (e: KeyboardEvent) => {
-    const code = e.code.toLowerCase().replace('key', '');
-    if (this._physicalKeysHeld.has(code)) return;
-
-    // We create a new Set so Lit recognizes the state change
-    const newKeys = new Set(this._physicalKeysHeld);
-    newKeys.add(code);
-    this._physicalKeysHeld = newKeys;
+    this._desktopState.pressPhysicalCode(e.code);
+    if (this.showPhysicalEcho) {
+      this.requestUpdate();
+    }
   };
 
   private _handleKeyup = (e: KeyboardEvent) => {
-    const code = e.code.toLowerCase().replace('key', '');
-    const newKeys = new Set(this._physicalKeysHeld);
-    newKeys.delete(code);
-    this._physicalKeysHeld = newKeys;
+    this._desktopState.releasePhysicalCode(e.code);
+    if (this.showPhysicalEcho) {
+      this.requestUpdate();
+    }
   };
 
   render() {
-    // Standard 5-row layout
-    const rows = [
-      ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '{backspace}'],
-      ['{tab}', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
-      ['{capslock}', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", '{enter}'],
-      ['{shiftleft}', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '{shiftright}'],
-      [
-        '{ctrlleft}',
-        '{winleft}',
-        '{altleft}',
-        '{space}',
-        '{altright}',
-        '{winright}',
-        '{del}',
-        '{ctrlright}',
-      ],
-    ];
-
-    return html`
-      <div class="keyboard-container">
-        ${rows.map(
-          (row) => html` <div class="keyboard-row">${row.map((key) => this.renderKey(key))}</div> `
-        )}
-      </div>
-    `;
-  }
-
-  private renderKey(key: string) {
-    let classes = 'key';
-    let label: unknown = key;
-    let secondaryLabel = '';
-
-    if (key.length === 1 && this.modifierDisplayMode === 'hint' && /[a-z]/.test(key)) {
-      secondaryLabel = key.toUpperCase();
+    if (this._resolvedLayout === null) {
+      return html`<div class="keyboard-container" aria-busy="true"></div>`;
     }
 
-    if (key === '{space}') {
-      classes += ' space action-key';
-      label = '';
-    } else if (key === '{backspace}') {
-      classes += ' wide-2x action-key';
-      label = 'backspace';
-    } else if (key === '{tab}') {
-      classes += ' wide-1_5x action-key';
-      label = 'tab';
-    } else if (key === '{capslock}') {
-      classes += ' wide-1_75x action-key';
-      label = 'caps lock';
-    } else if (key === '{enter}') {
-      classes += ' wide-2_25x action-key action-primary';
-      label = 'enter';
-    } else if (key === '{shiftleft}') {
-      classes += ' wide-2_25x action-key';
-      label = 'shift';
-    } else if (key === '{shiftright}') {
-      classes += ' wide-2_75x action-key';
-      label = 'shift';
-    } else if (key.match(/^{(ctrl|win|alt|del)(left|right)?}$/)) {
-      classes += ' wide-1_25x action-key';
-      label = key.replace(/[{}]/g, '').replace(/(left|right)$/, '');
-    } else if (key === '\\') {
-      classes += ' wide-1_5x';
+    const snapshot = this._desktopState.snapshot();
+    const heldKeyIds: Set<string> = new Set();
+    for (const code of snapshot.heldPhysicalKeys) {
+      const keyId = mapPhysicalCodeToLogicalKey(code);
+      if (keyId !== null) heldKeyIds.add(keyId);
     }
 
-    if (this.disabled) {
-      classes += ' disabled';
-    }
+    const model = createDesktopRenderModel(this._resolvedLayout, {
+      activeLayer: snapshot.activeLayer,
+      modifierDisplayMode: this.modifierDisplayMode,
+      heldPhysicalKeys: this.showPhysicalEcho ? heldKeyIds : new Set(),
+      hiddenKeys: snapshot.hiddenKeys,
+      disabledKeys: snapshot.disabledKeys,
+      focusedKeyId: snapshot.focusedKeyId,
+    });
 
-    const codeMap: Record<string, string> = {
-      '{backspace}': 'backspace',
-      '{tab}': 'tab',
-      '{capslock}': 'capslock',
-      '{enter}': 'enter',
-      '{shiftleft}': 'shiftleft',
-      '{shiftright}': 'shiftright',
-      '{ctrlleft}': 'controlleft',
-      '{ctrlright}': 'controlright',
-      '{altleft}': 'altleft',
-      '{altright}': 'altright',
-      '{winleft}': 'metaleft',
-      '{winright}': 'metaright',
-      '{space}': 'space',
-      '{del}': 'delete',
-      '-': 'minus',
-      '=': 'equal',
-      '[': 'bracketleft',
-      ']': 'bracketright',
-      '\\': 'backslash',
-      ';': 'semicolon',
-      "'": 'quote',
-      ',': 'comma',
-      '.': 'period',
-      '/': 'slash',
-      '`': 'backquote',
-    };
-    const code = codeMap[key] || key;
-
-    // Check if held
-    if (this.showPhysicalEcho && this._physicalKeysHeld.has(code)) {
-      classes += ' active';
-    }
-
-    return html`
-      <div
-        class="${classes}"
-        data-key="${key}"
-        tabindex="${this.disabled ? -1 : 0}"
-        aria-disabled="${this.disabled ? 'true' : 'false'}"
-        role="button"
-      >
-        <span>${label}</span>
-        ${secondaryLabel ? html`<span class="secondary-label">${secondaryLabel}</span>` : ''}
-      </div>
-    `;
+    return html`<div class="keyboard-container">${renderDesktopRows(model.rows)}</div>`;
   }
 }
 
