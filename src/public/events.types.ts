@@ -18,9 +18,15 @@ export interface BBoardErrorEventDetail {
   readonly message: string;
 }
 
+export interface BBoardKeyPressEventDetail {
+  readonly keyId: string;
+  readonly char: string;
+}
+
 export type BBoardEventMap = {
   'bboard-ready': CustomEvent<BBoardReadyEventDetail>;
   'bboard-language-change': CustomEvent<BBoardLanguageChangeEventDetail>;
   'bboard-theme-change': CustomEvent<BBoardThemeChangeEventDetail>;
   'bboard-error': CustomEvent<BBoardErrorEventDetail>;
+  'bboard-key-press': CustomEvent<BBoardKeyPressEventDetail>;
 };
