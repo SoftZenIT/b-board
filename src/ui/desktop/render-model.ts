@@ -1,4 +1,10 @@
-import type { KeyId, LayerId, ModifierDisplayMode, ResolvedLayout } from '../../public/index.js';
+import type {
+  KeyId,
+  LayerId,
+  ModifierDisplayMode,
+  ResolvedKey,
+  ResolvedLayout,
+} from '../../public/index.js';
 
 export interface DesktopRenderState {
   activeLayer: LayerId;
@@ -43,11 +49,15 @@ export function createDesktopRenderModel(
         keys: row.slots.map((slot) => {
           const resolvedKey = resolvedLayout.keyMap.get(slot.keyId);
           const activeLabel = resolvedKey?.layers[state.activeLayer]?.char ?? '';
-          const shiftLabel = resolvedKey?.layers.shift.char ?? '';
           const primaryLabel = slot.label ?? activeLabel;
-          const secondaryLabel =
-            slot.label !== undefined || state.modifierDisplayMode !== 'hint' ? '' : shiftLabel;
           const overrideLabel = slot.label;
+          const secondaryLabel = deriveSecondaryLabel({
+            activeLayer: state.activeLayer,
+            modifierDisplayMode: state.modifierDisplayMode,
+            primaryLabel,
+            resolvedKey,
+            overrideLabel,
+          });
 
           return {
             keyId: slot.keyId,
@@ -63,4 +73,34 @@ export function createDesktopRenderModel(
         }),
       })) ?? [],
   };
+}
+
+function deriveSecondaryLabel(options: {
+  activeLayer: LayerId;
+  modifierDisplayMode: ModifierDisplayMode;
+  primaryLabel: string;
+  resolvedKey: ResolvedKey | undefined;
+  overrideLabel?: string;
+}): string {
+  const { activeLayer, modifierDisplayMode, primaryLabel, resolvedKey, overrideLabel } = options;
+
+  if (modifierDisplayMode !== 'hint' || overrideLabel !== undefined) {
+    return '';
+  }
+
+  const logicalLayers: LayerId[] = ['base', 'shift', 'altGr'];
+  const activeLayerIndex = logicalLayers.indexOf(activeLayer);
+  const orderedCandidates = [
+    ...(activeLayerIndex >= 0 ? logicalLayers.slice(activeLayerIndex + 1) : logicalLayers),
+    ...(activeLayerIndex >= 0 ? logicalLayers.slice(0, activeLayerIndex) : []),
+  ];
+
+  for (const layerId of orderedCandidates) {
+    const candidate = resolvedKey?.layers[layerId]?.char ?? '';
+    if (candidate !== '' && candidate !== primaryLabel) {
+      return candidate;
+    }
+  }
+
+  return '';
 }

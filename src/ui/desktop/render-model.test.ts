@@ -5,6 +5,7 @@ import {
   createLayoutRow,
   createLayoutShape,
   createLayoutSlot,
+  createLanguageProfile,
   createResolvedKey,
   createResolvedLayout,
   createKeyOutput,
@@ -64,7 +65,7 @@ function makeResolvedLayout(): ResolvedLayout {
 
   return createResolvedLayout(
     layout,
-    { characters: [], compositionRules: [] } as never,
+    createLanguageProfile('yoruba', 'Yoruba', 'Yorùbá', [], []),
     keyMap,
     new Map()
   );
@@ -72,7 +73,8 @@ function makeResolvedLayout(): ResolvedLayout {
 
 describe('createDesktopRenderModel', () => {
   it('should derive rows, widths, and labels from the resolved layout', () => {
-    const model = createDesktopRenderModel(makeResolvedLayout(), {
+    const resolvedLayout = makeResolvedLayout();
+    const hintedModel = createDesktopRenderModel(resolvedLayout, {
       activeLayer: 'base',
       modifierDisplayMode: 'hint',
       heldPhysicalKeys: new Set([createKeyId('key-a')]),
@@ -80,11 +82,34 @@ describe('createDesktopRenderModel', () => {
       disabledKeys: new Set([createKeyId('key-enter')]),
       focusedKeyId: createKeyId('key-a'),
     });
+    const transitionModel = createDesktopRenderModel(resolvedLayout, {
+      activeLayer: 'base',
+      modifierDisplayMode: 'transition',
+      heldPhysicalKeys: new Set(),
+      hiddenKeys: new Set(),
+      disabledKeys: new Set(),
+      focusedKeyId: null,
+    });
+    const shiftedModel = createDesktopRenderModel(resolvedLayout, {
+      activeLayer: 'shift',
+      modifierDisplayMode: 'hint',
+      heldPhysicalKeys: new Set(),
+      hiddenKeys: new Set(),
+      disabledKeys: new Set(),
+      focusedKeyId: null,
+    });
 
-    expect(model.rows).toHaveLength(2);
-    expect(model.rows[0].keys[0].primaryLabel).toBe('a');
-    expect(model.rows[0].keys[0].secondaryLabel).toBe('A');
-    expect(model.rows[1].keys[0].width).toBe(1.5);
-    expect(model.rows[0].keys[0].active).toBe(true);
+    expect(hintedModel.rows).toHaveLength(2);
+    expect(hintedModel.rows[0].keys[0].primaryLabel).toBe('a');
+    expect(hintedModel.rows[0].keys[0].secondaryLabel).toBe('A');
+    expect(hintedModel.rows[1].keys[0].width).toBe(1.5);
+    expect(hintedModel.rows[0].keys[0].active).toBe(true);
+    expect(hintedModel.rows[0].keys[0].focused).toBe(true);
+    expect(hintedModel.rows[0].keys[1].hidden).toBe(true);
+    expect(hintedModel.rows[1].keys[1].disabled).toBe(true);
+    expect(hintedModel.rows[1].keys[0].overrideLabel).toBe('⇧');
+    expect(hintedModel.rows[1].keys[0].secondaryLabel).toBe('');
+    expect(shiftedModel.rows[0].keys[0].secondaryLabel).toBe('@');
+    expect(transitionModel.rows[0].keys[0].secondaryLabel).toBe('');
   });
 });
