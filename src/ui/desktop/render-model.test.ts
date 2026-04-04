@@ -112,4 +112,18 @@ describe('createDesktopRenderModel', () => {
     expect(shiftedModel.rows[0].keys[0].secondaryLabel).toBe('@');
     expect(transitionModel.rows[0].keys[0].secondaryLabel).toBe('');
   });
+
+  it('should expose modifier hints only for keys with alternate output', () => {
+    const model = createDesktopRenderModel(makeResolvedLayout(), {
+      activeLayer: 'base',
+      modifierDisplayMode: 'hint',
+      heldPhysicalKeys: new Set(),
+      hiddenKeys: new Set(),
+      disabledKeys: new Set(),
+      focusedKeyId: null,
+    });
+
+    expect(model.rows[0].keys[0].secondaryLabel).toBe('A');
+    expect(model.rows[1].keys[0].secondaryLabel).toBe('');
+  });
 });
