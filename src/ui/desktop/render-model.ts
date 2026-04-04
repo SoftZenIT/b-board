@@ -14,6 +14,11 @@ export interface DesktopRenderKey {
   width: number;
   primaryLabel: string;
   secondaryLabel: string;
+  overrideLabel?: string;
+  hidden: boolean;
+  disabled: boolean;
+  focused: boolean;
+  active: boolean;
 }
 
 export interface DesktopRenderRow {
@@ -42,12 +47,18 @@ export function createDesktopRenderModel(
           const primaryLabel = slot.label ?? activeLabel;
           const secondaryLabel =
             slot.label !== undefined || state.modifierDisplayMode !== 'hint' ? '' : shiftLabel;
+          const overrideLabel = slot.label;
 
           return {
             keyId: slot.keyId,
             width: slot.width,
             primaryLabel,
             secondaryLabel,
+            overrideLabel,
+            hidden: state.hiddenKeys.has(slot.keyId),
+            disabled: state.disabledKeys.has(slot.keyId),
+            focused: state.focusedKeyId === slot.keyId,
+            active: state.heldPhysicalKeys.has(slot.keyId),
           };
         }),
       })) ?? [],
