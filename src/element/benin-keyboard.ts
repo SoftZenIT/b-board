@@ -586,6 +586,15 @@ export class BeninKeyboard extends LitElement {
     this.requestUpdate();
   };
 
+  private readonly _handleFocusIn = (e: FocusEvent) => {
+    const target = (e.target as HTMLElement).closest('[data-key-id]') as HTMLElement | null;
+    if (!target) return;
+    const keyId = target.getAttribute('data-key-id') as KeyId | null;
+    if (!keyId) return;
+    this._desktopState.setFocusedKey(keyId);
+    this.requestUpdate();
+  };
+
   private readonly _handleTouchStart = (e: TouchEvent) => {
     const target = (e.target as HTMLElement).closest('[data-key-id]') as HTMLElement | null;
     if (!target) return;
@@ -750,6 +759,7 @@ export class BeninKeyboard extends LitElement {
         role="group"
         aria-label="Clavier virtuel"
         @click=${this._handleContainerClick}
+        @focusin=${this._handleFocusIn}
       >
         ${renderDesktopRows(model.rows)}
       </div>
