@@ -5,7 +5,13 @@ import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag === 'benin-keyboard',
+        },
+      },
+    }),
     dts({
       insertTypesEntry: true,
       include: ['src/**/*.ts'],
