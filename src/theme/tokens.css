@@ -47,6 +47,13 @@
   --bboard-shadow-key-pressed: none;
   --bboard-shadow-popup: 0 4px 12px rgba(0, 0, 0, 0.15);
   --bboard-opacity-disabled: 0.5;
+
+  /* ── Mobile design tokens ───────────────────────────────────────────── */
+
+  /* xs bucket defaults (< 375px) */
+  --bboard-mobile-key-height: 44px;
+  --bboard-mobile-row-gap: 8px;
+  --bboard-mobile-h-padding: 12px;
 }
 
 /* Dark Theme Overrides */
