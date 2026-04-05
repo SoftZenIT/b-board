@@ -129,6 +129,149 @@ export class BeninKeyboard extends LitElement {
       font-size: var(--bboard-font-size-sm);
       color: var(--bboard-color-text-secondary);
     }
+
+    /* ── Mobile responsive bucket overrides (host selectors) ─────────── */
+
+    :host([data-bucket='sm']) {
+      --bboard-mobile-key-height: 52px;
+      --bboard-mobile-row-gap: 12px;
+      --bboard-mobile-h-padding: 14px;
+    }
+
+    :host([data-bucket='md']) {
+      --bboard-mobile-key-height: 60px;
+      --bboard-mobile-row-gap: 16px;
+      --bboard-mobile-h-padding: 16px;
+    }
+
+    /* ── Mobile keyboard container ──────────────────────────────────── */
+
+    .bboard-mobile-keyboard {
+      padding-bottom: max(var(--bboard-mobile-row-gap), env(safe-area-inset-bottom, 0px));
+      padding-left: max(var(--bboard-mobile-h-padding), env(safe-area-inset-left, 0px));
+      padding-right: max(var(--bboard-mobile-h-padding), env(safe-area-inset-right, 0px));
+      display: flex;
+      flex-direction: column;
+      gap: var(--bboard-mobile-row-gap);
+      position: relative;
+    }
+
+    /* ── Mobile row ─────────────────────────────────────────────────── */
+
+    .bboard-mobile-row {
+      display: flex;
+      justify-content: center;
+      gap: var(--bboard-space-gap-key);
+    }
+
+    /* ── Mobile key ─────────────────────────────────────────────────── */
+
+    .bboard-mobile-key {
+      flex: var(--bboard-key-width-multiplier, 1);
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: var(--bboard-size-radius-md);
+      background: var(--bboard-color-surface-key);
+      color: var(--bboard-color-text-primary);
+      box-shadow: var(--bboard-shadow-key);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--bboard-font-size-base);
+      font-weight: var(--bboard-font-weight-label);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      align-self: stretch;
+      transition:
+        background 80ms ease,
+        transform 80ms ease;
+    }
+
+    .bboard-mobile-key.is-active {
+      background: var(--bboard-color-surface-active);
+      box-shadow: var(--bboard-shadow-key-pressed);
+      transform: translateY(1px);
+    }
+
+    .bboard-mobile-key.is-disabled {
+      opacity: var(--bboard-opacity-disabled);
+      pointer-events: none;
+    }
+
+    .bboard-mobile-key:focus-visible {
+      outline: 2px solid var(--bboard-color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    /* Thumb-zone height scaling */
+    .bboard-mobile-key[data-thumb-comfort='high'] {
+      align-self: stretch;
+      min-height: calc(var(--bboard-mobile-key-height) * 1.05);
+    }
+    .bboard-mobile-key[data-thumb-comfort='medium'] {
+      align-self: stretch;
+      min-height: var(--bboard-mobile-key-height);
+    }
+    .bboard-mobile-key[data-thumb-comfort='low'] {
+      align-self: stretch;
+      min-height: calc(var(--bboard-mobile-key-height) * 0.92);
+    }
+
+    /* Long-press dot indicator */
+    .bboard-key__long-press-dot {
+      position: absolute;
+      bottom: 3px;
+      right: 5px;
+      font-size: 0.65em;
+      color: var(--bboard-color-text-secondary);
+      line-height: 1;
+    }
+
+    /* ── Long-press popup ───────────────────────────────────────────── */
+
+    .bboard-long-press-popup {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: var(--lp-anchor-x, 50%);
+      transform: translateX(-50%);
+      max-width: 100%;
+      background: var(--bboard-color-surface-key);
+      border-radius: var(--bboard-size-radius-md);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+      display: flex;
+      gap: 2px;
+      padding: 4px;
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    .bboard-long-press-item {
+      padding: 10px 14px;
+      font-size: 1.1em;
+      border-radius: calc(var(--bboard-size-radius-md) - 2px);
+      cursor: pointer;
+      color: var(--bboard-color-text-primary);
+      transition: background 60ms ease;
+    }
+
+    .bboard-long-press-item.is-selected {
+      background: var(--bboard-color-surface-active);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* ── Reduced motion ─────────────────────────────────────────────── */
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
   `;
 
   constructor() {
