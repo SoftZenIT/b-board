@@ -13,6 +13,7 @@ export interface DesktopRenderState {
   activeModifierKeyIds: ReadonlySet<KeyId>;
   hiddenKeys: ReadonlySet<KeyId>;
   disabledKeys: ReadonlySet<KeyId>;
+  keyboardDisabled: boolean;
   focusedKeyId: KeyId | null;
 }
 
