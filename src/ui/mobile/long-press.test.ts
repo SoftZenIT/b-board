@@ -40,4 +40,30 @@ describe('renderLongPressPopup', () => {
     expect(options[1].getAttribute('data-char')).toBe('á');
     expect(options[2].getAttribute('data-char')).toBe('â');
   });
+
+  it('sets data-index on each option', () => {
+    const container = document.createElement('div');
+    render(renderLongPressPopup(makePopup()), container);
+    const options = container.querySelectorAll('[role="option"]');
+    expect(options[0].getAttribute('data-index')).toBe('0');
+    expect(options[1].getAttribute('data-index')).toBe('1');
+    expect(options[2].getAttribute('data-index')).toBe('2');
+  });
+
+  it('adds is-selected class to the selected option', () => {
+    const container = document.createElement('div');
+    render(renderLongPressPopup(makePopup({ selectedIndex: 2 })), container);
+    const options = container.querySelectorAll('[role="option"]');
+    expect(options[0].classList.contains('is-selected')).toBe(false);
+    expect(options[1].classList.contains('is-selected')).toBe(false);
+    expect(options[2].classList.contains('is-selected')).toBe(true);
+  });
+
+  it('listbox has aria-label "Alternate characters"', () => {
+    const container = document.createElement('div');
+    render(renderLongPressPopup(makePopup()), container);
+    expect(container.querySelector('[role="listbox"]')!.getAttribute('aria-label')).toBe(
+      'Alternate characters'
+    );
+  });
 });
