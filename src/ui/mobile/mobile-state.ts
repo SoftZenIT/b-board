@@ -82,6 +82,10 @@ export function createMobileState() {
     },
 
     dismissLongPress() {
+      if (longPressTimer !== null) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
       longPressVisible = false;
       longPressKeyId = null;
       longPressSelectedIndex = 0;
