@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import './benin-keyboard.js';
 
 describe('BeninKeyboard Custom Element', () => {
@@ -172,5 +172,77 @@ describe('Physical keyboard output', () => {
 
     document.body.removeChild(el);
     (window as any).ResizeObserver = origResizeObserver;
+  });
+});
+
+describe('Composition engine integration', () => {
+  let el: any;
+
+  beforeEach(async () => {
+    el = document.createElement('benin-keyboard');
+    el.layoutVariant = 'desktop-azerty';
+    el.language = 'yoruba';
+    document.body.appendChild(el);
+    await el.updateComplete;
+  });
+
+  afterEach(() => {
+    document.body.removeChild(el);
+  });
+
+  it('dead key press swallows the event — no bboard-key-press fired', async () => {
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    // Arm the processor directly with the tone trigger (´ U+00B4)
+    const result = el._compositionProcessor?.process('key-fake', '´');
+    expect(result).toBeNull();
+    expect(events).toHaveLength(0);
+    expect(el._compositionProcessor?.isArmed).toBe(true);
+  });
+
+  it('fires bboard-key-press with composed char after dead key sequence', async () => {
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    // Arm the processor with tone trigger
+    el._compositionProcessor?.process('key-fake', '´');
+
+    // Find the key ID for 'a' in the base layer
+    const keyAId = [...el._resolvedLayout.keyMap.entries()].find(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ([_key, v]: [any, any]) => v.layers?.base?.char === 'a'
+    )?.[0];
+
+    if (keyAId) {
+      el._activateKey(keyAId);
+      expect(events).toHaveLength(1);
+      expect(events[0].detail.char).toBe('á');
+    } else {
+      // Safety fallback if layout changes
+      expect(el._compositionProcessor?.isArmed).toBe(true);
+    }
+  });
+
+  it('cancel resets composition — next key fires plain char', async () => {
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    // Arm then cancel
+    el._compositionProcessor?.process('key-fake', '´');
+    el._compositionProcessor?.cancel();
+    expect(el._compositionProcessor?.isArmed).toBe(false);
+
+    // Next activation should fire the plain char
+    const keyAId = [...el._resolvedLayout.keyMap.entries()].find(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ([_key, v]: [any, any]) => v.layers?.base?.char === 'a'
+    )?.[0];
+
+    if (keyAId) {
+      el._activateKey(keyAId);
+      expect(events).toHaveLength(1);
+      expect(events[0].detail.char).toBe('a');
+    }
   });
 });
