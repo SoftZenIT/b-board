@@ -22,4 +22,19 @@ describe('createDesktopState', () => {
     state.setFocusedKey(null);
     expect(state.snapshot().focusedKeyId).toBeNull();
   });
+
+  it('should clear held physical keys', () => {
+    const state = createDesktopState();
+    state.pressPhysicalCode('ShiftLeft');
+    state.pressPhysicalCode('KeyA');
+    expect(state.snapshot().heldPhysicalKeys.size).toBe(2);
+    state.clearHeldPhysicalKeys();
+    expect(state.snapshot().heldPhysicalKeys.size).toBe(0);
+  });
+
+  it('should safely clear held physical keys when already empty', () => {
+    const state = createDesktopState();
+    expect(() => state.clearHeldPhysicalKeys()).not.toThrow();
+    expect(state.snapshot().heldPhysicalKeys.size).toBe(0);
+  });
 });
