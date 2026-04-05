@@ -40,7 +40,7 @@ describe('BeninKeyboard Custom Element', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    expect(el.shadowRoot.querySelectorAll('[data-row-index]')).toHaveLength(4);
+    expect(el.shadowRoot.querySelectorAll('[data-row-index]')).toHaveLength(5);
     document.body.removeChild(el);
   });
 

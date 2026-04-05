@@ -86,7 +86,7 @@ export function createDesktopRenderModel(
           });
 
           const hidden = state.hiddenKeys.has(slot.keyId);
-          const disabled = state.disabledKeys.has(slot.keyId);
+          const disabled = state.keyboardDisabled || state.disabledKeys.has(slot.keyId);
           const focused = state.focusedKeyId === slot.keyId;
           const active =
             state.heldPhysicalKeys.has(slot.keyId) || state.activeModifierKeyIds.has(slot.keyId);
