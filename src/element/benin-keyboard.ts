@@ -8,8 +8,7 @@ import {
   isLayoutVariantId,
   isLanguageId,
 } from '../public/types.js';
-import { type KeyId, type LayerId, createKeyId } from '../public/index.js';
-import type { ResolvedLayout } from '../public/index.js';
+import { type KeyId, type LayerId, type ResolvedLayout, createKeyId } from '../public/index.js';
 import { dispatchBBoardEvent } from './events.js';
 import { ThemeManager } from '../theme/theme-manager.js';
 import { createDataLoader } from '../data/loader.js';
@@ -57,7 +56,7 @@ export class BeninKeyboard extends LitElement {
   @property({ type: String, attribute: 'modifier-display-mode' })
   modifierDisplayMode: ModifierDisplayMode = 'transition';
 
-  private _themeManager!: ThemeManager;
+  private readonly _themeManager!: ThemeManager;
   private readonly _desktopState = createDesktopState();
   private readonly _mobileState = createMobileState();
   private _resizeObserver: ResizeObserver | null = null;
@@ -68,7 +67,7 @@ export class BeninKeyboard extends LitElement {
   private _layoutKey = '';
   private _lastSyncedFocusId: KeyId | null = null;
 
-  static styles = css`
+  static readonly styles = css`
     :host {
       display: block;
       width: 100%;
@@ -95,7 +94,11 @@ export class BeninKeyboard extends LitElement {
     }
 
     .bboard-key {
-      flex: 0 0 calc(var(--bboard-size-key-width) * var(--bboard-key-width-multiplier, 1));
+      flex: 0 0
+        calc(
+          var(--bboard-size-key-width) * var(--bboard-key-width-multiplier, 1) +
+            var(--bboard-space-gap-key) * (var(--bboard-key-width-multiplier, 1) - 1)
+        );
       min-height: var(--bboard-size-key-height);
       border-radius: var(--bboard-size-radius-md);
       background: var(--bboard-color-surface-key);
@@ -503,12 +506,12 @@ export class BeninKeyboard extends LitElement {
     this.open = false;
   }
 
-  private _handleWindowBlur = () => {
+  private readonly _handleWindowBlur = () => {
     this._desktopState.clearHeldPhysicalKeys();
     if (this.showPhysicalEcho) this.requestUpdate();
   };
 
-  private _handleKeydown = (e: KeyboardEvent) => {
+  private readonly _handleKeydown = (e: KeyboardEvent) => {
     // Gap fix: skip pressPhysicalCode on auto-repeat (idempotent but creates needless Set allocations)
     if (!e.repeat) this._desktopState.pressPhysicalCode(e.code);
 
@@ -566,14 +569,14 @@ export class BeninKeyboard extends LitElement {
     if (this.showPhysicalEcho && !e.repeat) this.requestUpdate();
   };
 
-  private _handleKeyup = (e: KeyboardEvent) => {
+  private readonly _handleKeyup = (e: KeyboardEvent) => {
     this._desktopState.releasePhysicalCode(e.code);
     if (this.showPhysicalEcho) {
       this.requestUpdate();
     }
   };
 
-  private _handleContainerClick = (e: MouseEvent) => {
+  private readonly _handleContainerClick = (e: MouseEvent) => {
     const target = (e.target as HTMLElement).closest('[data-key-id]') as HTMLElement | null;
     if (!target) return;
     const keyId = target.getAttribute('data-key-id') as KeyId | null;
@@ -583,7 +586,7 @@ export class BeninKeyboard extends LitElement {
     this.requestUpdate();
   };
 
-  private _handleTouchStart = (e: TouchEvent) => {
+  private readonly _handleTouchStart = (e: TouchEvent) => {
     const target = (e.target as HTMLElement).closest('[data-key-id]') as HTMLElement | null;
     if (!target) return;
     const keyId = target.getAttribute('data-key-id') as KeyId | null;
@@ -607,7 +610,7 @@ export class BeninKeyboard extends LitElement {
     });
   };
 
-  private _handleTouchMove = (e: TouchEvent) => {
+  private readonly _handleTouchMove = (e: TouchEvent) => {
     const snap = this._mobileState.snapshot();
     if (!snap.longPressVisible || !snap.longPressKeyId) return;
     e.preventDefault();
@@ -633,7 +636,7 @@ export class BeninKeyboard extends LitElement {
     this.requestUpdate();
   };
 
-  private _handleTouchEnd = () => {
+  private readonly _handleTouchEnd = () => {
     const snap = this._mobileState.snapshot();
     if (snap.longPressVisible && snap.longPressKeyId !== null) {
       const resolvedKey = this._resolvedLayout?.keyMap.get(snap.longPressKeyId);
@@ -659,7 +662,7 @@ export class BeninKeyboard extends LitElement {
     }
   };
 
-  private _handleTouchCancel = () => {
+  private readonly _handleTouchCancel = () => {
     this._mobileState.cancelLongPress();
     this._touchStartKeyId = null;
     this.requestUpdate();
@@ -738,6 +741,7 @@ export class BeninKeyboard extends LitElement {
       hiddenKeys: snapshot.hiddenKeys,
       disabledKeys: snapshot.disabledKeys,
       focusedKeyId: snapshot.focusedKeyId,
+      keyboardDisabled: this.disabled,
     });
 
     return html`
