@@ -40,11 +40,8 @@ test.describe('Desktop Keyboard Interactions', () => {
 
     await page.keyboard.press('Tab');
 
-    // After pressing Tab, the next focusable element should have focus
-    // It might be the second key if roving tabindex is perfectly handling it, or something else
-    // Playwright focus logic inside shadow DOM might be tricky, so just ensuring it doesn't crash
-    // and we can focus the keys.
-    // For now, let's just assert that we could focus the first key.
+    const secondKey = page.locator('benin-keyboard .bboard-key').nth(1);
+    await expect(secondKey).toBeFocused();
   });
 
   test('should reflect disabled state', async ({ page }) => {
