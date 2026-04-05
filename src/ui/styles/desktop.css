@@ -5,7 +5,11 @@
 }
 
 .bboard-key {
-  flex: 0 0 calc(var(--bboard-size-key-width) * var(--bboard-key-width-multiplier, 1));
+  flex: 0 0
+    calc(
+      var(--bboard-size-key-width) * var(--bboard-key-width-multiplier, 1) +
+        var(--bboard-space-gap-key) * (var(--bboard-key-width-multiplier, 1) - 1)
+    );
   min-height: var(--bboard-size-key-height);
   border-radius: var(--bboard-size-radius-md);
   background: var(--bboard-color-surface-key);
