@@ -21,6 +21,8 @@ import {
   computePhysicalLayer,
   MODIFIER_KEY_IDS,
 } from '../ui/desktop/physical-key-map.js';
+import { createCompositionProcessor } from '../composition/index.js';
+import type { CompositionProcessor } from '../composition/index.js';
 import { createFocusController } from '../ui/state/focus-controller.js';
 import { createMobileRenderModel } from '../ui/mobile/render-model.js';
 import { renderMobileRows } from '../ui/mobile/rows.js';
@@ -63,6 +65,7 @@ export class BeninKeyboard extends LitElement {
   private _longPressAnchorX = 0;
   private _touchStartKeyId: KeyId | null = null;
   private _resolvedLayout: ResolvedLayout | null = null;
+  private _compositionProcessor: CompositionProcessor | null = null;
   private _dataLoadPromise: Promise<void> | undefined;
   private _layoutKey = '';
   private _lastSyncedFocusId: KeyId | null = null;
@@ -354,10 +357,12 @@ export class BeninKeyboard extends LitElement {
         this.layoutVariant,
         this.language
       );
+      this._compositionProcessor = createCompositionProcessor(this._resolvedLayout);
     }
   }
 
   protected updated(changedProperties: Map<string | number | symbol, unknown>) {
+    this.toggleAttribute('data-composition-armed', this._compositionProcessor?.isArmed ?? false);
     if (changedProperties.has('language')) {
       dispatchBBoardEvent(this, 'bboard-language-change', { languageId: this.language });
     }
@@ -438,8 +443,12 @@ export class BeninKeyboard extends LitElement {
         ? 'altGr'
         : snapshot.activeLayer;
     const char = resolvedKey?.layers[effectiveLayer]?.char ?? '';
-
-    dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char });
+    const composed = this._compositionProcessor?.process(keyId, char) ?? char;
+    if (composed === null) {
+      this.requestUpdate();
+      return;
+    }
+    dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
 
     const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snapshot.activeLayer);
     if (keyId === shiftKey || keyId === shiftRightKey) {
@@ -463,8 +472,12 @@ export class BeninKeyboard extends LitElement {
         ? 'altGr'
         : snap.activeLayer;
     const char = resolvedKey?.layers[effectiveLayer]?.char ?? '';
-
-    dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char });
+    const composed = this._compositionProcessor?.process(keyId, char) ?? char;
+    if (composed === null) {
+      this.requestUpdate();
+      return;
+    }
+    dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
 
     const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snap.activeLayer);
     if (keyId === shiftKey || keyId === shiftRightKey) {
@@ -496,6 +509,7 @@ export class BeninKeyboard extends LitElement {
 
   detach(): void {
     console.debug('[BeninKeyboard] detach() called');
+    this._compositionProcessor?.cancel();
   }
 
   openKeyboard(): void {
@@ -508,12 +522,20 @@ export class BeninKeyboard extends LitElement {
 
   private readonly _handleWindowBlur = () => {
     this._desktopState.clearHeldPhysicalKeys();
-    if (this.showPhysicalEcho) this.requestUpdate();
+    const wasArmed = this._compositionProcessor?.isArmed ?? false;
+    this._compositionProcessor?.cancel();
+    if (this.showPhysicalEcho || wasArmed) this.requestUpdate();
   };
 
   private readonly _handleKeydown = (e: KeyboardEvent) => {
     // Gap fix: skip pressPhysicalCode on auto-repeat (idempotent but creates needless Set allocations)
     if (!e.repeat) this._desktopState.pressPhysicalCode(e.code);
+
+    if (e.key === 'Escape' && this._compositionProcessor?.isArmed) {
+      this._compositionProcessor.cancel();
+      this.requestUpdate();
+      return;
+    }
 
     // Navigate/activate only when a key inside the keyboard has browser focus
     if (this.shadowRoot?.activeElement) {
@@ -561,7 +583,10 @@ export class BeninKeyboard extends LitElement {
         const resolvedKey = this._resolvedLayout.keyMap.get(keyId);
         // Fall back to base layer if the computed layer has no entry for this key
         const char = resolvedKey?.layers[layer]?.char ?? resolvedKey?.layers['base']?.char ?? '';
-        dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char });
+        const composed = this._compositionProcessor?.process(keyId, char) ?? char;
+        if (composed !== null) {
+          dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
+        }
       }
     }
 
