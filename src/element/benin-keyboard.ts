@@ -17,7 +17,11 @@ import { createLayoutResolver } from '../data/layout-resolver.js';
 import { createDesktopRenderModel } from '../ui/desktop/render-model.js';
 import { renderDesktopRows } from '../ui/desktop/rows.js';
 import { createDesktopState } from '../ui/state/desktop-state.js';
-import { mapPhysicalCodeToLogicalKey } from '../ui/desktop/physical-key-map.js';
+import {
+  mapPhysicalCodeToLogicalKey,
+  computePhysicalLayer,
+  MODIFIER_KEY_IDS,
+} from '../ui/desktop/physical-key-map.js';
 import { createFocusController } from '../ui/state/focus-controller.js';
 import { createMobileRenderModel } from '../ui/mobile/render-model.js';
 import { renderMobileRows } from '../ui/mobile/rows.js';
@@ -302,6 +306,7 @@ export class BeninKeyboard extends LitElement {
     this._applyTheme(this._themeManager.effectiveTheme);
     window.addEventListener('keydown', this._handleKeydown);
     window.addEventListener('keyup', this._handleKeyup);
+    window.addEventListener('blur', this._handleWindowBlur);
     if (this.layoutVariant.startsWith('mobile-')) {
       this._startResizeObserver();
     }
@@ -314,6 +319,7 @@ export class BeninKeyboard extends LitElement {
     this._themeManager.destroy();
     window.removeEventListener('keydown', this._handleKeydown);
     window.removeEventListener('keyup', this._handleKeyup);
+    window.removeEventListener('blur', this._handleWindowBlur);
   }
 
   protected override async scheduleUpdate(): Promise<unknown> {
@@ -497,8 +503,14 @@ export class BeninKeyboard extends LitElement {
     this.open = false;
   }
 
+  private _handleWindowBlur = () => {
+    this._desktopState.clearHeldPhysicalKeys();
+    if (this.showPhysicalEcho) this.requestUpdate();
+  };
+
   private _handleKeydown = (e: KeyboardEvent) => {
-    this._desktopState.pressPhysicalCode(e.code);
+    // Gap fix: skip pressPhysicalCode on auto-repeat (idempotent but creates needless Set allocations)
+    if (!e.repeat) this._desktopState.pressPhysicalCode(e.code);
 
     // Navigate/activate only when a key inside the keyboard has browser focus
     if (this.shadowRoot?.activeElement) {
@@ -535,9 +547,23 @@ export class BeninKeyboard extends LitElement {
       }
     }
 
-    if (this.showPhysicalEcho) {
-      this.requestUpdate();
+    // BBOARD-141/140/142: physical key output — always-on for desktop variants
+    // Hold-based modifier layer: computed from heldPhysicalKeys, not UI toggle state
+    // Auto-repeat guard: e.repeat events are skipped (BBOARD-142)
+    if (!e.repeat && this.layoutVariant.startsWith('desktop-') && this._resolvedLayout) {
+      const keyId = mapPhysicalCodeToLogicalKey(e.code);
+      if (keyId !== null && !MODIFIER_KEY_IDS.has(keyId)) {
+        const heldKeys = this._desktopState.snapshot().heldPhysicalKeys;
+        const layer = computePhysicalLayer(heldKeys);
+        const resolvedKey = this._resolvedLayout.keyMap.get(keyId);
+        // Fall back to base layer if the computed layer has no entry for this key
+        const char = resolvedKey?.layers[layer]?.char ?? resolvedKey?.layers['base']?.char ?? '';
+        dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char });
+      }
     }
+
+    // Visual echo: only update on first press (repeat doesn't change held-key state)
+    if (this.showPhysicalEcho && !e.repeat) this.requestUpdate();
   };
 
   private _handleKeyup = (e: KeyboardEvent) => {
