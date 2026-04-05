@@ -140,6 +140,12 @@ export class BeninKeyboard extends LitElement {
 
     /* ── Mobile responsive bucket overrides (host selectors) ─────────── */
 
+    :host([data-bucket='xs']) {
+      --bboard-mobile-key-height: 44px;
+      --bboard-mobile-row-gap: 8px;
+      --bboard-mobile-h-padding: 12px;
+    }
+
     :host([data-bucket='sm']) {
       --bboard-mobile-key-height: 52px;
       --bboard-mobile-row-gap: 12px;
@@ -646,8 +652,6 @@ export class BeninKeyboard extends LitElement {
       ></div>`;
     }
 
-    const snapshot = this._desktopState.snapshot();
-
     // ── Mobile branch ────────────────────────────────────────────────────
     if (this.layoutVariant.startsWith('mobile-')) {
       const snap = this._mobileState.snapshot();
@@ -683,6 +687,7 @@ export class BeninKeyboard extends LitElement {
     }
 
     // ── Desktop branch (existing code below, unchanged) ──────────────────
+    const snapshot = this._desktopState.snapshot();
     const heldKeyIds: Set<string> = new Set();
     for (const code of snapshot.heldPhysicalKeys) {
       const keyId = mapPhysicalCodeToLogicalKey(code);
