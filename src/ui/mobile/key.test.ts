@@ -68,4 +68,41 @@ describe('renderMobileKey', () => {
     render(renderMobileKey(makeKey({ hasLongPress: true }))!, container);
     expect(container.querySelector('button')!.hasAttribute('data-has-long-press')).toBe(true);
   });
+
+  it('omits data-has-long-press when hasLongPress is false', () => {
+    const container = document.createElement('div');
+    render(renderMobileKey(makeKey({ hasLongPress: false }))!, container);
+    expect(container.querySelector('button')!.hasAttribute('data-has-long-press')).toBe(false);
+  });
+
+  it('sets --bboard-key-width-multiplier via inline style', () => {
+    const container = document.createElement('div');
+    render(renderMobileKey(makeKey({ width: 1.5 }))!, container);
+    const style = container.querySelector('button')!.getAttribute('style') ?? '';
+    expect(style).toContain('--bboard-key-width-multiplier:1.5');
+  });
+
+  it('sets aria-label from primaryLabel', () => {
+    const container = document.createElement('div');
+    render(renderMobileKey(makeKey({ primaryLabel: 'a' }))!, container);
+    expect(container.querySelector('button')!.getAttribute('aria-label')).toBe('a');
+  });
+
+  it('sets aria-pressed based on active state', () => {
+    const container = document.createElement('div');
+    render(renderMobileKey(makeKey({ active: true }))!, container);
+    expect(container.querySelector('button')!.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('sets aria-haspopup=listbox when hasLongPress is true', () => {
+    const container = document.createElement('div');
+    render(renderMobileKey(makeKey({ hasLongPress: true }))!, container);
+    expect(container.querySelector('button')!.getAttribute('aria-haspopup')).toBe('listbox');
+  });
+
+  it('sets aria-haspopup=false when hasLongPress is false', () => {
+    const container = document.createElement('div');
+    render(renderMobileKey(makeKey({ hasLongPress: false }))!, container);
+    expect(container.querySelector('button')!.getAttribute('aria-haspopup')).toBe('false');
+  });
 });
