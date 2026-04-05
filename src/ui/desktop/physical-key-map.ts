@@ -1,4 +1,4 @@
-import { createKeyId, type KeyId } from '../../public/index.js';
+import { createKeyId, type KeyId, type LayerId } from '../../public/index.js';
 
 // Maps browser KeyboardEvent.code (physical key position, US QWERTY reference)
 // to logical KeyId in the desktop-azerty layout.
@@ -48,4 +48,49 @@ const CODE_TO_KEY: Record<string, KeyId> = {
 
 export function mapPhysicalCodeToLogicalKey(code: string): KeyId | null {
   return CODE_TO_KEY[code] ?? null;
+}
+
+/**
+ * Physical key codes (from KeyboardEvent.code) that control the active layer.
+ * When any of these keys are held, they affect which layer character keys output from.
+ */
+export const PHYSICAL_MODIFIER_CODES = new Set([
+  'ShiftLeft',
+  'ShiftRight',
+  'AltRight',
+  'AltLeft',
+  'ControlLeft',
+  'ControlRight',
+  'MetaLeft',
+  'MetaRight',
+]) as ReadonlySet<string>;
+
+/**
+ * Logical key IDs that must NOT generate `bboard-key-press` output when physically pressed.
+ * These are the modifier keys in the layout that control layer state.
+ */
+export const MODIFIER_KEY_IDS = new Set([
+  createKeyId('key-shift'),
+  createKeyId('key-shift-right'),
+  createKeyId('key-altgr'),
+  createKeyId('key-alt'),
+  createKeyId('key-ctrl'),
+]) as ReadonlySet<KeyId>;
+
+/**
+ * Computes the effective keyboard layer from a set of held physical keys.
+ * Layer precedence (hold-based, not toggle):
+ * 1. If Shift (Left or Right) is held → 'shift'
+ * 2. Else if AltRight is held → 'altGr'
+ * 3. Else → 'base'
+ * (Shift wins if both Shift and AltGr are held simultaneously)
+ */
+export function computePhysicalLayer(heldPhysicalKeys: ReadonlySet<string>): LayerId {
+  if (heldPhysicalKeys.has('ShiftLeft') || heldPhysicalKeys.has('ShiftRight')) {
+    return 'shift';
+  }
+  if (heldPhysicalKeys.has('AltRight')) {
+    return 'altGr';
+  }
+  return 'base';
 }
