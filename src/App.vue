@@ -33,11 +33,16 @@ onMounted(() => {
     <h1>BBoard Keyboard Demo</h1>
     <div class="controls">
       <div class="control-row">
-        <span>Theme:</span>
+        <span
+          >Theme: <span id="theme-mode">{{ currentTheme }}</span></span
+        >
         <button id="btn-light" @click="currentTheme = 'light'">Light</button>
         <button id="btn-dark" @click="currentTheme = 'dark'">Dark</button>
         <button id="btn-auto" @click="currentTheme = 'auto'">Auto</button>
-        <span class="meta">({{ effectiveTheme }})</span>
+        <span class="meta"
+          >(<span id="effective-theme">{{ effectiveTheme }}</span
+          >)</span
+        >
       </div>
       <div class="control-row">
         <span>Physical echo:</span>
