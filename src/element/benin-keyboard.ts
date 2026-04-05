@@ -19,6 +19,10 @@ import { renderDesktopRows } from '../ui/desktop/rows.js';
 import { createDesktopState } from '../ui/state/desktop-state.js';
 import { mapPhysicalCodeToLogicalKey } from '../ui/desktop/physical-key-map.js';
 import { createFocusController } from '../ui/state/focus-controller.js';
+import { createMobileRenderModel } from '../ui/mobile/render-model.js';
+import { renderMobileRows } from '../ui/mobile/rows.js';
+import { renderLongPressPopup } from '../ui/mobile/long-press.js';
+import { createMobileState } from '../ui/mobile/mobile-state.js';
 
 /**
  * Per-layer key IDs follow the convention: base = `key-{name}`, shift = `key-{name}-shift`, altGr = `key-{name}-altgr`.
@@ -51,6 +55,10 @@ export class BeninKeyboard extends LitElement {
 
   private _themeManager!: ThemeManager;
   private readonly _desktopState = createDesktopState();
+  private readonly _mobileState = createMobileState();
+  private _resizeObserver: ResizeObserver | null = null;
+  private _longPressAnchorX = 0;
+  private _touchStartKeyId: KeyId | null = null;
   private _resolvedLayout: ResolvedLayout | null = null;
   private _dataLoadPromise: Promise<void> | undefined;
   private _layoutKey = '';
@@ -288,10 +296,15 @@ export class BeninKeyboard extends LitElement {
     this._applyTheme(this._themeManager.effectiveTheme);
     window.addEventListener('keydown', this._handleKeydown);
     window.addEventListener('keyup', this._handleKeyup);
+    if (this.layoutVariant.startsWith('mobile-')) {
+      this._startResizeObserver();
+    }
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this._resizeObserver?.disconnect();
+    this._resizeObserver = null;
     this._themeManager.destroy();
     window.removeEventListener('keydown', this._handleKeydown);
     window.removeEventListener('keyup', this._handleKeyup);
@@ -336,6 +349,14 @@ export class BeninKeyboard extends LitElement {
     if (changedProperties.has('theme')) {
       this._themeManager.theme = this.theme;
     }
+    if (changedProperties.has('layoutVariant')) {
+      if (this.layoutVariant.startsWith('mobile-')) {
+        this._startResizeObserver();
+      } else {
+        this._resizeObserver?.disconnect();
+        this._resizeObserver = null;
+      }
+    }
     this._syncDomFocus();
   }
 
@@ -367,6 +388,27 @@ export class BeninKeyboard extends LitElement {
     );
   }
 
+  private _bucketFromWidth(width: number): 'xs' | 'sm' | 'md' {
+    if (width < 375) return 'xs';
+    if (width < 768) return 'sm';
+    return 'md';
+  }
+
+  private _startResizeObserver(): void {
+    if (this._resizeObserver) return;
+    this._resizeObserver = new ResizeObserver((entries) => {
+      const width = entries[0]?.contentRect.width ?? 0;
+      const bucket = this._bucketFromWidth(width);
+      this._mobileState.setWidthBucket(bucket);
+      this.dataset['bucket'] = bucket;
+      this.requestUpdate();
+    });
+    this.updateComplete.then(() => {
+      const container = this.shadowRoot?.querySelector('.bboard-mobile-keyboard');
+      if (container) this._resizeObserver?.observe(container);
+    });
+  }
+
   private _activateKey(keyId: KeyId): void {
     if (!this._resolvedLayout) return;
     const snapshot = this._desktopState.snapshot();
@@ -391,6 +433,29 @@ export class BeninKeyboard extends LitElement {
     } else if (keyId === altGrKey) {
       const newLayer: LayerId = snapshot.activeLayer === 'altGr' ? 'base' : 'altGr';
       this._desktopState.setActiveLayer(newLayer);
+    }
+  }
+
+  private _activateMobileKey(keyId: KeyId): void {
+    if (!this._resolvedLayout) return;
+    const snap = this._mobileState.snapshot();
+    const resolvedKey =
+      this._resolvedLayout.keyMap.get(keyId) ??
+      this._resolvedLayout.keyMap.get(keyId.replace(/-(shift|altgr|altGr)$/, '') as KeyId);
+    const effectiveLayer: LayerId = keyId.endsWith('-shift')
+      ? 'shift'
+      : keyId.endsWith('-altgr') || keyId.endsWith('-altGr')
+        ? 'altGr'
+        : snap.activeLayer;
+    const char = resolvedKey?.layers[effectiveLayer]?.char ?? '';
+
+    dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char });
+
+    const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snap.activeLayer);
+    if (keyId === shiftKey || keyId === shiftRightKey) {
+      this._mobileState.setActiveLayer(snap.activeLayer === 'shift' ? 'base' : 'shift');
+    } else if (keyId === altGrKey) {
+      this._mobileState.setActiveLayer(snap.activeLayer === 'altGr' ? 'base' : 'altGr');
     }
   }
 
@@ -486,6 +551,88 @@ export class BeninKeyboard extends LitElement {
     this.requestUpdate();
   };
 
+  private _handleTouchStart = (e: TouchEvent) => {
+    const target = (e.target as HTMLElement).closest('[data-key-id]') as HTMLElement | null;
+    if (!target) return;
+    const keyId = target.getAttribute('data-key-id') as KeyId | null;
+    if (!keyId) return;
+
+    this._touchStartKeyId = keyId;
+
+    const rect = target.getBoundingClientRect();
+    const containerRect = this.shadowRoot
+      ?.querySelector('.bboard-mobile-keyboard')
+      ?.getBoundingClientRect();
+    this._longPressAnchorX = containerRect
+      ? rect.left - containerRect.left + rect.width / 2
+      : rect.left + rect.width / 2;
+
+    this._mobileState.startLongPress(keyId, () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (navigator as any).vibrate?.(10);
+      this._mobileState.setLongPressVisible(true);
+      this.requestUpdate();
+    });
+  };
+
+  private _handleTouchMove = (e: TouchEvent) => {
+    const snap = this._mobileState.snapshot();
+    if (!snap.longPressVisible || !snap.longPressKeyId) return;
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    if (!touch) return;
+    const popup = this.shadowRoot?.querySelector('.bboard-long-press-popup');
+    if (!popup) return;
+
+    const items = popup.querySelectorAll('[data-index]');
+    let closestIndex = snap.longPressSelectedIndex;
+    let closestDist = Infinity;
+    items.forEach((item) => {
+      const r = item.getBoundingClientRect();
+      const centerX = r.left + r.width / 2;
+      const dist = Math.abs(touch.clientX - centerX);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIndex = Number(item.getAttribute('data-index') ?? 0);
+      }
+    });
+    this._mobileState.setLongPressSelectedIndex(closestIndex);
+    this.requestUpdate();
+  };
+
+  private _handleTouchEnd = () => {
+    const snap = this._mobileState.snapshot();
+    if (snap.longPressVisible && snap.longPressKeyId !== null) {
+      const resolvedKey = this._resolvedLayout?.keyMap.get(snap.longPressKeyId);
+      if (resolvedKey?.longPress?.length) {
+        const safeIndex = Math.max(
+          0,
+          Math.min(snap.longPressSelectedIndex, resolvedKey.longPress.length - 1)
+        );
+        const char = resolvedKey.longPress[safeIndex] ?? '';
+        dispatchBBoardEvent(this, 'bboard-key-press', { keyId: snap.longPressKeyId, char });
+      }
+      this._mobileState.dismissLongPress();
+      this._touchStartKeyId = null;
+      this.requestUpdate();
+      return;
+    }
+    this._mobileState.cancelLongPress();
+    const keyId = this._touchStartKeyId;
+    this._touchStartKeyId = null;
+    if (keyId) {
+      this._activateMobileKey(keyId);
+      this.requestUpdate();
+    }
+  };
+
+  private _handleTouchCancel = () => {
+    this._mobileState.cancelLongPress();
+    this._touchStartKeyId = null;
+    this.requestUpdate();
+  };
+
   render() {
     if (!this.open) {
       return html``;
@@ -500,6 +647,42 @@ export class BeninKeyboard extends LitElement {
     }
 
     const snapshot = this._desktopState.snapshot();
+
+    // ── Mobile branch ────────────────────────────────────────────────────
+    if (this.layoutVariant.startsWith('mobile-')) {
+      const snap = this._mobileState.snapshot();
+      const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snap.activeLayer);
+      const activeModifierKeyIds = new Set<KeyId>();
+      if (snap.activeLayer === 'shift') {
+        activeModifierKeyIds.add(shiftKey);
+        activeModifierKeyIds.add(shiftRightKey);
+      } else if (snap.activeLayer === 'altGr') {
+        activeModifierKeyIds.add(altGrKey);
+      }
+
+      const model = createMobileRenderModel(this._resolvedLayout, {
+        ...snap,
+        activeModifierKeyIds,
+      });
+
+      return html`
+        <div
+          class="bboard-mobile-keyboard"
+          role="group"
+          aria-label="Clavier virtuel"
+          style="--lp-anchor-x:${this._longPressAnchorX}px;"
+          @touchstart=${this._handleTouchStart}
+          @touchmove=${this._handleTouchMove}
+          @touchend=${this._handleTouchEnd}
+          @touchcancel=${this._handleTouchCancel}
+        >
+          ${renderMobileRows(model.rows)}
+          ${model.longPressPopup ? renderLongPressPopup(model.longPressPopup) : null}
+        </div>
+      `;
+    }
+
+    // ── Desktop branch (existing code below, unchanged) ──────────────────
     const heldKeyIds: Set<string> = new Set();
     for (const code of snapshot.heldPhysicalKeys) {
       const keyId = mapPhysicalCodeToLogicalKey(code);
