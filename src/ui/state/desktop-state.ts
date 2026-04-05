@@ -27,6 +27,9 @@ export function createDesktopState() {
       next.delete(code);
       heldPhysicalKeys = next;
     },
+    clearHeldPhysicalKeys() {
+      heldPhysicalKeys = new Set();
+    },
     setFocusedKey(keyId: KeyId | null) {
       focusedKeyId = keyId;
     },
