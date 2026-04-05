@@ -156,3 +156,17 @@ describe('createLayoutResolver — cache management', () => {
     expect(r1Again).not.toBe(r1);
   });
 });
+
+describe('yoruba.json longPress data', () => {
+  it('key-a has longPress alternates', async () => {
+    const { default: raw } = await import('../../data/languages/yoruba.json');
+    const entry = (raw as any).characters.find((c: any) => c.keyId === 'key-a');
+    expect(entry?.longPress).toEqual(['à', 'á']);
+  });
+
+  it('key-e has longPress alternates including ẹ', async () => {
+    const { default: raw } = await import('../../data/languages/yoruba.json');
+    const entry = (raw as any).characters.find((c: any) => c.keyId === 'key-e');
+    expect(entry?.longPress).toEqual(['è', 'é', 'ẹ']);
+  });
+});
