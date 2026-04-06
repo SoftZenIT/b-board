@@ -4,6 +4,7 @@
 
 export * from './types.js';
 export * from './events.types.js';
+export { ErrorCode, RECOVERY_SUGGESTIONS, RECOVERABLE_CODES } from './error-codes.js';
 
 // Core public interfaces
 export { createKeyboardEngine } from '../core/engine.js';

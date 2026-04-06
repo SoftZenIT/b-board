@@ -14,7 +14,12 @@ describe('Public Event Types', () => {
     const langDetail: BBoardLanguageChangeEventDetail = { languageId: 'yoruba' };
     expect(langDetail.languageId).toBe('yoruba');
 
-    const errDetail: BBoardErrorEventDetail = { severity: 'recoverable', message: 'test' };
+    const errDetail: BBoardErrorEventDetail = {
+      code: 'UNKNOWN_ERROR' as never,
+      severity: 'recoverable',
+      message: 'test',
+      recoverySuggestion: 'Check the browser console for details.',
+    };
     expect(errDetail.severity).toBe('recoverable');
   });
 });

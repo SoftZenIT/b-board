@@ -1,5 +1,11 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { createErrorHandler } from './error-handler.js';
+import { createErrorHandler, ErrorCode } from './error-handler.js';
+import { RECOVERY_SUGGESTIONS } from '../../public/error-codes.js';
+import { DataLoaderError } from '../../data/loader.js';
+import { ValidationError } from '../../data/_internal/validator.js';
+import { IntegrityError } from '../../data/_internal/integrity-checker.js';
+import { StateTransitionError } from './state-machine.js';
+import { InvariantViolationError } from './invariants.js';
 
 describe('createErrorHandler', () => {
   const originalNodeEnv = process.env['NODE_ENV'];
@@ -100,5 +106,99 @@ describe('createErrorHandler', () => {
     const ke = handler.handle(new Error('x'), 'unknown');
 
     expect(handler.isRecoverable(ke)).toBe(false);
+  });
+
+  describe('ErrorCode classification', () => {
+    it('every ErrorCode has a recovery suggestion', () => {
+      for (const code of Object.values(ErrorCode)) {
+        expect(RECOVERY_SUGGESTIONS[code]).toBeTruthy();
+      }
+    });
+
+    it('handle() assigns an ErrorCode to every KeyboardError', () => {
+      const handler = createErrorHandler();
+      const ke = handler.handle(new Error('x'));
+      expect(ke.code).toBeDefined();
+      expect(Object.values(ErrorCode)).toContain(ke.code);
+    });
+
+    it('classifies DataLoaderError with "HTTP" as HTTP_ERROR (recoverable)', () => {
+      const handler = createErrorHandler();
+      const err = new DataLoaderError("[DataLoader] HTTP 503 loading 'data/layouts/desktop.json'");
+      const { code, severity } = handler.classifyError(err);
+      expect(code).toBe(ErrorCode.HTTP_ERROR);
+      expect(severity).toBe('recoverable');
+    });
+
+    it('classifies DataLoaderError with "not found" as DATA_NOT_FOUND (fatal)', () => {
+      const handler = createErrorHandler();
+      const err = new DataLoaderError("[DataLoader] File not found in bundle: 'missing.json'");
+      const { code, severity } = handler.classifyError(err);
+      expect(code).toBe(ErrorCode.DATA_NOT_FOUND);
+      expect(severity).toBe('fatal');
+    });
+
+    it('classifies DataLoaderError with network message as NETWORK_ERROR (recoverable)', () => {
+      const handler = createErrorHandler();
+      const err = new DataLoaderError(
+        "[DataLoader] Network error loading 'data/foo.json': Failed to fetch"
+      );
+      const { code, severity } = handler.classifyError(err);
+      expect(code).toBe(ErrorCode.NETWORK_ERROR);
+      expect(severity).toBe('recoverable');
+    });
+
+    it('classifies ValidationError as SCHEMA_VALIDATION (fatal)', () => {
+      const handler = createErrorHandler();
+      const err = new ValidationError('Invalid schema');
+      const { code, severity } = handler.classifyError(err);
+      expect(code).toBe(ErrorCode.SCHEMA_VALIDATION);
+      expect(severity).toBe('fatal');
+    });
+
+    it('classifies IntegrityError as INTEGRITY_CHECK (fatal)', () => {
+      const handler = createErrorHandler();
+      const err = new IntegrityError('Duplicate key');
+      const { code, severity } = handler.classifyError(err);
+      expect(code).toBe(ErrorCode.INTEGRITY_CHECK);
+      expect(severity).toBe('fatal');
+    });
+
+    it('classifies StateTransitionError as INVALID_TRANSITION (fatal)', () => {
+      const handler = createErrorHandler();
+      const err = new StateTransitionError('ready', 'initializing', 'not allowed');
+      const { code, severity } = handler.classifyError(err);
+      expect(code).toBe(ErrorCode.INVALID_TRANSITION);
+      expect(severity).toBe('fatal');
+    });
+
+    it('classifies InvariantViolationError as INVARIANT_VIOLATION (fatal)', () => {
+      const handler = createErrorHandler();
+      const err = new InvariantViolationError(1, 'invariant check failed');
+      const { code, severity } = handler.classifyError(err);
+      expect(code).toBe(ErrorCode.INVARIANT_VIOLATION);
+      expect(severity).toBe('fatal');
+    });
+
+    it('classifies unknown errors as UNKNOWN_ERROR (recoverable)', () => {
+      const handler = createErrorHandler();
+      const { code, severity } = handler.classifyError({ random: 'obj' });
+      expect(code).toBe(ErrorCode.UNKNOWN_ERROR);
+      expect(severity).toBe('recoverable');
+    });
+
+    it('handle() without severity override uses auto-classified severity', () => {
+      const handler = createErrorHandler();
+      const ke = handler.handle(new DataLoaderError('[DataLoader] Network error'));
+      expect(ke.severity).toBe('recoverable');
+      expect(ke.code).toBe(ErrorCode.NETWORK_ERROR);
+    });
+
+    it('handle() with severity override uses the override', () => {
+      const handler = createErrorHandler();
+      const ke = handler.handle(new DataLoaderError('[DataLoader] Network error'), 'fatal');
+      expect(ke.severity).toBe('fatal');
+      expect(ke.code).toBe(ErrorCode.NETWORK_ERROR);
+    });
   });
 });
