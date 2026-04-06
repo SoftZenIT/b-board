@@ -30,3 +30,4 @@ examples/*/node_modules
 examples/*/dist
 examples/*/playwright-report
 examples/*/test-results
+todo-notes.txt
