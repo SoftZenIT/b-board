@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { dispatchBBoardEvent } from './events.js';
+import { ErrorCode } from '../public/error-codes.js';
 
 describe('Event Emitter', () => {
   it('dispatches bboard-ready event', () => {
@@ -34,7 +35,7 @@ describe('Event Emitter', () => {
     el.addEventListener('bboard-error', listener);
 
     dispatchBBoardEvent(el, 'bboard-error', {
-      code: 'UNKNOWN_ERROR' as never,
+      code: ErrorCode.UNKNOWN_ERROR,
       severity: 'fatal',
       message: 'Test error',
       recoverySuggestion: 'Check the browser console for details.',

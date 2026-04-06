@@ -23,8 +23,8 @@ describe('ErrorCode public API', () => {
     expect(RECOVERABLE_CODES.has(ErrorCode.DATA_NOT_FOUND)).toBe(false);
   });
 
-  it('HTTP_ERROR is in RECOVERABLE_CODES', () => {
-    expect(RECOVERABLE_CODES.has(ErrorCode.HTTP_ERROR)).toBe(true);
+  it('HTTP_ERROR is NOT in RECOVERABLE_CODES (severity depends on status code)', () => {
+    expect(RECOVERABLE_CODES.has(ErrorCode.HTTP_ERROR)).toBe(false);
   });
 
   it('NETWORK_ERROR is in RECOVERABLE_CODES', () => {
