@@ -1,30 +1,6 @@
-import { html, type TemplateResult } from 'lit';
+import { html, nothing, type TemplateResult } from 'lit';
 import type { DesktopRenderKey } from './render-model.js';
-
-/**
- * Maps well-known action key IDs to human-readable accessible names.
- * Character keys fall back to their `primaryLabel`.
- */
-const KEY_ACCESSIBLE_LABELS: Readonly<Record<string, string>> = {
-  'key-backspace': 'Backspace',
-  'key-tab': 'Tab',
-  'key-capslock': 'Caps Lock',
-  'key-enter': 'Enter',
-  'key-shift': 'Shift',
-  'key-shift-right': 'Shift',
-  'key-ctrl': 'Control',
-  'key-ctrl-right': 'Control',
-  'key-alt': 'Alt',
-  'key-altgr': 'AltGr',
-  'key-win': 'Meta',
-  'key-win-right': 'Meta',
-  'key-space': 'Space',
-  'key-escape': 'Escape',
-};
-
-function getAccessibleLabel(keyId: string, primaryLabel: string): string {
-  return KEY_ACCESSIBLE_LABELS[keyId] ?? primaryLabel;
-}
+import { getAccessibleLabel } from '../accessible-labels.js';
 
 export function renderDesktopKey(key: DesktopRenderKey): TemplateResult | null {
   if (key.hidden) return null;
@@ -44,7 +20,7 @@ export function renderDesktopKey(key: DesktopRenderKey): TemplateResult | null {
       style="--bboard-key-width-multiplier:${key.width};"
       data-key-id=${key.keyId}
       aria-label=${getAccessibleLabel(key.keyId, key.primaryLabel)}
-      aria-pressed=${key.active}
+      aria-pressed=${key.isToggle ? key.active : nothing}
       ?disabled=${key.disabled}
       tabindex=${key.tabStop ? 0 : -1}
     >

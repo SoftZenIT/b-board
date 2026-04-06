@@ -1,5 +1,6 @@
-import { html, type TemplateResult } from 'lit';
+import { html, nothing, type TemplateResult } from 'lit';
 import type { MobileRenderKey } from './render-model.js';
+import { getAccessibleLabel } from '../accessible-labels.js';
 
 export function renderMobileKey(key: MobileRenderKey): TemplateResult | null {
   if (key.hidden) return null;
@@ -21,8 +22,8 @@ export function renderMobileKey(key: MobileRenderKey): TemplateResult | null {
       data-key-id=${key.keyId}
       data-thumb-comfort=${key.thumbComfort}
       ?data-has-long-press=${key.hasLongPress}
-      aria-label=${key.primaryLabel}
-      aria-pressed=${key.active}
+      aria-label=${getAccessibleLabel(key.keyId, key.primaryLabel)}
+      aria-pressed=${key.isToggle ? key.active : nothing}
       aria-haspopup=${key.hasLongPress ? 'listbox' : 'false'}
       ?disabled=${key.disabled}
       tabindex=${key.tabStop ? 0 : -1}

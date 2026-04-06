@@ -15,6 +15,7 @@ describe('renderDesktopKey', () => {
       focused: false,
       active: false,
       tabStop: true,
+      isToggle: false,
     });
     expect(String((result as TemplateResult).strings?.[0] ?? '')).toContain('bboard-key');
   });
@@ -30,6 +31,7 @@ describe('renderDesktopKey', () => {
       focused: false,
       active: false,
       tabStop: false,
+      isToggle: false,
     });
     expect(result).toBeNull();
   });
@@ -45,6 +47,7 @@ describe('renderDesktopKey', () => {
       focused: false,
       active: true,
       tabStop: false,
+      isToggle: false,
     }) as TemplateResult;
     // The active class is dynamic — check via the values array
     expect(result.values).toContain('bboard-key-character is-active');
@@ -62,6 +65,7 @@ describe('renderDesktopKey', () => {
       focused: false,
       active: false,
       tabStop: true,
+      isToggle: false,
     }) as TemplateResult;
     // aria-label should be the accessible name "Enter", not the icon glyph "⏎"
     expect(result.values).toContain('Enter');
@@ -78,6 +82,7 @@ describe('renderDesktopKey', () => {
       focused: false,
       active: false,
       tabStop: true,
+      isToggle: false,
     }) as TemplateResult;
     expect(result.values).toContain('a');
   });
@@ -94,6 +99,7 @@ describe('renderDesktopKey', () => {
       focused: false,
       active: false,
       tabStop: false,
+      isToggle: true,
     }) as TemplateResult;
     // aria-label should be "Shift", not "⇧"
     expect(result.values).toContain('Shift');

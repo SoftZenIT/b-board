@@ -15,6 +15,7 @@ function makeKey(overrides: Partial<MobileRenderKey> = {}): MobileRenderKey {
     tabStop: true,
     thumbComfort: 'medium',
     isActionKey: false,
+    isToggle: false,
     hasLongPress: true,
     longPressChars: ['à', 'á'],
     ...overrides,
@@ -88,10 +89,19 @@ describe('renderMobileKey', () => {
     expect(container.querySelector('button')!.getAttribute('aria-label')).toBe('a');
   });
 
-  it('sets aria-pressed based on active state', () => {
+  it('sets aria-pressed based on active state for toggle keys', () => {
     const container = document.createElement('div');
-    render(renderMobileKey(makeKey({ active: true }))!, container);
+    render(
+      renderMobileKey(makeKey({ keyId: createKeyId('key-shift'), active: true, isToggle: true }))!,
+      container
+    );
     expect(container.querySelector('button')!.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('omits aria-pressed on non-toggle keys', () => {
+    const container = document.createElement('div');
+    render(renderMobileKey(makeKey({ active: true, isToggle: false }))!, container);
+    expect(container.querySelector('button')!.hasAttribute('aria-pressed')).toBe(false);
   });
 
   it('sets aria-haspopup=listbox when hasLongPress is true', () => {
