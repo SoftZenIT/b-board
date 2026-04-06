@@ -4,6 +4,7 @@ import type {
   BBoardLanguageChangeEventDetail,
   BBoardErrorEventDetail,
 } from '@/public/events.types.js';
+import { ErrorCode } from '@/public/error-codes.js';
 
 describe('Public Event Types', () => {
   it('types are importable and structured correctly', () => {
@@ -15,7 +16,7 @@ describe('Public Event Types', () => {
     expect(langDetail.languageId).toBe('yoruba');
 
     const errDetail: BBoardErrorEventDetail = {
-      code: 'UNKNOWN_ERROR' as never,
+      code: ErrorCode.UNKNOWN_ERROR,
       severity: 'recoverable',
       message: 'test',
       recoverySuggestion: 'Check the browser console for details.',

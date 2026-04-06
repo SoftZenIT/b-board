@@ -123,13 +123,15 @@ interface BBoardErrorEventDetail {
 
 | Error class                                      | ErrorCode             | Severity    |
 | ------------------------------------------------ | --------------------- | ----------- |
-| `DataLoaderError` (message contains "HTTP")      | `HTTP_ERROR`          | Recoverable |
+| `DataLoaderError` (HTTP 4xx)                     | `HTTP_ERROR`          | Fatal       |
+| `DataLoaderError` (HTTP 5xx+)                    | `HTTP_ERROR`          | Recoverable |
 | `DataLoaderError` (message contains "not found") | `DATA_NOT_FOUND`      | Fatal       |
 | `DataLoaderError` (other)                        | `NETWORK_ERROR`       | Recoverable |
 | `ValidationError`                                | `SCHEMA_VALIDATION`   | Fatal       |
 | `IntegrityError`                                 | `INTEGRITY_CHECK`     | Fatal       |
 | `StateTransitionError`                           | `INVALID_TRANSITION`  | Fatal       |
 | `InvariantViolationError`                        | `INVARIANT_VIOLATION` | Fatal       |
+| `SyntaxError` (JSON parse failure)               | `PARSE_ERROR`         | Fatal       |
 | Unknown / other                                  | `UNKNOWN_ERROR`       | Recoverable |
 
 > **Note:** The `engine.handleError()` method always passes `severity: 'recoverable'` as an override, meaning errors during `initialize()` are always treated as recoverable regardless of their auto-classified severity.
