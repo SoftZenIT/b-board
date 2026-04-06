@@ -324,7 +324,6 @@ export class BeninKeyboard extends LitElement {
       }
     }
 
-<<<<<<< HEAD
     /* ── Error banner ──────────────────────────────────────────────── */
 
     .bboard-error-banner {
