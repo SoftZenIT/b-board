@@ -26,3 +26,7 @@ test-results/
 playwright-report/
 .superpowers/
 docs/superpowers/
+examples/*/node_modules
+examples/*/dist
+examples/*/playwright-report
+examples/*/test-results
