@@ -12,7 +12,7 @@ The primary trust boundary lies between the `OperationDispatcher` (trusted inter
 
 1. **Spoofing:** (Low Risk) The keyboard does not handle authentication.
 2. **Tampering:** (High Risk) Malicious scripts modifying the internal state or the target element directly to bypass validation.
-   - _Mitigation:_ `TargetValidator` strictly verifies element state (`readonly`, `disabled`) before _every_ operation.
+   - _Mitigation:_ `TargetValidation` strictly verifies element state (`readonly`, `disabled`), and the `InsertionPipeline` performs those checks before applying each operation.
 3. **Repudiation:** (N/A) Logging of keystrokes is explicitly avoided for privacy.
 4. **Information Disclosure:** (Medium Risk) Keyloggers intercepting custom events.
    - _Mitigation:_ Event payloads contain only necessary state, avoiding exposing full buffered input histories where possible.
