@@ -33,6 +33,7 @@ import {
   type ErrorHandler,
   type KeyboardError,
 } from '../core/_internal/error-handler.js';
+import { validateBrowser, supportsResizeObserver } from '../core/_internal/browser-compat.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -71,6 +72,7 @@ export class BeninKeyboard extends LitElement {
   private readonly _desktopState = createDesktopState();
   private readonly _mobileState = createMobileState();
   private _resizeObserver: ResizeObserver | null = null;
+  private _resizeFallbackHandler: (() => void) | null = null;
   private _longPressAnchorX = 0;
   private _touchStartKeyId: KeyId | null = null;
   private _resolvedLayout: ResolvedLayout | null = null;
@@ -386,6 +388,21 @@ export class BeninKeyboard extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+
+    // Browser compatibility check — emits errors for missing APIs
+    const compatErrors = validateBrowser();
+    for (const ke of compatErrors) {
+      if (ke.severity === 'fatal') {
+        this._errorState = ke;
+        logger.error(ke.message);
+        this._emitErrorEvent(ke);
+        return; // Stop initialization — core APIs missing
+      }
+      // Log recoverable issues but continue
+      logger.error(ke.message);
+      this._emitErrorEvent(ke);
+    }
+
     this._applyTheme(this._themeManager.effectiveTheme);
     window.addEventListener('keydown', this._handleKeydown);
     window.addEventListener('keyup', this._handleKeyup);
@@ -399,6 +416,10 @@ export class BeninKeyboard extends LitElement {
     super.disconnectedCallback();
     this._resizeObserver?.disconnect();
     this._resizeObserver = null;
+    if (this._resizeFallbackHandler) {
+      window.removeEventListener('resize', this._resizeFallbackHandler);
+      this._resizeFallbackHandler = null;
+    }
     this._themeManager.destroy();
     window.removeEventListener('keydown', this._handleKeydown);
     window.removeEventListener('keyup', this._handleKeyup);
@@ -561,18 +582,37 @@ export class BeninKeyboard extends LitElement {
   }
 
   private _startResizeObserver(): void {
-    if (this._resizeObserver) return;
-    this._resizeObserver = new ResizeObserver((entries) => {
-      const width = entries[0]?.contentRect.width ?? 0;
-      const bucket = this._bucketFromWidth(width);
-      this._mobileState.setWidthBucket(bucket);
-      this.dataset['bucket'] = bucket;
-      this.requestUpdate();
-    });
-    this.updateComplete.then(() => {
-      const container = this.shadowRoot?.querySelector('.bboard-mobile-keyboard');
-      if (container) this._resizeObserver?.observe(container);
-    });
+    if (this._resizeObserver || this._resizeFallbackHandler) return;
+
+    if (supportsResizeObserver()) {
+      this._resizeObserver = new ResizeObserver((entries) => {
+        const width = entries[0]?.contentRect.width ?? 0;
+        const bucket = this._bucketFromWidth(width);
+        this._mobileState.setWidthBucket(bucket);
+        this.dataset['bucket'] = bucket;
+        this.requestUpdate();
+      });
+      this.updateComplete.then(() => {
+        const container = this.shadowRoot?.querySelector('.bboard-mobile-keyboard');
+        if (container) this._resizeObserver?.observe(container);
+      });
+    } else {
+      // Fallback: debounced window resize listener
+      let timer: ReturnType<typeof setTimeout> | null = null;
+      this._resizeFallbackHandler = () => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+          const width = this.clientWidth;
+          const bucket = this._bucketFromWidth(width);
+          this._mobileState.setWidthBucket(bucket);
+          this.dataset['bucket'] = bucket;
+          this.requestUpdate();
+        }, 100);
+      };
+      window.addEventListener('resize', this._resizeFallbackHandler);
+      // Trigger initial measurement
+      this._resizeFallbackHandler();
+    }
   }
 
   private _activateKey(keyId: KeyId): void {
