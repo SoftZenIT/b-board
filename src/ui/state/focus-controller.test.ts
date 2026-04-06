@@ -31,5 +31,17 @@ describe('createFocusController', () => {
     const controller = createFocusController([[createKeyId('key-a')]]);
     expect(controller.move('arrow-right', createKeyId('key-a'))).toBe(createKeyId('key-a'));
     expect(controller.move('arrow-up', createKeyId('key-a'))).toBe(createKeyId('key-a'));
+    expect(controller.move('arrow-left', createKeyId('key-a'))).toBe(createKeyId('key-a'));
+  });
+
+  it('should shift-tab from null to last key', () => {
+    const controller = createFocusController([[createKeyId('key-a'), createKeyId('key-z')]]);
+    expect(controller.move('shift-tab', null)).toBe(createKeyId('key-z'));
+  });
+
+  it('should shift-tab backwards through keys and wrap to last', () => {
+    const controller = createFocusController([[createKeyId('key-a'), createKeyId('key-z')]]);
+    expect(controller.move('shift-tab', createKeyId('key-z'))).toBe(createKeyId('key-a'));
+    expect(controller.move('shift-tab', createKeyId('key-a'))).toBe(createKeyId('key-z'));
   });
 });
