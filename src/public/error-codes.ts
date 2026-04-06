@@ -70,7 +70,6 @@ export const RECOVERY_SUGGESTIONS: Readonly<Record<ErrorCode, string>> = {
  */
 export const RECOVERABLE_CODES: ReadonlySet<ErrorCode> = new Set([
   ErrorCode.NETWORK_ERROR,
-  ErrorCode.HTTP_ERROR,
   ErrorCode.RENDER_ERROR,
   ErrorCode.EVENT_DISPATCH_ERROR,
   ErrorCode.COMPOSITION_ERROR,

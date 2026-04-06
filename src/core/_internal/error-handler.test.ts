@@ -122,12 +122,20 @@ describe('createErrorHandler', () => {
       expect(Object.values(ErrorCode)).toContain(ke.code);
     });
 
-    it('classifies DataLoaderError with "HTTP" as HTTP_ERROR (recoverable)', () => {
+    it('classifies DataLoaderError with HTTP 5xx as HTTP_ERROR (recoverable)', () => {
       const handler = createErrorHandler();
       const err = new DataLoaderError("[DataLoader] HTTP 503 loading 'data/layouts/desktop.json'");
       const { code, severity } = handler.classifyError(err);
       expect(code).toBe(ErrorCode.HTTP_ERROR);
       expect(severity).toBe('recoverable');
+    });
+
+    it('classifies DataLoaderError with HTTP 4xx as HTTP_ERROR (fatal)', () => {
+      const handler = createErrorHandler();
+      const err = new DataLoaderError("[DataLoader] HTTP 404 loading 'data/layouts/desktop.json'");
+      const { code, severity } = handler.classifyError(err);
+      expect(code).toBe(ErrorCode.HTTP_ERROR);
+      expect(severity).toBe('fatal');
     });
 
     it('classifies DataLoaderError with "not found" as DATA_NOT_FOUND (fatal)', () => {
@@ -185,6 +193,14 @@ describe('createErrorHandler', () => {
       const { code, severity } = handler.classifyError({ random: 'obj' });
       expect(code).toBe(ErrorCode.UNKNOWN_ERROR);
       expect(severity).toBe('recoverable');
+    });
+
+    it('classifies SyntaxError as PARSE_ERROR (fatal)', () => {
+      const handler = createErrorHandler();
+      const err = new SyntaxError('Unexpected token < in JSON at position 0');
+      const { code, severity } = handler.classifyError(err);
+      expect(code).toBe(ErrorCode.PARSE_ERROR);
+      expect(severity).toBe('fatal');
     });
 
     it('handle() without severity override uses auto-classified severity', () => {

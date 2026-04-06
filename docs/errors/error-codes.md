@@ -10,23 +10,23 @@ Every error emitted by `<benin-keyboard>` carries an `ErrorCode` that identifies
 
 ## Error Code Table
 
-| Code                   | Category     | Severity    | Description                                |
-| ---------------------- | ------------ | ----------- | ------------------------------------------ |
-| `NETWORK_ERROR`        | Data Loading | Recoverable | Fetch failed — no response from the server |
-| `HTTP_ERROR`           | Data Loading | Recoverable | Server responded with a non-2xx status     |
-| `DATA_NOT_FOUND`       | Data Loading | Fatal       | Requested data file does not exist         |
-| `PARSE_ERROR`          | Data Loading | Fatal       | Data file contains invalid JSON            |
-| `SCHEMA_VALIDATION`    | Validation   | Fatal       | Data does not match the expected schema    |
-| `INTEGRITY_CHECK`      | Validation   | Fatal       | Cross-file consistency check failed        |
-| `INVALID_LANGUAGE`     | Validation   | Fatal       | Language ID is not registered              |
-| `INVALID_LAYOUT`       | Validation   | Fatal       | Layout variant is not registered           |
-| `INVALID_TRANSITION`   | State        | Fatal       | Invalid state machine transition attempted |
-| `INVARIANT_VIOLATION`  | State        | Fatal       | Internal invariant broken                  |
-| `COMPOSITION_ERROR`    | Composition  | Recoverable | Composition rule evaluation failed         |
-| `INVALID_OPERATION`    | Composition  | Fatal       | Malformed input operation                  |
-| `RENDER_ERROR`         | Runtime      | Recoverable | Keyboard failed to render                  |
-| `EVENT_DISPATCH_ERROR` | Runtime      | Recoverable | An event listener threw                    |
-| `UNKNOWN_ERROR`        | Runtime      | Recoverable | Unrecognized error                         |
+| Code                   | Category     | Severity                    | Description                                |
+| ---------------------- | ------------ | --------------------------- | ------------------------------------------ |
+| `NETWORK_ERROR`        | Data Loading | Recoverable                 | Fetch failed — no response from the server |
+| `HTTP_ERROR`           | Data Loading | 4xx Fatal / 5xx Recoverable | Server responded with a non-2xx status     |
+| `DATA_NOT_FOUND`       | Data Loading | Fatal                       | Requested data file does not exist         |
+| `PARSE_ERROR`          | Data Loading | Fatal                       | Data file contains invalid JSON            |
+| `SCHEMA_VALIDATION`    | Validation   | Fatal                       | Data does not match the expected schema    |
+| `INTEGRITY_CHECK`      | Validation   | Fatal                       | Cross-file consistency check failed        |
+| `INVALID_LANGUAGE`     | Validation   | Fatal                       | Language ID is not registered              |
+| `INVALID_LAYOUT`       | Validation   | Fatal                       | Layout variant is not registered           |
+| `INVALID_TRANSITION`   | State        | Fatal                       | Invalid state machine transition attempted |
+| `INVARIANT_VIOLATION`  | State        | Fatal                       | Internal invariant broken                  |
+| `COMPOSITION_ERROR`    | Composition  | Recoverable                 | Composition rule evaluation failed         |
+| `INVALID_OPERATION`    | Composition  | Fatal                       | Malformed input operation                  |
+| `RENDER_ERROR`         | Runtime      | Recoverable                 | Keyboard failed to render                  |
+| `EVENT_DISPATCH_ERROR` | Runtime      | Recoverable                 | An event listener threw                    |
+| `UNKNOWN_ERROR`        | Runtime      | Recoverable                 | Unrecognized error                         |
 
 ### Severity Levels
 

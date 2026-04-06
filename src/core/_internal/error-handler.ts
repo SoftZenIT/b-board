@@ -29,9 +29,16 @@ export interface ErrorHandler {
 function classifyErrorValue(error: unknown): { code: ErrorCode; severity: ErrorSeverity } {
   if (error instanceof DataLoaderError) {
     const msg = error.message;
-    if (msg.includes('HTTP')) return { code: ErrorCode.HTTP_ERROR, severity: 'recoverable' };
     if (msg.includes('not found') || msg.includes('File not found'))
       return { code: ErrorCode.DATA_NOT_FOUND, severity: 'fatal' };
+    // HTTP 4xx client errors are fatal (bad config); 5xx/other are recoverable
+    const httpMatch = msg.match(/HTTP (\d+)/);
+    if (httpMatch) {
+      const status = Number(httpMatch[1]);
+      return status >= 400 && status < 500
+        ? { code: ErrorCode.HTTP_ERROR, severity: 'fatal' }
+        : { code: ErrorCode.HTTP_ERROR, severity: 'recoverable' };
+    }
     return { code: ErrorCode.NETWORK_ERROR, severity: 'recoverable' };
   }
   if (error instanceof ValidationError) {
@@ -45,6 +52,10 @@ function classifyErrorValue(error: unknown): { code: ErrorCode; severity: ErrorS
   }
   if (error instanceof InvariantViolationError) {
     return { code: ErrorCode.INVARIANT_VIOLATION, severity: 'fatal' };
+  }
+  // JSON parse failures (TypeError from res.json()) and other unknowns
+  if (error instanceof SyntaxError) {
+    return { code: ErrorCode.PARSE_ERROR, severity: 'fatal' };
   }
   return { code: ErrorCode.UNKNOWN_ERROR, severity: 'recoverable' };
 }
