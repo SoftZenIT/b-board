@@ -1,5 +1,12 @@
 import type { KeyId, LayerId, ResolvedLayout } from '../../public/index.js';
 
+const TOGGLE_KEY_IDS: ReadonlySet<string> = new Set([
+  'key-shift',
+  'key-shift-right',
+  'key-altgr',
+  'key-capslock',
+]);
+
 export interface MobileRenderState {
   activeLayer: LayerId;
   hiddenKeys: ReadonlySet<KeyId>;
@@ -22,6 +29,7 @@ export interface MobileRenderKey {
   tabStop: boolean;
   thumbComfort: 'high' | 'medium' | 'low';
   isActionKey: boolean;
+  isToggle: boolean;
   hasLongPress: boolean;
   longPressChars: string[];
 }
@@ -117,6 +125,7 @@ export function createMobileRenderModel(
           tabStop,
           thumbComfort: thumbComfort(rowIndex),
           isActionKey: isActionKey(slot.keyId),
+          isToggle: TOGGLE_KEY_IDS.has(slot.keyId),
           hasLongPress: longPressChars.length > 0,
           longPressChars,
         };
