@@ -10,4 +10,6 @@ export type {
   CompositionSubstate,
 } from './substate.types.js';
 export type { LifecycleEventMap, LifecycleEventName, Unsubscribe } from './lifecycle.types.js';
-export type { KeyboardError, ErrorSeverity } from './_internal/error-handler.js';
+export type { KeyboardError, ErrorSeverity, ErrorHandler } from './_internal/error-handler.js';
+export { ErrorCode } from './_internal/error-handler.js';
+export { createErrorHandler } from './_internal/error-handler.js';

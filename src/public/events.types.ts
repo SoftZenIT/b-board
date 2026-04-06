@@ -1,4 +1,6 @@
-import type { KeyboardState, ErrorSeverity } from '../core/index.js';
+import type { KeyboardState } from '../core/index.js';
+import type { ErrorSeverity } from '../core/index.js';
+import type { ErrorCode } from './error-codes.js';
 
 export interface BBoardReadyEventDetail {
   readonly state: KeyboardState;
@@ -14,8 +16,11 @@ export interface BBoardThemeChangeEventDetail {
 }
 
 export interface BBoardErrorEventDetail {
+  readonly code: ErrorCode;
   readonly severity: ErrorSeverity;
   readonly message: string;
+  readonly recoverySuggestion: string;
+  readonly cause?: Error;
 }
 
 export interface BBoardKeyPressEventDetail {

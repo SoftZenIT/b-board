@@ -33,7 +33,12 @@ describe('Event Emitter', () => {
     const listener = vi.fn();
     el.addEventListener('bboard-error', listener);
 
-    dispatchBBoardEvent(el, 'bboard-error', { severity: 'fatal', message: 'Test error' });
+    dispatchBBoardEvent(el, 'bboard-error', {
+      code: 'UNKNOWN_ERROR' as never,
+      severity: 'fatal',
+      message: 'Test error',
+      recoverySuggestion: 'Check the browser console for details.',
+    });
 
     expect(listener).toHaveBeenCalled();
     const event = listener.mock.calls[0][0] as CustomEvent;

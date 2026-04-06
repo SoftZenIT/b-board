@@ -1,9 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createLifecycle } from './lifecycle.js';
 import type { KeyboardError } from './error-handler.js';
+import { ErrorCode } from './error-handler.js';
 import type { ReadySubstates } from '../substate.types.js';
 
-const ke: KeyboardError = { severity: 'recoverable', message: 'test' };
+const ke: KeyboardError = {
+  code: ErrorCode.UNKNOWN_ERROR,
+  severity: 'recoverable',
+  message: 'test',
+  suggestion: 'Check the browser console for details.',
+};
 
 const substates: ReadySubstates = {
   attachment: 'attached',
