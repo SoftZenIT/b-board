@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, html, css, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import {
   type LanguageId,
   type ThemeId,
@@ -28,6 +28,12 @@ import { createMobileRenderModel } from '../ui/mobile/render-model.js';
 import { renderMobileRows } from '../ui/mobile/rows.js';
 import { renderLongPressPopup } from '../ui/mobile/long-press.js';
 import { createMobileState } from '../ui/mobile/mobile-state.js';
+import {
+  createErrorHandler,
+  type ErrorHandler,
+  type KeyboardError,
+} from '../core/_internal/error-handler.js';
+import { logger } from '../utils/logger.js';
 
 /**
  * Per-layer key IDs follow the convention: base = `key-{name}`, shift = `key-{name}-shift`, altGr = `key-{name}-altgr`.
@@ -58,6 +64,9 @@ export class BeninKeyboard extends LitElement {
   @property({ type: String, attribute: 'modifier-display-mode' })
   modifierDisplayMode: ModifierDisplayMode = 'transition';
 
+  @state() private _errorState: KeyboardError | null = null;
+
+  private readonly _errorHandler: ErrorHandler = createErrorHandler();
   private readonly _themeManager!: ThemeManager;
   private readonly _desktopState = createDesktopState();
   private readonly _mobileState = createMobileState();
@@ -296,6 +305,74 @@ export class BeninKeyboard extends LitElement {
         animation: none !important;
       }
     }
+
+    /* ── Error banner ──────────────────────────────────────────────── */
+
+    .bboard-error-banner {
+      padding: 24px 20px;
+      border-radius: var(--bboard-size-radius-lg);
+      text-align: center;
+      font-family: var(--bboard-font-family);
+    }
+
+    .bboard-error-banner--warning {
+      background: #fef3cd;
+      color: #856404;
+      border: 1px solid #ffc107;
+    }
+
+    .bboard-error-banner--fatal {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .bboard-error-banner__message {
+      font-size: var(--bboard-font-size-base, 16px);
+      margin: 0 0 12px;
+    }
+
+    .bboard-error-banner__retry {
+      padding: 8px 20px;
+      border-radius: var(--bboard-size-radius-md);
+      border: 1px solid currentColor;
+      background: transparent;
+      color: inherit;
+      font-size: var(--bboard-font-size-sm, 14px);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .bboard-error-banner__retry:hover {
+      opacity: 0.8;
+    }
+
+    .bboard-error-banner__retry:focus-visible {
+      outline: 2px solid var(--bboard-color-focus-ring, #005fcc);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-contrast: more) {
+      .bboard-error-banner--warning {
+        background: #fff;
+        color: #000;
+        border: 2px solid #000;
+      }
+      .bboard-error-banner--fatal {
+        background: #fff;
+        color: #000;
+        border: 3px solid #000;
+      }
+    }
+
+    @media (forced-colors: active) {
+      .bboard-error-banner {
+        border: 2px solid ButtonText;
+      }
+      .bboard-error-banner__retry {
+        border: 1px solid ButtonText;
+      }
+    }
   `;
 
   constructor() {
@@ -338,10 +415,53 @@ export class BeninKeyboard extends LitElement {
     return super.scheduleUpdate();
   }
 
+  /** Retry loading after a recoverable error. Clears the error state and re-triggers layout loading. */
+  retry(): void {
+    if (!this._errorState) return;
+    if (!this._errorHandler.isRecoverable(this._errorState)) return;
+    this._errorState = null;
+    this._layoutKey = '';
+    this.requestUpdate();
+  }
+
   private async _loadLayout(expectedKey: string): Promise<void> {
     if (!isLayoutVariantId(this.layoutVariant) || !isLanguageId(this.language)) {
       return;
     }
+
+    this._errorState = null;
+
+    try {
+      const result = await this._tryLoadOnce(expectedKey);
+      if (result) return;
+    } catch (firstError) {
+      // Discard errors for superseded layout requests
+      if (this._layoutKey !== expectedKey) return;
+
+      if (!this._errorHandler.isRecoverable(this._errorHandler.handle(firstError))) {
+        this._handleFatalError(firstError);
+        return;
+      }
+
+      // Auto-retry once after 1s for recoverable errors
+      await new Promise((r) => setTimeout(r, 1000));
+
+      // Re-check staleness after delay
+      if (this._layoutKey !== expectedKey) return;
+
+      try {
+        const retryResult = await this._tryLoadOnce(expectedKey);
+        if (retryResult) return;
+      } catch (retryError) {
+        // Discard errors for superseded layout requests
+        if (this._layoutKey !== expectedKey) return;
+        this._handleRecoverableError(retryError);
+        return;
+      }
+    }
+  }
+
+  private async _tryLoadOnce(expectedKey: string): Promise<boolean> {
     const loader = createDataLoader();
     const [shape, profile, catalog] = await Promise.all([
       loader.loadLayoutShape(this.layoutVariant),
@@ -358,7 +478,33 @@ export class BeninKeyboard extends LitElement {
         this.language
       );
       this._compositionProcessor = createCompositionProcessor(this._resolvedLayout);
+      return true;
     }
+    return false;
+  }
+
+  private _handleRecoverableError(error: unknown): void {
+    const ke = this._errorHandler.handle(error);
+    this._errorState = ke;
+    logger.error(ke.message);
+    this._emitErrorEvent(ke);
+  }
+
+  private _handleFatalError(error: unknown): void {
+    const ke = this._errorHandler.handle(error, 'fatal');
+    this._errorState = ke;
+    logger.error(ke.message);
+    this._emitErrorEvent(ke);
+  }
+
+  private _emitErrorEvent(ke: KeyboardError): void {
+    dispatchBBoardEvent(this, 'bboard-error', {
+      code: ke.code,
+      severity: ke.severity,
+      message: ke.message,
+      recoverySuggestion: ke.suggestion,
+      ...(ke.cause instanceof Error && { cause: ke.cause }),
+    });
   }
 
   protected updated(changedProperties: Map<string | number | symbol, unknown>) {
@@ -706,6 +852,27 @@ export class BeninKeyboard extends LitElement {
     if (!this.open) {
       return html``;
     }
+
+    // ── Error banner (replaces the key grid) ────────────────────────────
+    if (this._errorState) {
+      const isRecoverable = this._errorHandler.isRecoverable(this._errorState);
+      const bannerClass = isRecoverable
+        ? 'bboard-error-banner--warning'
+        : 'bboard-error-banner--fatal';
+      const message = isRecoverable
+        ? 'Le clavier n\u2019a pas pu se charger.'
+        : 'Le clavier a rencontré une erreur critique.';
+
+      return html`<div class="bboard-error-banner ${bannerClass}" role="alert">
+        <p class="bboard-error-banner__message">${message}</p>
+        ${isRecoverable
+          ? html`<button class="bboard-error-banner__retry" @click=${() => this.retry()}>
+              Réessayer
+            </button>`
+          : nothing}
+      </div>`;
+    }
+
     if (this._resolvedLayout === null) {
       return html`<div
         class="keyboard-container"

@@ -8,11 +8,11 @@
 [Module] Action: detail
 ```
 
-| Part | Description | Example |
-|------|-------------|---------|
-| `[Module]` | PascalCase name of the module or error class | `[DataLoader]`, `[IntegrityError]` |
-| `Action` | What was attempted | `Failed to load`, `HTTP 404 loading` |
-| `detail` | Specific context — file, id, value | `'desktop-azerty': network timeout` |
+| Part       | Description                                  | Example                              |
+| ---------- | -------------------------------------------- | ------------------------------------ |
+| `[Module]` | PascalCase name of the module or error class | `[DataLoader]`, `[IntegrityError]`   |
+| `Action`   | What was attempted                           | `Failed to load`, `HTTP 404 loading` |
+| `detail`   | Specific context — file, id, value           | `'desktop-azerty': network timeout`  |
 
 ---
 
@@ -33,11 +33,11 @@
 
 ## Error Classification
 
-| Class | Meaning | Recovery |
-|-------|---------|---------|
-| **User error** | Bad input from the consumer of the library | Fix the call site |
-| **System error** | File not found, network failure | Retry, check connectivity |
-| **Programming error** | Bug — precondition violated | Fix the code |
+| Class                 | Meaning                                    | Recovery                  |
+| --------------------- | ------------------------------------------ | ------------------------- |
+| **User error**        | Bad input from the consumer of the library | Fix the call site         |
+| **System error**      | File not found, network failure            | Retry, check connectivity |
+| **Programming error** | Bug — precondition violated                | Fix the code              |
 
 ---
 
@@ -46,9 +46,10 @@
 Never expose internal file paths or stack traces to production consumers:
 
 ```typescript
-const detail = import.meta.env?.DEV === true
-  ? err.message          // full detail in dev
-  : 'check console for details'  // sanitized in prod
+const detail =
+  import.meta.env?.DEV === true
+    ? err.message // full detail in dev
+    : 'check console for details'; // sanitized in prod
 ```
 
 ---
@@ -57,11 +58,18 @@ const detail = import.meta.env?.DEV === true
 
 ```typescript
 // ❌ No module prefix
-throw new Error('fetch failed')
+throw new Error('fetch failed');
 
 // ❌ No context
-throw new DataLoaderError('load error')
+throw new DataLoaderError('load error');
 
 // ❌ Leaks internal path in production
-throw new DataLoaderError(`Failed: ${internalFilePath}`)
+throw new DataLoaderError(`Failed: ${internalFilePath}`);
 ```
+
+---
+
+## See Also
+
+- [Error Codes Reference](./errors/error-codes.md) — canonical `ErrorCode` enum values and recovery suggestions
+- [Error Handling Guide](./errors/error-handling-guide.md) — retry logic, error events, and inline banner behavior

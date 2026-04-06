@@ -154,8 +154,14 @@ describe('createKeyboardEngine — error path', () => {
   it('handles fatal errors by transitioning to "destroyed" state', async () => {
     const ehSpy = vi.spyOn(errorHandlerModule, 'createErrorHandler').mockReturnValue({
       handle: (error: unknown) => ({
+        code: errorHandlerModule.ErrorCode.UNKNOWN_ERROR,
         severity: 'fatal' as const,
         message: String(error),
+        suggestion: 'An unexpected error occurred. Check the browser console for details.',
+      }),
+      classifyError: () => ({
+        code: errorHandlerModule.ErrorCode.UNKNOWN_ERROR,
+        severity: 'fatal' as const,
       }),
       isRecoverable: () => false,
     });
