@@ -10,11 +10,12 @@ Use this checklist during code reviews when modifying the adapter layer, dispatc
 
 ## Target Validation
 
-- [ ] `TargetValidator` is called before ANY mutation operation.
+- [ ] `TargetValidation` is applied before ANY mutation operation.
 - [ ] `stale` (detached) elements are rejected.
-- [ ] `readonly` and `disabled` states are respected.
+- [ ] `readonly` and `disabled` states are respected by `TargetValidation`.
 
 ## API & Integration
 
+- [ ] The dispatcher delegates mutation handling to `InsertionPipeline`.
 - [ ] Public events do not leak sensitive internal state objects (use frozen/cloned payloads).
 - [ ] External inputs to `BeninKeyboard` properties are validated against strict type guards before internal state updates.
