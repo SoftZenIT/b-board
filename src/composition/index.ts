@@ -14,6 +14,8 @@ export interface CompositionProcessor {
   get isArmed(): boolean;
   /** The trigger character currently pending, or null if not armed. */
   get armedTrigger(): string | null;
+  /** The composition mode currently armed: 'tone', 'nasal', or null if idle. */
+  get armedMode(): 'tone' | 'nasal' | null;
 }
 
 /**
@@ -54,6 +56,13 @@ export function createCompositionProcessor(resolvedLayout: ResolvedLayout): Comp
 
     get armedTrigger(): string | null {
       return sm.getArmedTrigger();
+    },
+
+    get armedMode(): 'tone' | 'nasal' | null {
+      const mode = sm.getMode();
+      if (mode === 'tone-armed') return 'tone';
+      if (mode === 'nasal-armed') return 'nasal';
+      return null;
     },
   };
 }

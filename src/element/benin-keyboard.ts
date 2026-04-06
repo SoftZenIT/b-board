@@ -36,6 +36,20 @@ import {
 import { validateBrowser, supportsResizeObserver } from '../core/_internal/browser-compat.js';
 import { logger } from '../utils/logger.js';
 
+const BCP47_MAP: Readonly<Record<LanguageId, string>> = {
+  yoruba: 'yo',
+  'fon-adja': 'fon',
+  baatonum: 'bba',
+  dendi: 'ddn',
+};
+
+const LANGUAGE_DISPLAY_NAMES: Readonly<Record<LanguageId, string>> = {
+  yoruba: 'Yoruba',
+  'fon-adja': 'Fon / Adja',
+  baatonum: 'Baatɔnum',
+  dendi: 'Dendi',
+};
+
 /**
  * Per-layer key IDs follow the convention: base = `key-{name}`, shift = `key-{name}-shift`, altGr = `key-{name}-altgr`.
  * This helper derives the modifier key IDs for a given layer so Shift/AltGr detection works in all layers.
@@ -80,6 +94,8 @@ export class BeninKeyboard extends LitElement {
   private _dataLoadPromise: Promise<void> | undefined;
   private _layoutKey = '';
   private _lastSyncedFocusId: KeyId | null = null;
+  private _politeMessage = '';
+  private _assertiveMessage = '';
 
   static readonly styles = css`
     :host {
@@ -308,6 +324,7 @@ export class BeninKeyboard extends LitElement {
       }
     }
 
+<<<<<<< HEAD
     /* ── Error banner ──────────────────────────────────────────────── */
 
     .bboard-error-banner {
@@ -354,6 +371,22 @@ export class BeninKeyboard extends LitElement {
       outline-offset: 2px;
     }
 
+    /* ── Screen-reader-only (live regions) ──────────────────────────── */
+
+    .bboard-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ── High contrast mode ────────────────────────────────────────── */
+
     @media (prefers-contrast: more) {
       .bboard-error-banner--warning {
         background: #fff;
@@ -365,6 +398,22 @@ export class BeninKeyboard extends LitElement {
         color: #000;
         border: 3px solid #000;
       }
+
+      .bboard-key,
+      .bboard-mobile-key {
+        border: 1px solid currentColor;
+        font-weight: 600;
+      }
+
+      .bboard-key:focus-visible,
+      .bboard-key.is-focused,
+      .bboard-mobile-key:focus-visible {
+        outline-width: 3px;
+      }
+
+      .bboard-long-press-item.is-selected {
+        border: 2px solid currentColor;
+      }
     }
 
     @media (forced-colors: active) {
@@ -373,6 +422,45 @@ export class BeninKeyboard extends LitElement {
       }
       .bboard-error-banner__retry {
         border: 1px solid ButtonText;
+      }
+
+      .bboard-key,
+      .bboard-mobile-key {
+        forced-color-adjust: none;
+        border: 1px solid ButtonText;
+        background: ButtonFace;
+        color: ButtonText;
+      }
+
+      .bboard-key.is-active,
+      .bboard-mobile-key.is-active {
+        background: Highlight;
+        color: HighlightText;
+      }
+
+      .bboard-key:focus-visible,
+      .bboard-key.is-focused,
+      .bboard-mobile-key:focus-visible {
+        outline: 3px solid Highlight;
+      }
+
+      .bboard-key-action {
+        background: ButtonFace;
+      }
+
+      .bboard-long-press-item {
+        color: ButtonText;
+      }
+
+      .bboard-long-press-item.is-selected {
+        background: Highlight;
+        color: HighlightText;
+        border: 2px solid HighlightText;
+      }
+
+      .keyboard-container,
+      .bboard-mobile-keyboard {
+        background: Canvas;
       }
     }
   `;
@@ -532,6 +620,8 @@ export class BeninKeyboard extends LitElement {
     this.toggleAttribute('data-composition-armed', this._compositionProcessor?.isArmed ?? false);
     if (changedProperties.has('language')) {
       dispatchBBoardEvent(this, 'bboard-language-change', { languageId: this.language });
+      const displayName = LANGUAGE_DISPLAY_NAMES[this.language] ?? this.language;
+      this._announcePolite(`Langue : ${displayName}`);
     }
     if (changedProperties.has('theme')) {
       this._themeManager.theme = this.theme;
@@ -557,6 +647,27 @@ export class BeninKeyboard extends LitElement {
       ) as HTMLElement | null;
       btn?.focus({ preventScroll: true });
     }
+  }
+
+  private _announcePolite(message: string): void {
+    // Clear then set to ensure screen readers re-announce identical messages
+    this._politeMessage = '';
+    this._assertiveMessage = '';
+    this.requestUpdate();
+    this.updateComplete.then(() => {
+      this._politeMessage = message;
+      this.requestUpdate();
+    });
+  }
+
+  private _announceAssertive(message: string): void {
+    this._politeMessage = '';
+    this._assertiveMessage = '';
+    this.requestUpdate();
+    this.updateComplete.then(() => {
+      this._assertiveMessage = message;
+      this.requestUpdate();
+    });
   }
 
   private _computeFocusGrid(): readonly (readonly KeyId[])[] {
@@ -629,10 +740,31 @@ export class BeninKeyboard extends LitElement {
         ? 'altGr'
         : snapshot.activeLayer;
     const char = resolvedKey?.layers[effectiveLayer]?.char ?? '';
+    const wasArmed = this._compositionProcessor?.isArmed ?? false;
+    const armedTrigger = this._compositionProcessor?.armedTrigger ?? null;
     const composed = this._compositionProcessor?.process(keyId, char) ?? char;
     if (composed === null) {
+      // Dead key was swallowed — announce composition armed state
+      if (this._compositionProcessor?.isArmed) {
+        const mode = this._compositionProcessor.armedMode;
+        if (mode === 'tone') {
+          this._announcePolite('Modificateur de ton activé');
+        } else if (mode === 'nasal') {
+          this._announcePolite('Modificateur nasal activé');
+        }
+      } else if (wasArmed) {
+        // Was armed but process returned null and is no longer armed → invalid
+        this._announceAssertive('Combinaison invalide');
+      }
       this.requestUpdate();
       return;
+    }
+    // Successful composition of a previously armed dead key
+    if (wasArmed && composed !== char) {
+      this._announcePolite(`${composed}`);
+    } else if (wasArmed && armedTrigger !== null) {
+      // Was armed but produced the original char → invalid combination
+      this._announceAssertive('Combinaison invalide');
     }
     dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
 
@@ -658,10 +790,27 @@ export class BeninKeyboard extends LitElement {
         ? 'altGr'
         : snap.activeLayer;
     const char = resolvedKey?.layers[effectiveLayer]?.char ?? '';
+    const wasArmed = this._compositionProcessor?.isArmed ?? false;
+    const armedTrigger = this._compositionProcessor?.armedTrigger ?? null;
     const composed = this._compositionProcessor?.process(keyId, char) ?? char;
     if (composed === null) {
+      if (this._compositionProcessor?.isArmed) {
+        const mode = this._compositionProcessor.armedMode;
+        if (mode === 'tone') {
+          this._announcePolite('Modificateur de ton activé');
+        } else if (mode === 'nasal') {
+          this._announcePolite('Modificateur nasal activé');
+        }
+      } else if (wasArmed) {
+        this._announceAssertive('Combinaison invalide');
+      }
       this.requestUpdate();
       return;
+    }
+    if (wasArmed && composed !== char) {
+      this._announcePolite(`${composed}`);
+    } else if (wasArmed && armedTrigger !== null) {
+      this._announceAssertive('Combinaison invalide');
     }
     dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
 
@@ -710,6 +859,9 @@ export class BeninKeyboard extends LitElement {
     this._desktopState.clearHeldPhysicalKeys();
     const wasArmed = this._compositionProcessor?.isArmed ?? false;
     this._compositionProcessor?.cancel();
+    if (wasArmed) {
+      this._announcePolite('Modificateur annulé');
+    }
     if (this.showPhysicalEcho || wasArmed) this.requestUpdate();
   };
 
@@ -717,8 +869,15 @@ export class BeninKeyboard extends LitElement {
     // Gap fix: skip pressPhysicalCode on auto-repeat (idempotent but creates needless Set allocations)
     if (!e.repeat) this._desktopState.pressPhysicalCode(e.code);
 
+    if (e.key === 'Escape' && this._mobileState.snapshot().longPressVisible) {
+      this._mobileState.dismissLongPress();
+      this.requestUpdate();
+      return;
+    }
+
     if (e.key === 'Escape' && this._compositionProcessor?.isArmed) {
       this._compositionProcessor.cancel();
+      this._announcePolite('Modificateur annulé');
       this.requestUpdate();
       return;
     }
@@ -922,6 +1081,16 @@ export class BeninKeyboard extends LitElement {
       ></div>`;
     }
 
+    const bcp47 = BCP47_MAP[this.language] ?? nothing;
+    const srInstructions =
+      'Utilisez Tab et les touches fléchées pour naviguer, Entrée ou Espace pour activer une touche';
+    const liveRegions = html`
+      <div class="bboard-sr-only" aria-live="polite" aria-atomic="true">${this._politeMessage}</div>
+      <div class="bboard-sr-only" aria-live="assertive" aria-atomic="true">
+        ${this._assertiveMessage}
+      </div>
+    `;
+
     // ── Mobile branch ────────────────────────────────────────────────────
     if (this.layoutVariant.startsWith('mobile-')) {
       const snap = this._mobileState.snapshot();
@@ -944,6 +1113,8 @@ export class BeninKeyboard extends LitElement {
           class="bboard-mobile-keyboard"
           role="group"
           aria-label="Clavier virtuel"
+          aria-description=${srInstructions}
+          lang=${bcp47}
           style="--lp-anchor-x:${this._longPressAnchorX}px;"
           @touchstart=${this._handleTouchStart}
           @touchmove=${this._handleTouchMove}
@@ -951,12 +1122,12 @@ export class BeninKeyboard extends LitElement {
           @touchcancel=${this._handleTouchCancel}
         >
           ${renderMobileRows(model.rows)}
-          ${model.longPressPopup ? renderLongPressPopup(model.longPressPopup) : null}
+          ${model.longPressPopup ? renderLongPressPopup(model.longPressPopup) : null} ${liveRegions}
         </div>
       `;
     }
 
-    // ── Desktop branch (existing code below, unchanged) ──────────────────
+    // ── Desktop branch ──────────────────────────────────────────────────
     const snapshot = this._desktopState.snapshot();
     const heldKeyIds: Set<string> = new Set();
     for (const code of snapshot.heldPhysicalKeys) {
@@ -990,10 +1161,12 @@ export class BeninKeyboard extends LitElement {
         class="keyboard-container"
         role="group"
         aria-label="Clavier virtuel"
+        aria-description=${srInstructions}
+        lang=${bcp47}
         @click=${this._handleContainerClick}
         @focusin=${this._handleFocusIn}
       >
-        ${renderDesktopRows(model.rows)}
+        ${renderDesktopRows(model.rows)} ${liveRegions}
       </div>
     `;
   }

@@ -6,6 +6,13 @@ import type {
   ResolvedLayout,
 } from '../../public/index.js';
 
+const TOGGLE_KEY_IDS: ReadonlySet<string> = new Set([
+  'key-shift',
+  'key-shift-right',
+  'key-altgr',
+  'key-capslock',
+]);
+
 export interface DesktopRenderState {
   activeLayer: LayerId;
   modifierDisplayMode: ModifierDisplayMode;
@@ -28,6 +35,7 @@ export interface DesktopRenderKey {
   focused: boolean;
   active: boolean;
   tabStop: boolean;
+  isToggle: boolean;
 }
 
 export interface DesktopRenderRow {
@@ -112,6 +120,7 @@ export function createDesktopRenderModel(
             focused,
             active,
             tabStop,
+            isToggle: TOGGLE_KEY_IDS.has(slot.keyId),
           };
         }),
       })) ?? [],
