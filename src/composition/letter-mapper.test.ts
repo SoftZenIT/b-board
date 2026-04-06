@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mapLetter } from './letter-mapper.js';
-import type { CompositionRule } from '../data/language.types.js';
+import type { CompositionRule, CompositionRuleMode } from '../data/language.types.js';
 
 function makeMap(rules: CompositionRule[]): Map<string, CompositionRule[]> {
   const m = new Map<string, CompositionRule[]>();
@@ -36,5 +36,10 @@ describe('mapLetter', () => {
   it('returns null when no rule matches for nasal', () => {
     const map = makeMap(mixedRules);
     expect(mapLetter('~', 'z', 'nasal', map)).toBeNull();
+  });
+
+  it('returns null for an unknown mode', () => {
+    const map = makeMap(mixedRules);
+    expect(mapLetter('´', 'a', 'unknown' as CompositionRuleMode, map)).toBeNull();
   });
 });

@@ -75,4 +75,34 @@ describe('createMobileState', () => {
     expect(snap.longPressVisible).toBe(false);
     expect(snap.longPressKeyId).toBeNull();
   });
+
+  it('cancelLongPress when no timer is pending clears state without error', () => {
+    const state = createMobileState();
+    state.startLongPress(createKeyId('key-a'), () => {});
+    vi.advanceTimersByTime(300); // timer fires → longPressTimer = null
+    state.cancelLongPress(); // called when timer already null
+    expect(state.snapshot().longPressKeyId).toBeNull();
+  });
+
+  it('startLongPress replaces an existing pending timer', () => {
+    const state = createMobileState();
+    const first = vi.fn();
+    const second = vi.fn();
+    state.startLongPress(createKeyId('key-a'), first);
+    state.startLongPress(createKeyId('key-z'), second); // replaces first timer
+    vi.advanceTimersByTime(300);
+    expect(first).not.toHaveBeenCalled();
+    expect(second).toHaveBeenCalledOnce();
+    expect(state.snapshot().longPressKeyId).toBe(createKeyId('key-z'));
+  });
+
+  it('dismissLongPress cancels a still-pending timer', () => {
+    const state = createMobileState();
+    const onShow = vi.fn();
+    state.startLongPress(createKeyId('key-a'), onShow);
+    state.dismissLongPress(); // timer still pending
+    vi.advanceTimersByTime(300);
+    expect(onShow).not.toHaveBeenCalled();
+    expect(state.snapshot().longPressVisible).toBe(false);
+  });
 });
