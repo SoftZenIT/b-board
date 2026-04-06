@@ -1,0 +1,198 @@
+name: Framework Interoperability Tests
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-library:
+    name: Build b-board
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-node${{ matrix.node-version }}
+          path: dist/
+          retention-days: 1
+
+  test-react:
+    name: React Sample App (Node ${{ matrix.node-version }})
+    needs: build-library
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    defaults:
+      run:
+        working-directory: examples/react-sample-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: examples/react-sample-app/package-lock.json
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-node${{ matrix.node-version }}
+          path: dist/
+
+      - run: npm ci
+      - run: npx vite build
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: react-playwright-report-node${{ matrix.node-version }}
+          path: examples/react-sample-app/playwright-report/
+          retention-days: 7
+
+  test-vue:
+    name: Vue 3 Sample App (Node ${{ matrix.node-version }})
+    needs: build-library
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    defaults:
+      run:
+        working-directory: examples/vue3-sample-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: examples/vue3-sample-app/package-lock.json
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-node${{ matrix.node-version }}
+          path: dist/
+
+      - run: npm ci
+      - run: npx vite build
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: vue-playwright-report-node${{ matrix.node-version }}
+          path: examples/vue3-sample-app/playwright-report/
+          retention-days: 7
+
+  test-angular:
+    name: Angular Sample App (Node ${{ matrix.node-version }})
+    needs: build-library
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    defaults:
+      run:
+        working-directory: examples/angular-sample-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: examples/angular-sample-app/package-lock.json
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-node${{ matrix.node-version }}
+          path: dist/
+
+      - run: npm ci
+      - run: npx ng build
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: angular-playwright-report-node${{ matrix.node-version }}
+          path: examples/angular-sample-app/playwright-report/
+          retention-days: 7
+
+  consistency-tests:
+    name: Cross-Framework Consistency (Node ${{ matrix.node-version }})
+    needs: [test-react, test-vue, test-angular]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-node${{ matrix.node-version }}
+          path: dist/
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install sample app dependencies
+        run: |
+          cd examples/react-sample-app && npm ci && cd ../..
+          cd examples/vue3-sample-app && npm ci && cd ../..
+          cd examples/angular-sample-app && npm ci && cd ../..
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Start all dev servers
+        run: |
+          cd examples/react-sample-app && npx vite --port 5174 &
+          cd examples/vue3-sample-app && npx vite --port 5175 &
+          cd examples/angular-sample-app && npx ng serve --port 5176 &
+          # Wait for servers to be ready
+          npx wait-on http://localhost:5174 http://localhost:5175 http://localhost:5176 --timeout 120000
+
+      - name: Run consistency tests
+        run: npx playwright test tests/e2e/framework-interop/
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: consistency-playwright-report
+          path: playwright-report/
+          retention-days: 7
