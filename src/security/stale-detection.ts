@@ -15,9 +15,10 @@ export const StaleDetection = {
   },
 
   /**
-   * Checks if critical attributes (readonly, disabled) have changed.
+   * Checks if an element currently has disallowed attributes (disabled or readonly)
+   * that would prevent mutation operations.
    */
-  hasAttributeChanges(element: HTMLElement): boolean {
+  hasDisallowedAttributes(element: HTMLElement): boolean {
     if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
       return element.disabled || element.readOnly;
     }

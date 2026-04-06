@@ -13,15 +13,15 @@ describe('StaleDetection', () => {
     expect(StaleDetection.isStale(el)).toBe(true);
   });
 
-  it('detects attribute changes for inputs', () => {
+  it('detects disallowed attributes for inputs', () => {
     const el = document.createElement('input');
-    expect(StaleDetection.hasAttributeChanges(el)).toBe(false);
+    expect(StaleDetection.hasDisallowedAttributes(el)).toBe(false);
 
     el.readOnly = true;
-    expect(StaleDetection.hasAttributeChanges(el)).toBe(true);
+    expect(StaleDetection.hasDisallowedAttributes(el)).toBe(true);
 
     el.readOnly = false;
     el.disabled = true;
-    expect(StaleDetection.hasAttributeChanges(el)).toBe(true);
+    expect(StaleDetection.hasDisallowedAttributes(el)).toBe(true);
   });
 });
