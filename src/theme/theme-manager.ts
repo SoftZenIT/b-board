@@ -1,4 +1,5 @@
 import type { ThemeId } from '../public/types.js';
+import { supportsMatchMedia } from '../core/_internal/browser-compat.js';
 
 export type EffectiveTheme = 'light' | 'dark';
 
@@ -15,11 +16,13 @@ export type ThemeChangeListener = (detail: ThemeChangeDetail) => void;
 export class ThemeManager {
   private _theme: ThemeId = 'auto';
   private _listeners: Set<ThemeChangeListener> = new Set();
-  private _mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  private _mediaQuery: MediaQueryList | null = supportsMatchMedia()
+    ? window.matchMedia('(prefers-color-scheme: dark)')
+    : null;
 
   constructor(initialTheme: ThemeId = 'auto') {
     this._theme = initialTheme;
-    this._mediaQuery.addEventListener('change', this._handleSystemChange);
+    this._mediaQuery?.addEventListener('change', this._handleSystemChange);
   }
 
   get theme(): ThemeId {
@@ -35,7 +38,7 @@ export class ThemeManager {
 
   get effectiveTheme(): EffectiveTheme {
     if (this._theme === 'auto') {
-      return this._mediaQuery.matches ? 'dark' : 'light';
+      return this._mediaQuery?.matches ? 'dark' : 'light';
     }
     return this._theme as EffectiveTheme;
   }
@@ -51,7 +54,7 @@ export class ThemeManager {
   }
 
   destroy(): void {
-    this._mediaQuery.removeEventListener('change', this._handleSystemChange);
+    this._mediaQuery?.removeEventListener('change', this._handleSystemChange);
     this._listeners.clear();
   }
 
