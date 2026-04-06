@@ -82,6 +82,7 @@ describe('createDesktopRenderModel', () => {
       hiddenKeys: new Set([createKeyId('key-z')]),
       disabledKeys: new Set([createKeyId('key-enter')]),
       focusedKeyId: createKeyId('key-a'),
+      keyboardDisabled: false,
     });
     const transitionModel = createDesktopRenderModel(resolvedLayout, {
       activeLayer: 'base',
@@ -91,6 +92,7 @@ describe('createDesktopRenderModel', () => {
       hiddenKeys: new Set(),
       disabledKeys: new Set(),
       focusedKeyId: null,
+      keyboardDisabled: false,
     });
     const shiftedModel = createDesktopRenderModel(resolvedLayout, {
       activeLayer: 'shift',
@@ -100,6 +102,7 @@ describe('createDesktopRenderModel', () => {
       hiddenKeys: new Set(),
       disabledKeys: new Set(),
       focusedKeyId: null,
+      keyboardDisabled: false,
     });
 
     expect(hintedModel.rows).toHaveLength(2);
@@ -125,6 +128,7 @@ describe('createDesktopRenderModel', () => {
       hiddenKeys: new Set(),
       disabledKeys: new Set(),
       focusedKeyId: null,
+      keyboardDisabled: false,
     });
 
     expect(model.rows[0].keys[0].secondaryLabel).toBe('A');
