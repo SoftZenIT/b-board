@@ -24,6 +24,10 @@ export enum ErrorCode {
   COMPOSITION_ERROR = 'COMPOSITION_ERROR',
   INVALID_OPERATION = 'INVALID_OPERATION',
 
+  // Browser compatibility
+  UNSUPPORTED_BROWSER = 'UNSUPPORTED_BROWSER',
+  MISSING_API = 'MISSING_API',
+
   // Runtime
   RENDER_ERROR = 'RENDER_ERROR',
   EVENT_DISPATCH_ERROR = 'EVENT_DISPATCH_ERROR',
@@ -56,6 +60,10 @@ export const RECOVERY_SUGGESTIONS: Readonly<Record<ErrorCode, string>> = {
     'A composition rule failed. Check the composition rules catalog for the active language.',
   [ErrorCode.INVALID_OPERATION]:
     'The input operation is malformed. Verify operation type, text, and selection fields.',
+  [ErrorCode.UNSUPPORTED_BROWSER]:
+    'This browser does not support required Web Component APIs. Please use a modern browser (Chrome 105+, Firefox 104+, Safari 15.6+, Edge 105+).',
+  [ErrorCode.MISSING_API]:
+    'A required browser API is unavailable. The keyboard will attempt to work with reduced functionality.',
   [ErrorCode.RENDER_ERROR]:
     'The keyboard failed to render. This is usually transient — try re-opening the keyboard.',
   [ErrorCode.EVENT_DISPATCH_ERROR]:
