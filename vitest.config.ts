@@ -19,6 +19,10 @@ export default defineConfig({
         // Dev-only app scaffolding
         'src/main.ts',
         'src/App.vue',
+        // Pure TypeScript type-definition files — no runtime code to cover
+        'src/**/*.types.ts',
+        // Lit web component with render templates — behaviour covered by E2E tests
+        'src/element/benin-keyboard.ts',
       ],
       thresholds: {
         lines: 90,
