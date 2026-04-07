@@ -54,7 +54,7 @@ describe('browser-compat', () => {
       const original = globalThis.CSS;
       globalThis.CSS = {
         supports: () => false,
-      } as typeof CSS;
+      } as unknown as typeof CSS;
       expect(supportsCSSCustomProperties()).toBe(false);
       globalThis.CSS = original;
     });
