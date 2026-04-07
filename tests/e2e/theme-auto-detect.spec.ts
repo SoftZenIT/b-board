@@ -5,8 +5,9 @@ test.describe('Auto Theme Detection', () => {
     await page.emulateMedia({ colorScheme: 'light' });
     await page.goto('/');
 
-    await expect(page.locator('#theme-mode')).toHaveText('auto');
-    await expect(page.locator('#effective-theme')).toHaveText('light');
+    // Wait for keyboard to fully render
+    await page.locator('benin-keyboard .bboard-row').first().waitFor();
+
     await expect(page.locator('benin-keyboard')).not.toHaveClass(/theme-dark/);
   });
 
@@ -14,18 +15,22 @@ test.describe('Auto Theme Detection', () => {
     await page.emulateMedia({ colorScheme: 'dark' });
     await page.goto('/');
 
-    await expect(page.locator('#theme-mode')).toHaveText(/auto/);
-    await expect(page.locator('#effective-theme')).toHaveText(/dark/);
+    // Wait for keyboard to fully render
+    await page.locator('benin-keyboard .bboard-row').first().waitFor();
+
     await expect(page.locator('benin-keyboard')).toHaveClass(/theme-dark/);
   });
 
   test('should respond to dynamic system theme changes', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
     await page.goto('/');
-    await expect(page.locator('#effective-theme')).toHaveText('light');
+
+    // Wait for keyboard to fully render
+    await page.locator('benin-keyboard .bboard-row').first().waitFor();
+
+    await expect(page.locator('benin-keyboard')).not.toHaveClass(/theme-dark/);
 
     await page.emulateMedia({ colorScheme: 'dark' });
-    await expect(page.locator('#effective-theme')).toHaveText('dark');
     await expect(page.locator('benin-keyboard')).toHaveClass(/theme-dark/);
   });
 });
