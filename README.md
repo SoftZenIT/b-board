@@ -1,5 +1,7 @@
 # BJ-Keyboard (`b-board`)
 
+![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)
+
 A framework-agnostic virtual keyboard UI library with multi-language support, built for Beninese languages (Yoruba, Fon/Adja, Baatɔnum, Dendi).
 
 ## Features
