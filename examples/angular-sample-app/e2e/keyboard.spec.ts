@@ -16,7 +16,7 @@ test.describe('BBoard Angular Integration', () => {
     await expect(textarea).toHaveValue('');
 
     const keyboard = page.locator('benin-keyboard');
-    const key = keyboard.locator('.key-cell').first();
+    const key = keyboard.locator('.bboard-key-character').first();
     await key.click();
 
     await expect(textarea).not.toHaveValue('');

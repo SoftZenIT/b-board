@@ -16,7 +16,7 @@ test.describe('BBoard Vue 3 Integration', () => {
     await expect(textarea).toHaveValue('');
 
     const keyboard = page.locator('benin-keyboard');
-    const key = keyboard.locator('.key-cell').first();
+    const key = keyboard.locator('.bboard-key-character').first();
     await key.click();
 
     await expect(textarea).not.toHaveValue('');
@@ -28,7 +28,7 @@ test.describe('BBoard Vue 3 Integration', () => {
     await select.selectOption('fon-adja');
 
     const keyboard = page.locator('benin-keyboard');
-    await expect(keyboard).toHaveAttribute('language', 'fon-adja');
+    await expect(keyboard).toHaveJSProperty('language', 'fon-adja');
   });
 
   test('theme toggle changes theme', async ({ page }) => {
@@ -40,7 +40,7 @@ test.describe('BBoard Vue 3 Integration', () => {
     await expect(toggle).toContainText('dark');
 
     const keyboard = page.locator('benin-keyboard');
-    await expect(keyboard).toHaveAttribute('theme', 'dark');
+    await expect(keyboard).toHaveJSProperty('theme', 'dark');
   });
 
   test('all language options are available', async ({ page }) => {
