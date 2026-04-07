@@ -17,8 +17,8 @@ const FRAMEWORKS = [
 
 async function waitForKeyboard(page: Page) {
   await page.waitForSelector('benin-keyboard', { state: 'attached' });
-  // Allow the keyboard to fully render (load layout data)
-  await page.waitForTimeout(500);
+  // Wait for keys to render (layout data loads asynchronously)
+  await page.locator('benin-keyboard .bboard-key-character').first().waitFor({ state: 'attached' });
 }
 
 for (const framework of FRAMEWORKS) {
@@ -31,7 +31,8 @@ for (const framework of FRAMEWORKS) {
     test('keyboard renders with default language (yoruba)', async ({ page }) => {
       const keyboard = page.locator('benin-keyboard');
       await expect(keyboard).toBeAttached();
-      await expect(keyboard).toHaveAttribute('language', 'yoruba');
+      // Use JS property check — Vue binds via property, not attribute
+      await expect(keyboard).toHaveJSProperty('language', 'yoruba');
     });
 
     test('key press produces output in textarea', async ({ page }) => {
@@ -39,36 +40,36 @@ for (const framework of FRAMEWORKS) {
       await expect(textarea).toHaveValue('');
 
       const keyboard = page.locator('benin-keyboard');
-      const key = keyboard.locator('.key-cell').first();
+      const key = keyboard.locator('.bboard-key-character').first();
       await key.click();
 
       await expect(textarea).not.toHaveValue('');
     });
 
-    test('language switch updates keyboard attribute', async ({ page }) => {
+    test('language switch updates keyboard property', async ({ page }) => {
       const select = page.getByTestId('language-select');
       const keyboard = page.locator('benin-keyboard');
 
       for (const lang of ['fon-adja', 'baatonum', 'dendi', 'yoruba']) {
         await select.selectOption(lang);
-        await expect(keyboard).toHaveAttribute('language', lang);
+        await expect(keyboard).toHaveJSProperty('language', lang);
       }
     });
 
-    test('theme toggle updates keyboard attribute', async ({ page }) => {
+    test('theme toggle updates keyboard property', async ({ page }) => {
       const toggle = page.getByTestId('theme-toggle');
       const keyboard = page.locator('benin-keyboard');
 
       // Start with light
-      await expect(keyboard).toHaveAttribute('theme', 'light');
+      await expect(keyboard).toHaveJSProperty('theme', 'light');
 
       // Toggle to dark
       await toggle.click();
-      await expect(keyboard).toHaveAttribute('theme', 'dark');
+      await expect(keyboard).toHaveJSProperty('theme', 'dark');
 
       // Toggle back to light
       await toggle.click();
-      await expect(keyboard).toHaveAttribute('theme', 'light');
+      await expect(keyboard).toHaveJSProperty('theme', 'light');
     });
 
     test('all four languages are available', async ({ page }) => {
@@ -94,10 +95,12 @@ test.describe('Cross-Framework Output Consistency', () => {
       await waitForKeyboard(page);
 
       const keyboard = page.locator('benin-keyboard');
-      const key = keyboard.locator('.key-cell').first();
+      const key = keyboard.locator('.bboard-key-character').first();
       await key.click();
 
       const textarea = page.getByTestId('text-output');
+      // Wait for the event handler to update the textarea
+      await expect(textarea).not.toHaveValue('');
       const value = await textarea.inputValue();
       outputs.push(value);
 

@@ -18,7 +18,7 @@ test.describe('BBoard React Integration', () => {
 
     // Click a key inside the keyboard's shadow DOM
     const keyboard = page.locator('benin-keyboard');
-    const key = keyboard.locator('.key-cell').first();
+    const key = keyboard.locator('.bboard-key-character').first();
     await key.click();
 
     // Textarea should have content from the key press event
