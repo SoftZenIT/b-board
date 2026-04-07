@@ -469,7 +469,9 @@ export class BeninKeyboard extends LitElement {
     this._themeManager = new ThemeManager();
     this._themeManager.subscribe((detail) => {
       this._applyTheme(detail.effectiveTheme);
-      dispatchBBoardEvent(this, 'bboard-theme-change', detail);
+      if (this.isConnected) {
+        dispatchBBoardEvent(this, 'bboard-theme-change', detail);
+      }
     });
   }
 
@@ -822,6 +824,9 @@ export class BeninKeyboard extends LitElement {
   }
 
   private _applyTheme(effectiveTheme: 'light' | 'dark'): void {
+    // Guard: classList manipulation sets attributes, which is forbidden
+    // inside a custom-element constructor (the HTML spec throws).
+    if (!this.isConnected) return;
     if (effectiveTheme === 'dark') {
       this.classList.add('theme-dark');
     } else {
