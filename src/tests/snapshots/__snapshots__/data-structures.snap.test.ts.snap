@@ -1,0 +1,162 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Composition Rule Snapshots > Fon nasal composition rules 1`] = `
+[
+  {
+    "base": "a",
+    "mode": "nasal",
+    "result": "ã",
+    "trigger": "~",
+  },
+  {
+    "base": "e",
+    "mode": "nasal",
+    "result": "ẽ",
+    "trigger": "~",
+  },
+  {
+    "base": "o",
+    "mode": "nasal",
+    "result": "õ",
+    "trigger": "~",
+  },
+]
+`;
+
+exports[`Composition Rule Snapshots > Yoruba tone composition rules 1`] = `
+[
+  {
+    "base": "a",
+    "mode": "tone",
+    "result": "á",
+    "trigger": "´",
+  },
+  {
+    "base": "e",
+    "mode": "tone",
+    "result": "é",
+    "trigger": "´",
+  },
+  {
+    "base": "o",
+    "mode": "tone",
+    "result": "ó",
+    "trigger": "´",
+  },
+  {
+    "base": "i",
+    "mode": "tone",
+    "result": "í",
+    "trigger": "´",
+  },
+  {
+    "base": "u",
+    "mode": "tone",
+    "result": "ú",
+    "trigger": "´",
+  },
+  {
+    "base": "a",
+    "mode": "tone",
+    "result": "à",
+    "trigger": "\`",
+  },
+  {
+    "base": "e",
+    "mode": "tone",
+    "result": "è",
+    "trigger": "\`",
+  },
+  {
+    "base": "o",
+    "mode": "tone",
+    "result": "ò",
+    "trigger": "\`",
+  },
+]
+`;
+
+exports[`Error Code Registry Snapshot > all error codes 1`] = `
+[
+  "NETWORK_ERROR",
+  "HTTP_ERROR",
+  "DATA_NOT_FOUND",
+  "PARSE_ERROR",
+  "SCHEMA_VALIDATION",
+  "INTEGRITY_CHECK",
+  "INVALID_LANGUAGE",
+  "INVALID_LAYOUT",
+  "INVALID_TRANSITION",
+  "INVARIANT_VIOLATION",
+  "COMPOSITION_ERROR",
+  "INVALID_OPERATION",
+  "UNSUPPORTED_BROWSER",
+  "MISSING_API",
+  "RENDER_ERROR",
+  "EVENT_DISPATCH_ERROR",
+  "UNKNOWN_ERROR",
+]
+`;
+
+exports[`Error Code Registry Snapshot > recoverable codes 1`] = `
+[
+  "COMPOSITION_ERROR",
+  "EVENT_DISPATCH_ERROR",
+  "NETWORK_ERROR",
+  "RENDER_ERROR",
+  "UNKNOWN_ERROR",
+]
+`;
+
+exports[`Error Code Registry Snapshot > recovery suggestions 1`] = `
+{
+  "COMPOSITION_ERROR": "A composition rule failed. Check the composition rules catalog for the active language.",
+  "DATA_NOT_FOUND": "Ensure the requested layout or language data file exists at the expected path.",
+  "EVENT_DISPATCH_ERROR": "An event listener threw an error. Check your bboard event handlers for exceptions.",
+  "HTTP_ERROR": "Verify the data file URL returns a 2xx status. Check server logs for errors.",
+  "INTEGRITY_CHECK": "Cross-file data consistency check failed. Check for duplicate keyIds or circular composition rules.",
+  "INVALID_LANGUAGE": "The specified language ID is not supported. Use one of the registered language IDs.",
+  "INVALID_LAYOUT": "The specified layout variant is not supported. Use one of the registered layout variants.",
+  "INVALID_OPERATION": "The input operation is malformed. Verify operation type, text, and selection fields.",
+  "INVALID_TRANSITION": "Check the valid transitions for the current state before calling transition().",
+  "INVARIANT_VIOLATION": "Ensure all required substates and engine conditions are met before the operation.",
+  "MISSING_API": "A required browser API is unavailable. The keyboard will attempt to work with reduced functionality.",
+  "NETWORK_ERROR": "Check network connectivity and ensure the data server is reachable.",
+  "PARSE_ERROR": "The data file contains invalid JSON. Regenerate or fix the data file.",
+  "RENDER_ERROR": "The keyboard failed to render. This is usually transient — try re-opening the keyboard.",
+  "SCHEMA_VALIDATION": "The data file does not match the expected schema. Run the schema validator to identify issues.",
+  "UNKNOWN_ERROR": "An unexpected error occurred. Check the browser console for details.",
+  "UNSUPPORTED_BROWSER": "This browser does not support required Web Component APIs. Please use a modern browser (Chrome 105+, Firefox 104+, Safari 15.6+, Edge 105+).",
+}
+`;
+
+exports[`Language Profile Structure Snapshots > Fon profile shape 1`] = `
+{
+  "characterCount": 5,
+  "compositionRuleCount": 3,
+  "languageId": "fon-adja",
+  "name": "Fon",
+  "nativeName": "Fɔ̀ngbè",
+}
+`;
+
+exports[`Language Profile Structure Snapshots > Yoruba profile shape 1`] = `
+{
+  "characterCount": 10,
+  "characterFields": [
+    "keyId",
+    "baseChar",
+    "shiftChar",
+  ],
+  "compositionRuleCount": 8,
+  "languageId": "yoruba",
+  "name": "Yoruba",
+  "nativeName": "Yorùbá",
+  "ruleFields": [
+    "trigger",
+    "base",
+    "result",
+    "mode",
+  ],
+}
+`;
