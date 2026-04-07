@@ -20,15 +20,10 @@ async function dispatchTouchOn(
     ({ sel, type }) => {
       const kb = document.querySelector('benin-keyboard')!;
       const el = kb.shadowRoot!.querySelector(sel) as HTMLElement;
-      const touch = new Touch({ identifier: 1, target: el });
-      el.dispatchEvent(
-        new TouchEvent(type, {
-          bubbles: true,
-          cancelable: true,
-          touches: type === 'touchstart' ? [touch] : [],
-          changedTouches: [touch],
-        })
-      );
+      // Use plain Event — the handlers only need e.target (touchstart)
+      // or nothing (touchend/touchcancel). Avoids Touch/TouchEvent
+      // constructors unsupported in desktop Firefox/WebKit.
+      el.dispatchEvent(new Event(type, { bubbles: true, cancelable: true }));
     },
     { sel: selector, type: eventType }
   );
