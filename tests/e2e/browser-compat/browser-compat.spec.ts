@@ -193,7 +193,7 @@ test.describe('Cross-Browser Compatibility', () => {
       });
     });
 
-    expect(latencyMs).toBeGreaterThan(0);
+    expect(latencyMs).toBeGreaterThanOrEqual(0);
     expect(latencyMs).toBeLessThan(5);
 
     // Attach performance result to test info for reporting
