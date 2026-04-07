@@ -1,4 +1,11 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnDestroy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -38,11 +45,10 @@ interface Language {
         ></textarea>
 
         <benin-keyboard
+          #keyboard
           [attr.language]="language"
           [attr.theme]="theme"
           data-testid="keyboard"
-          (bboard-key-press)="onKeyPress($event)"
-          (bboard-error)="onError($event)"
         ></benin-keyboard>
 
         @if (error) {
@@ -93,7 +99,9 @@ interface Language {
     `,
   ],
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('keyboard', { static: false }) keyboardRef!: ElementRef<HTMLElement>;
+
   languages: Language[] = [
     { id: 'yoruba', label: 'Yoruba' },
     { id: 'fon-adja', label: 'Fon / Adja' },
@@ -106,18 +114,32 @@ export class AppComponent {
   text = '';
   error: string | null = null;
 
-  onKeyPress(event: Event): void {
+  private readonly handleKeyPress = (event: Event): void => {
     const detail = (event as CustomEvent).detail as { char: string };
     this.text += detail.char;
-  }
+  };
 
-  onError(event: Event): void {
+  private readonly handleError = (event: Event): void => {
     const detail = (event as CustomEvent).detail as {
       code: string;
       message: string;
       recoverySuggestion: string;
     };
     this.error = `[${detail.code}] ${detail.message} — ${detail.recoverySuggestion}`;
+  };
+
+  ngAfterViewInit(): void {
+    const el = this.keyboardRef.nativeElement;
+    el.addEventListener('bboard-key-press', this.handleKeyPress);
+    el.addEventListener('bboard-error', this.handleError);
+  }
+
+  ngOnDestroy(): void {
+    const el = this.keyboardRef?.nativeElement;
+    if (el) {
+      el.removeEventListener('bboard-key-press', this.handleKeyPress);
+      el.removeEventListener('bboard-error', this.handleError);
+    }
   }
 
   toggleTheme(): void {
