@@ -66,7 +66,7 @@ public
 | `adapters`    | core, public    | composition, ui                       |
 | `ui`          | core, public    | data, composition, adapters           |
 
-See [ADR-0002](../adr/0002-module-boundaries.md) for the rationale behind this rule.
+See [ADR-0002](https://github.com/b-board/b-board/blob/main/docs/adr/0002-module-boundaries.md) for the rationale behind this rule.
 
 ---
 
@@ -145,7 +145,7 @@ Implements the AZERTY-based full-width keyboard layout. The rendering pipeline s
 3. `src/ui/desktop/key.ts` / `src/ui/desktop/rows.ts` convert the render model to Lit `TemplateResult` objects.
 4. `src/element/benin-keyboard.ts` is the thin public shell: it owns lifecycle, data loading, theme integration, and keyboard event registration.
 
-Physical key echo and focus state are managed by `src/ui/state/desktop-state.ts` and `src/ui/state/focus-controller.ts`. See [ADR-0003](../adr/0003-desktop-renderer-boundary.md) for the motivation behind the thin-shell design.
+Physical key echo and focus state are managed by `src/ui/state/desktop-state.ts` and `src/ui/state/focus-controller.ts`. See [ADR-0003](https://github.com/b-board/b-board/blob/main/docs/adr/0003-desktop-renderer-boundary.md) for the motivation behind the thin-shell design.
 
 ### Mobile Renderer (`src/ui/mobile/`)
 
@@ -169,7 +169,7 @@ All adapters share a common interface defined in `src/public/`. The `AdapterRegi
 
 ## Data Layer (`src/data/`)
 
-The data layer is a set of pure-function modules following [ADR-0001](../adr/0001-flat-module-structure.md)'s flat-module convention (one file per concern, no inheritance).
+The data layer is a set of pure-function modules following [ADR-0001](https://github.com/b-board/b-board/blob/main/docs/adr/0001-flat-module-structure.md)'s flat-module convention (one file per concern, no inheritance).
 
 | Module                 | Responsibility                                                                              |
 | ---------------------- | ------------------------------------------------------------------------------------------- |
@@ -200,7 +200,7 @@ Every language profile is validated against a JSON Schema using **AJV** before u
 
 ### Why Lit?
 
-The keyboard UI must work in React, Vue, Angular, and plain HTML without requiring consumers to install framework-specific wrapper packages. Lit Web Components are standard Custom Elements — they are registered once in the browser and usable in any context. This avoids the maintenance burden of maintaining separate React, Vue, and Angular component packages. See [ADR-0002](../adr/0002-module-boundaries.md).
+The keyboard UI must work in React, Vue, Angular, and plain HTML without requiring consumers to install framework-specific wrapper packages. Lit Web Components are standard Custom Elements — they are registered once in the browser and usable in any context. This avoids the maintenance burden of maintaining separate React, Vue, and Angular component packages. See [ADR-0002](https://github.com/b-board/b-board/blob/main/docs/adr/0002-module-boundaries.md).
 
 ### Why no framework in the core engine?
 
@@ -222,8 +222,8 @@ Branding prevents raw strings from being accidentally passed where a `KeyId` is 
 
 ## ADR Log
 
-Architecture Decision Records live in [`docs/adr/`](../adr/):
+Architecture Decision Records live in [`docs/adr/`](https://github.com/b-board/b-board/blob/main/docs/adr/):
 
-- [ADR-0001 — Flat module structure for `src/data/`](../adr/0001-flat-module-structure.md)
-- [ADR-0002 — Module boundaries and layer separation](../adr/0002-module-boundaries.md)
-- [ADR-0003 — Thin element shell for desktop renderer](../adr/0003-desktop-renderer-boundary.md)
+- [ADR-0001 — Flat module structure for `src/data/`](https://github.com/b-board/b-board/blob/main/docs/adr/0001-flat-module-structure.md)
+- [ADR-0002 — Module boundaries and layer separation](https://github.com/b-board/b-board/blob/main/docs/adr/0002-module-boundaries.md)
+- [ADR-0003 — Thin element shell for desktop renderer](https://github.com/b-board/b-board/blob/main/docs/adr/0003-desktop-renderer-boundary.md)

@@ -18,7 +18,7 @@ b-board is currently at **v0.1.0**. The library is in active pre-1.0 development
 | New feature        | Minor (`0.x.0`) | Backwards-compatible additions; may include deprecations |
 | **Stable release** | **`1.0.0`**     | **Full semantic versioning (SemVer) begins here**        |
 
-Until v1.0.0, treat every minor version as potentially containing breaking changes and review the [CHANGELOG](../../CHANGELOG.md) before upgrading.
+Until v1.0.0, treat every minor version as potentially containing breaking changes and review the [CHANGELOG](https://github.com/b-board/b-board/blob/main/CHANGELOG.md) before upgrading.
 
 ---
 
@@ -36,7 +36,7 @@ There are no active deprecations in the current release.
 
 ## CHANGELOG
 
-A full list of changes for every release is tracked in [CHANGELOG.md](../../CHANGELOG.md).
+A full list of changes for every release is tracked in [CHANGELOG.md](https://github.com/b-board/b-board/blob/main/CHANGELOG.md).
 
 ---
 
