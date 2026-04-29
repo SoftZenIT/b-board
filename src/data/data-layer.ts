@@ -3,14 +3,32 @@ import type { LayoutShape } from './layout.types.js';
 import { createDataLoader, type DataLoader } from './loader.js';
 import { isLanguageId, isLayoutVariantId } from '../public/types.js';
 
+/**
+ * The public data-loading contract for language profiles and layout shapes.
+ * Implement this interface to provide a custom data source.
+ */
 export interface DataLayer {
+  /**
+   * Loads a language profile by its {@link LanguageId}.
+   * @throws if `id` is not a valid {@link LanguageId}
+   */
   loadLanguageProfile(id: string): Promise<LanguageProfile>;
+  /**
+   * Loads a layout shape by its {@link LayoutVariantId}.
+   * @throws if `id` is not a valid {@link LayoutVariantId}
+   */
   loadLayoutShape(id: string): Promise<LayoutShape>;
 }
 
 /**
- * Implementation of the DataLayer that delegates to the specialized DataLoader.
- * Handles ID validation before loading.
+ * Default {@link DataLayer} implementation — loads JSON files from the package's
+ * `data/` directory via fetch. Pass a custom `baseUrl` if hosting data files
+ * on a CDN.
+ * @example
+ * ```ts
+ * const data = new DataLayerImpl()
+ * const profile = await data.loadLanguageProfile('yoruba')
+ * ```
  */
 export class DataLayerImpl implements DataLayer {
   private loader: DataLoader;
