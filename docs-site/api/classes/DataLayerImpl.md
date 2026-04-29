@@ -6,7 +6,7 @@
 
 # Class: DataLayerImpl
 
-Defined in: [data/data-layer.ts:33](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/data-layer.ts#L33)
+Defined in: [data/data-layer.ts:33](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/data-layer.ts#L33)
 
 Default [DataLayer](../interfaces/DataLayer.md) implementation — loads JSON files from the package's
 `data/` directory via fetch. Pass a custom `baseUrl` if hosting data files
@@ -29,7 +29,7 @@ const profile = await data.loadLanguageProfile('yoruba');
 
 > **new DataLayerImpl**(`baseUrl?`): `DataLayerImpl`
 
-Defined in: [data/data-layer.ts:36](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/data-layer.ts#L36)
+Defined in: [data/data-layer.ts:36](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/data-layer.ts#L36)
 
 #### Parameters
 
@@ -47,7 +47,7 @@ Defined in: [data/data-layer.ts:36](https://github.com/SoftZenIT/b-board/blob/c2
 
 > **loadLanguageProfile**(`id`): `Promise`\<[`LanguageProfile`](../interfaces/LanguageProfile.md)\>
 
-Defined in: [data/data-layer.ts:40](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/data-layer.ts#L40)
+Defined in: [data/data-layer.ts:40](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/data-layer.ts#L40)
 
 Loads a language profile by its [LanguageId](../type-aliases/LanguageId.md).
 
@@ -75,7 +75,7 @@ if `id` is not a valid [LanguageId](../type-aliases/LanguageId.md)
 
 > **loadLayoutShape**(`id`): `Promise`\<[`LayoutShape`](../interfaces/LayoutShape.md)\>
 
-Defined in: [data/data-layer.ts:47](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/data-layer.ts#L47)
+Defined in: [data/data-layer.ts:47](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/data-layer.ts#L47)
 
 Loads a layout shape by its [LayoutVariantId](../type-aliases/LayoutVariantId.md).
 

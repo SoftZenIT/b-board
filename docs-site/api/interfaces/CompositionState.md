@@ -6,7 +6,7 @@
 
 # Interface: CompositionState
 
-Defined in: [data/runtime.types.ts:53](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/runtime.types.ts#L53)
+Defined in: [data/runtime.types.ts:53](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/runtime.types.ts#L53)
 
 Live state of the composition engine between keystrokes.
 
@@ -22,7 +22,7 @@ const state = createCompositionState('tone-armed', '´', true);
 
 > `readonly` **armed**: `boolean`
 
-Defined in: [data/runtime.types.ts:59](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/runtime.types.ts#L59)
+Defined in: [data/runtime.types.ts:59](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/runtime.types.ts#L59)
 
 Whether a dead key has been pressed and is waiting for a base key.
 
@@ -32,7 +32,7 @@ Whether a dead key has been pressed and is waiting for a base key.
 
 > `readonly` **buffer**: `string`
 
-Defined in: [data/runtime.types.ts:57](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/runtime.types.ts#L57)
+Defined in: [data/runtime.types.ts:57](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/runtime.types.ts#L57)
 
 Characters accumulated so far in the composition buffer.
 
@@ -42,6 +42,6 @@ Characters accumulated so far in the composition buffer.
 
 > `readonly` **mode**: `"none"` \| `"tone-armed"` \| `"nasal-armed"`
 
-Defined in: [data/runtime.types.ts:55](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/runtime.types.ts#L55)
+Defined in: [data/runtime.types.ts:55](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/runtime.types.ts#L55)
 
 Current composition mode.

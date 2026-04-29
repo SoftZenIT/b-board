@@ -6,7 +6,7 @@
 
 # Interface: DeleteOperation
 
-Defined in: [adapters/types.ts:31](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L31)
+Defined in: [adapters/types.ts:31](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L31)
 
 ## Extends
 
@@ -18,7 +18,7 @@ Defined in: [adapters/types.ts:31](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **length**: `number`
 
-Defined in: [adapters/types.ts:33](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L33)
+Defined in: [adapters/types.ts:33](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L33)
 
 ---
 
@@ -26,7 +26,7 @@ Defined in: [adapters/types.ts:33](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **type**: `"delete"`
 
-Defined in: [adapters/types.ts:32](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L32)
+Defined in: [adapters/types.ts:32](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L32)
 
 #### Overrides
 

@@ -6,7 +6,7 @@
 
 # Interface: BBoardKeyPressEventDetail
 
-Defined in: [public/events.types.ts:31](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/events.types.ts#L31)
+Defined in: [public/events.types.ts:31](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/events.types.ts#L31)
 
 Payload for the `bboard-key-press` custom event.
 
@@ -16,7 +16,7 @@ Payload for the `bboard-key-press` custom event.
 
 > `readonly` **char**: `string`
 
-Defined in: [public/events.types.ts:33](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/events.types.ts#L33)
+Defined in: [public/events.types.ts:33](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/events.types.ts#L33)
 
 ---
 
@@ -24,4 +24,4 @@ Defined in: [public/events.types.ts:33](https://github.com/SoftZenIT/b-board/blo
 
 > `readonly` **keyId**: `string`
 
-Defined in: [public/events.types.ts:32](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/events.types.ts#L32)
+Defined in: [public/events.types.ts:32](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/events.types.ts#L32)

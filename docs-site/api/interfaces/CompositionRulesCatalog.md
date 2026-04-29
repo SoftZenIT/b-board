@@ -6,7 +6,7 @@
 
 # Interface: CompositionRulesCatalog
 
-Defined in: [data/registry.types.ts:64](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/registry.types.ts#L64)
+Defined in: [data/registry.types.ts:64](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/registry.types.ts#L64)
 
 Global catalog of dead-key triggers used across all language profiles.
 
@@ -22,7 +22,7 @@ const catalog: CompositionRulesCatalog = { version: '1.0.0', triggers: [...] }
 
 > **triggers**: [`CompositionTriggerEntry`](CompositionTriggerEntry.md)[]
 
-Defined in: [data/registry.types.ts:68](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/registry.types.ts#L68)
+Defined in: [data/registry.types.ts:68](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/registry.types.ts#L68)
 
 All registered dead-key triggers.
 
@@ -32,6 +32,6 @@ All registered dead-key triggers.
 
 > **version**: `string`
 
-Defined in: [data/registry.types.ts:66](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/registry.types.ts#L66)
+Defined in: [data/registry.types.ts:66](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/registry.types.ts#L66)
 
 Semantic version of the catalog.

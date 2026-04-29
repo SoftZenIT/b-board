@@ -6,7 +6,7 @@
 
 # Interface: LayoutSlot
 
-Defined in: [data/layout.types.ts:8](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/layout.types.ts#L8)
+Defined in: [data/layout.types.ts:8](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/layout.types.ts#L8)
 
 A single key slot within a keyboard row.
 
@@ -22,7 +22,7 @@ const slot = createLayoutSlot(createKeyId('key-a'), 1);
 
 > **keyId**: [`KeyId`](../type-aliases/KeyId.md)
 
-Defined in: [data/layout.types.ts:10](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/layout.types.ts#L10)
+Defined in: [data/layout.types.ts:10](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/layout.types.ts#L10)
 
 The key this slot renders.
 
@@ -32,7 +32,7 @@ The key this slot renders.
 
 > `optional` **label?**: `string`
 
-Defined in: [data/layout.types.ts:14](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/layout.types.ts#L14)
+Defined in: [data/layout.types.ts:14](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/layout.types.ts#L14)
 
 Optional visible label override.
 
@@ -42,6 +42,6 @@ Optional visible label override.
 
 > **width**: `number`
 
-Defined in: [data/layout.types.ts:12](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/layout.types.ts#L12)
+Defined in: [data/layout.types.ts:12](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/layout.types.ts#L12)
 
 Relative width multiplier (1 = standard key unit).

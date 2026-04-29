@@ -6,7 +6,7 @@
 
 # Interface: LifecycleEventMap
 
-Defined in: [core/lifecycle.types.ts:5](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/lifecycle.types.ts#L5)
+Defined in: [core/lifecycle.types.ts:5](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/lifecycle.types.ts#L5)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [core/lifecycle.types.ts:5](https://github.com/SoftZenIT/b-board/blo
 
 > **destroyed**: `object`
 
-Defined in: [core/lifecycle.types.ts:9](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/lifecycle.types.ts#L9)
+Defined in: [core/lifecycle.types.ts:9](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/lifecycle.types.ts#L9)
 
 #### timestamp
 
@@ -26,7 +26,7 @@ Defined in: [core/lifecycle.types.ts:9](https://github.com/SoftZenIT/b-board/blo
 
 > **error**: `object`
 
-Defined in: [core/lifecycle.types.ts:8](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/lifecycle.types.ts#L8)
+Defined in: [core/lifecycle.types.ts:8](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/lifecycle.types.ts#L8)
 
 #### error
 
@@ -46,7 +46,7 @@ Defined in: [core/lifecycle.types.ts:8](https://github.com/SoftZenIT/b-board/blo
 
 > **initialized**: `object`
 
-Defined in: [core/lifecycle.types.ts:6](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/lifecycle.types.ts#L6)
+Defined in: [core/lifecycle.types.ts:6](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/lifecycle.types.ts#L6)
 
 #### state
 
@@ -62,7 +62,7 @@ Defined in: [core/lifecycle.types.ts:6](https://github.com/SoftZenIT/b-board/blo
 
 > **ready**: `object`
 
-Defined in: [core/lifecycle.types.ts:7](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/lifecycle.types.ts#L7)
+Defined in: [core/lifecycle.types.ts:7](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/lifecycle.types.ts#L7)
 
 #### state
 
@@ -82,7 +82,7 @@ Defined in: [core/lifecycle.types.ts:7](https://github.com/SoftZenIT/b-board/blo
 
 > **state-change**: `object`
 
-Defined in: [core/lifecycle.types.ts:10](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/lifecycle.types.ts#L10)
+Defined in: [core/lifecycle.types.ts:10](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/lifecycle.types.ts#L10)
 
 #### from
 

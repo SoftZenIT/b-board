@@ -6,7 +6,7 @@
 
 # Interface: InsertOperation
 
-Defined in: [adapters/types.ts:26](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L26)
+Defined in: [adapters/types.ts:26](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L26)
 
 ## Extends
 
@@ -18,7 +18,7 @@ Defined in: [adapters/types.ts:26](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **text**: `string`
 
-Defined in: [adapters/types.ts:28](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L28)
+Defined in: [adapters/types.ts:28](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L28)
 
 ---
 
@@ -26,7 +26,7 @@ Defined in: [adapters/types.ts:28](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **type**: `"insert"`
 
-Defined in: [adapters/types.ts:27](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L27)
+Defined in: [adapters/types.ts:27](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L27)
 
 #### Overrides
 

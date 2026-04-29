@@ -6,7 +6,7 @@
 
 # Interface: LayoutShape
 
-Defined in: [data/layout.types.ts:46](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/layout.types.ts#L46)
+Defined in: [data/layout.types.ts:46](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/layout.types.ts#L46)
 
 The full shape of a keyboard layout variant.
 
@@ -22,7 +22,7 @@ const shape = createLayoutShape('desktop-azerty', 'desktop', [baseLayer], 'light
 
 > **id**: `"desktop-azerty"` \| `"mobile-default"`
 
-Defined in: [data/layout.types.ts:48](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/layout.types.ts#L48)
+Defined in: [data/layout.types.ts:48](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/layout.types.ts#L48)
 
 Unique identifier for this variant.
 
@@ -32,7 +32,7 @@ Unique identifier for this variant.
 
 > **layers**: [`LayoutLayer`](LayoutLayer.md)[]
 
-Defined in: [data/layout.types.ts:52](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/layout.types.ts#L52)
+Defined in: [data/layout.types.ts:52](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/layout.types.ts#L52)
 
 Ordered layers; typically base + shift (+ altGr on desktop).
 
@@ -42,7 +42,7 @@ Ordered layers; typically base + shift (+ altGr on desktop).
 
 > **theme**: `"light"` \| `"dark"` \| `"auto"`
 
-Defined in: [data/layout.types.ts:54](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/layout.types.ts#L54)
+Defined in: [data/layout.types.ts:54](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/layout.types.ts#L54)
 
 Default theme applied to this layout.
 
@@ -52,6 +52,6 @@ Default theme applied to this layout.
 
 > **variant**: `"desktop"` \| `"mobile"`
 
-Defined in: [data/layout.types.ts:50](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/layout.types.ts#L50)
+Defined in: [data/layout.types.ts:50](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/layout.types.ts#L50)
 
 Platform type: desktop or mobile.

@@ -6,7 +6,7 @@
 
 # Interface: DataLayer
 
-Defined in: [data/data-layer.ts:10](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/data-layer.ts#L10)
+Defined in: [data/data-layer.ts:10](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/data-layer.ts#L10)
 
 The public data-loading contract for language profiles and layout shapes.
 Implement this interface to provide a custom data source.
@@ -17,7 +17,7 @@ Implement this interface to provide a custom data source.
 
 > **loadLanguageProfile**(`id`): `Promise`\<[`LanguageProfile`](LanguageProfile.md)\>
 
-Defined in: [data/data-layer.ts:15](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/data-layer.ts#L15)
+Defined in: [data/data-layer.ts:15](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/data-layer.ts#L15)
 
 Loads a language profile by its [LanguageId](../type-aliases/LanguageId.md).
 
@@ -41,7 +41,7 @@ if `id` is not a valid [LanguageId](../type-aliases/LanguageId.md)
 
 > **loadLayoutShape**(`id`): `Promise`\<[`LayoutShape`](LayoutShape.md)\>
 
-Defined in: [data/data-layer.ts:20](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/data-layer.ts#L20)
+Defined in: [data/data-layer.ts:20](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/data-layer.ts#L20)
 
 Loads a layout shape by its [LayoutVariantId](../type-aliases/LayoutVariantId.md).
 

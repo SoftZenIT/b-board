@@ -8,7 +8,7 @@
 
 > **BBoardEventMap** = `object`
 
-Defined in: [public/events.types.ts:46](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/events.types.ts#L46)
+Defined in: [public/events.types.ts:46](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/events.types.ts#L46)
 
 Map of all custom events emitted by `<benin-keyboard>`.
 Use this with `addEventListener` for type-safe event handling.
@@ -27,7 +27,7 @@ keyboard.addEventListener('bboard-ready', (e: BBoardEventMap['bboard-ready']) =>
 
 > **bboard-error**: `CustomEvent`\<[`BBoardErrorEventDetail`](../interfaces/BBoardErrorEventDetail.md)\>
 
-Defined in: [public/events.types.ts:50](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/events.types.ts#L50)
+Defined in: [public/events.types.ts:50](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/events.types.ts#L50)
 
 ---
 
@@ -35,7 +35,7 @@ Defined in: [public/events.types.ts:50](https://github.com/SoftZenIT/b-board/blo
 
 > **bboard-key-press**: `CustomEvent`\<[`BBoardKeyPressEventDetail`](../interfaces/BBoardKeyPressEventDetail.md)\>
 
-Defined in: [public/events.types.ts:51](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/events.types.ts#L51)
+Defined in: [public/events.types.ts:51](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/events.types.ts#L51)
 
 ---
 
@@ -43,7 +43,7 @@ Defined in: [public/events.types.ts:51](https://github.com/SoftZenIT/b-board/blo
 
 > **bboard-language-change**: `CustomEvent`\<[`BBoardLanguageChangeEventDetail`](../interfaces/BBoardLanguageChangeEventDetail.md)\>
 
-Defined in: [public/events.types.ts:48](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/events.types.ts#L48)
+Defined in: [public/events.types.ts:48](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/events.types.ts#L48)
 
 ---
 
@@ -51,7 +51,7 @@ Defined in: [public/events.types.ts:48](https://github.com/SoftZenIT/b-board/blo
 
 > **bboard-ready**: `CustomEvent`\<[`BBoardReadyEventDetail`](../interfaces/BBoardReadyEventDetail.md)\>
 
-Defined in: [public/events.types.ts:47](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/events.types.ts#L47)
+Defined in: [public/events.types.ts:47](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/events.types.ts#L47)
 
 ---
 
@@ -59,4 +59,4 @@ Defined in: [public/events.types.ts:47](https://github.com/SoftZenIT/b-board/blo
 
 > **bboard-theme-change**: `CustomEvent`\<[`BBoardThemeChangeEventDetail`](../interfaces/BBoardThemeChangeEventDetail.md)\>
 
-Defined in: [public/events.types.ts:49](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/events.types.ts#L49)
+Defined in: [public/events.types.ts:49](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/events.types.ts#L49)

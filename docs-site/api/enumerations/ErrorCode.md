@@ -6,7 +6,7 @@
 
 # Enumeration: ErrorCode
 
-Defined in: [public/error-codes.ts:6](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L6)
+Defined in: [public/error-codes.ts:6](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L6)
 
 Canonical error codes emitted by the keyboard component.
 Each code maps to a [RECOVERY_SUGGESTIONS](../variables/RECOVERY_SUGGESTIONS.md) entry with a human-readable
@@ -18,7 +18,7 @@ recovery hint for developers.
 
 > **COMPOSITION_ERROR**: `"COMPOSITION_ERROR"`
 
-Defined in: [public/error-codes.ts:24](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L24)
+Defined in: [public/error-codes.ts:24](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L24)
 
 ---
 
@@ -26,7 +26,7 @@ Defined in: [public/error-codes.ts:24](https://github.com/SoftZenIT/b-board/blob
 
 > **DATA_NOT_FOUND**: `"DATA_NOT_FOUND"`
 
-Defined in: [public/error-codes.ts:10](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L10)
+Defined in: [public/error-codes.ts:10](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L10)
 
 ---
 
@@ -34,7 +34,7 @@ Defined in: [public/error-codes.ts:10](https://github.com/SoftZenIT/b-board/blob
 
 > **EVENT_DISPATCH_ERROR**: `"EVENT_DISPATCH_ERROR"`
 
-Defined in: [public/error-codes.ts:33](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L33)
+Defined in: [public/error-codes.ts:33](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L33)
 
 ---
 
@@ -42,7 +42,7 @@ Defined in: [public/error-codes.ts:33](https://github.com/SoftZenIT/b-board/blob
 
 > **HTTP_ERROR**: `"HTTP_ERROR"`
 
-Defined in: [public/error-codes.ts:9](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L9)
+Defined in: [public/error-codes.ts:9](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L9)
 
 ---
 
@@ -50,7 +50,7 @@ Defined in: [public/error-codes.ts:9](https://github.com/SoftZenIT/b-board/blob/
 
 > **INTEGRITY_CHECK**: `"INTEGRITY_CHECK"`
 
-Defined in: [public/error-codes.ts:15](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L15)
+Defined in: [public/error-codes.ts:15](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L15)
 
 ---
 
@@ -58,7 +58,7 @@ Defined in: [public/error-codes.ts:15](https://github.com/SoftZenIT/b-board/blob
 
 > **INVALID_LANGUAGE**: `"INVALID_LANGUAGE"`
 
-Defined in: [public/error-codes.ts:16](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L16)
+Defined in: [public/error-codes.ts:16](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L16)
 
 ---
 
@@ -66,7 +66,7 @@ Defined in: [public/error-codes.ts:16](https://github.com/SoftZenIT/b-board/blob
 
 > **INVALID_LAYOUT**: `"INVALID_LAYOUT"`
 
-Defined in: [public/error-codes.ts:17](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L17)
+Defined in: [public/error-codes.ts:17](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L17)
 
 ---
 
@@ -74,7 +74,7 @@ Defined in: [public/error-codes.ts:17](https://github.com/SoftZenIT/b-board/blob
 
 > **INVALID_OPERATION**: `"INVALID_OPERATION"`
 
-Defined in: [public/error-codes.ts:25](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L25)
+Defined in: [public/error-codes.ts:25](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L25)
 
 ---
 
@@ -82,7 +82,7 @@ Defined in: [public/error-codes.ts:25](https://github.com/SoftZenIT/b-board/blob
 
 > **INVALID_TRANSITION**: `"INVALID_TRANSITION"`
 
-Defined in: [public/error-codes.ts:20](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L20)
+Defined in: [public/error-codes.ts:20](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L20)
 
 ---
 
@@ -90,7 +90,7 @@ Defined in: [public/error-codes.ts:20](https://github.com/SoftZenIT/b-board/blob
 
 > **INVARIANT_VIOLATION**: `"INVARIANT_VIOLATION"`
 
-Defined in: [public/error-codes.ts:21](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L21)
+Defined in: [public/error-codes.ts:21](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L21)
 
 ---
 
@@ -98,7 +98,7 @@ Defined in: [public/error-codes.ts:21](https://github.com/SoftZenIT/b-board/blob
 
 > **MISSING_API**: `"MISSING_API"`
 
-Defined in: [public/error-codes.ts:29](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L29)
+Defined in: [public/error-codes.ts:29](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L29)
 
 ---
 
@@ -106,7 +106,7 @@ Defined in: [public/error-codes.ts:29](https://github.com/SoftZenIT/b-board/blob
 
 > **NETWORK_ERROR**: `"NETWORK_ERROR"`
 
-Defined in: [public/error-codes.ts:8](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L8)
+Defined in: [public/error-codes.ts:8](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L8)
 
 ---
 
@@ -114,7 +114,7 @@ Defined in: [public/error-codes.ts:8](https://github.com/SoftZenIT/b-board/blob/
 
 > **PARSE_ERROR**: `"PARSE_ERROR"`
 
-Defined in: [public/error-codes.ts:11](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L11)
+Defined in: [public/error-codes.ts:11](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L11)
 
 ---
 
@@ -122,7 +122,7 @@ Defined in: [public/error-codes.ts:11](https://github.com/SoftZenIT/b-board/blob
 
 > **RENDER_ERROR**: `"RENDER_ERROR"`
 
-Defined in: [public/error-codes.ts:32](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L32)
+Defined in: [public/error-codes.ts:32](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L32)
 
 ---
 
@@ -130,7 +130,7 @@ Defined in: [public/error-codes.ts:32](https://github.com/SoftZenIT/b-board/blob
 
 > **SCHEMA_VALIDATION**: `"SCHEMA_VALIDATION"`
 
-Defined in: [public/error-codes.ts:14](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L14)
+Defined in: [public/error-codes.ts:14](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L14)
 
 ---
 
@@ -138,7 +138,7 @@ Defined in: [public/error-codes.ts:14](https://github.com/SoftZenIT/b-board/blob
 
 > **UNKNOWN_ERROR**: `"UNKNOWN_ERROR"`
 
-Defined in: [public/error-codes.ts:34](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L34)
+Defined in: [public/error-codes.ts:34](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L34)
 
 ---
 
@@ -146,4 +146,4 @@ Defined in: [public/error-codes.ts:34](https://github.com/SoftZenIT/b-board/blob
 
 > **UNSUPPORTED_BROWSER**: `"UNSUPPORTED_BROWSER"`
 
-Defined in: [public/error-codes.ts:28](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/error-codes.ts#L28)
+Defined in: [public/error-codes.ts:28](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/error-codes.ts#L28)

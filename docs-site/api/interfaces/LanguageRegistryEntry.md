@@ -6,7 +6,7 @@
 
 # Interface: LanguageRegistryEntry
 
-Defined in: [data/registry.types.ts:9](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/registry.types.ts#L9)
+Defined in: [data/registry.types.ts:9](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/registry.types.ts#L9)
 
 A single entry in the registry pointing to a data file.
 
@@ -22,7 +22,7 @@ const entry: LanguageRegistryEntry = { id: 'yoruba', path: 'data/languages/yorub
 
 > **id**: `"yoruba"` \| `"fon-adja"` \| `"baatonum"` \| `"dendi"`
 
-Defined in: [data/registry.types.ts:11](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/registry.types.ts#L11)
+Defined in: [data/registry.types.ts:11](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/registry.types.ts#L11)
 
 Language identifier.
 
@@ -32,6 +32,6 @@ Language identifier.
 
 > **path**: `string`
 
-Defined in: [data/registry.types.ts:13](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/data/registry.types.ts#L13)
+Defined in: [data/registry.types.ts:13](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/registry.types.ts#L13)
 
 Relative path to the language JSON file.

@@ -6,7 +6,7 @@
 
 # Interface: NormalizedSelection
 
-Defined in: [adapters/types.ts:14](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L14)
+Defined in: [adapters/types.ts:14](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L14)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [adapters/types.ts:14](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **direction**: `"none"` \| `"forward"` \| `"backward"`
 
-Defined in: [adapters/types.ts:17](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L17)
+Defined in: [adapters/types.ts:17](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L17)
 
 ---
 
@@ -22,7 +22,7 @@ Defined in: [adapters/types.ts:17](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **length**: `number`
 
-Defined in: [adapters/types.ts:16](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L16)
+Defined in: [adapters/types.ts:16](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L16)
 
 ---
 
@@ -30,4 +30,4 @@ Defined in: [adapters/types.ts:16](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **position**: `number`
 
-Defined in: [adapters/types.ts:15](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L15)
+Defined in: [adapters/types.ts:15](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L15)

@@ -6,7 +6,7 @@
 
 # Interface: ReadySubstates
 
-Defined in: [core/substate.types.ts:16](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/substate.types.ts#L16)
+Defined in: [core/substate.types.ts:16](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/substate.types.ts#L16)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [core/substate.types.ts:16](https://github.com/SoftZenIT/b-board/blo
 
 > **attachment**: `"detached"` \| `"attached"`
 
-Defined in: [core/substate.types.ts:17](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/substate.types.ts#L17)
+Defined in: [core/substate.types.ts:17](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/substate.types.ts#L17)
 
 ---
 
@@ -22,7 +22,7 @@ Defined in: [core/substate.types.ts:17](https://github.com/SoftZenIT/b-board/blo
 
 > **composition**: `"inactive"` \| `"composing"`
 
-Defined in: [core/substate.types.ts:21](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/substate.types.ts#L21)
+Defined in: [core/substate.types.ts:21](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/substate.types.ts#L21)
 
 ---
 
@@ -30,7 +30,7 @@ Defined in: [core/substate.types.ts:21](https://github.com/SoftZenIT/b-board/blo
 
 > **focus**: `"blurred"` \| `"focused"`
 
-Defined in: [core/substate.types.ts:18](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/substate.types.ts#L18)
+Defined in: [core/substate.types.ts:18](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/substate.types.ts#L18)
 
 ---
 
@@ -38,7 +38,7 @@ Defined in: [core/substate.types.ts:18](https://github.com/SoftZenIT/b-board/blo
 
 > **interaction**: `"idle"` \| `"active"`
 
-Defined in: [core/substate.types.ts:20](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/substate.types.ts#L20)
+Defined in: [core/substate.types.ts:20](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/substate.types.ts#L20)
 
 ---
 
@@ -46,4 +46,4 @@ Defined in: [core/substate.types.ts:20](https://github.com/SoftZenIT/b-board/blo
 
 > **surface**: `"hidden"` \| `"visible"`
 
-Defined in: [core/substate.types.ts:19](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/substate.types.ts#L19)
+Defined in: [core/substate.types.ts:19](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/substate.types.ts#L19)

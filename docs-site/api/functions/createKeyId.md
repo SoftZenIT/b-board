@@ -8,7 +8,7 @@
 
 > **createKeyId**(`raw`): [`KeyId`](../type-aliases/KeyId.md)
 
-Defined in: [public/types.ts:30](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/public/types.ts#L30)
+Defined in: [public/types.ts:30](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/public/types.ts#L30)
 
 Creates a branded [KeyId](../type-aliases/KeyId.md) from a plain string.
 

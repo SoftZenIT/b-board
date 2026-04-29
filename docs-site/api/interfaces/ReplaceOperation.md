@@ -6,7 +6,7 @@
 
 # Interface: ReplaceOperation
 
-Defined in: [adapters/types.ts:36](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L36)
+Defined in: [adapters/types.ts:36](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L36)
 
 ## Extends
 
@@ -18,7 +18,7 @@ Defined in: [adapters/types.ts:36](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **selection**: [`NormalizedSelection`](NormalizedSelection.md)
 
-Defined in: [adapters/types.ts:39](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L39)
+Defined in: [adapters/types.ts:39](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L39)
 
 ---
 
@@ -26,7 +26,7 @@ Defined in: [adapters/types.ts:39](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **text**: `string`
 
-Defined in: [adapters/types.ts:38](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L38)
+Defined in: [adapters/types.ts:38](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L38)
 
 ---
 
@@ -34,7 +34,7 @@ Defined in: [adapters/types.ts:38](https://github.com/SoftZenIT/b-board/blob/c22
 
 > `readonly` **type**: `"replace"`
 
-Defined in: [adapters/types.ts:37](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/adapters/types.ts#L37)
+Defined in: [adapters/types.ts:37](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/adapters/types.ts#L37)
 
 #### Overrides
 

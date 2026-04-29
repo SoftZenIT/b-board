@@ -6,7 +6,7 @@
 
 # Interface: KeyboardEngine
 
-Defined in: [core/engine.ts:45](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/engine.ts#L45)
+Defined in: [core/engine.ts:45](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/engine.ts#L45)
 
 The keyboard engine facade — manages state, lifecycle events, and substates.
 Create via [createKeyboardEngine](../functions/createKeyboardEngine.md).
@@ -26,7 +26,7 @@ engine.destroy();
 
 > **destroy**(): `void`
 
-Defined in: [core/engine.ts:49](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/engine.ts#L49)
+Defined in: [core/engine.ts:49](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/engine.ts#L49)
 
 Destroys the engine and cleans up all listeners.
 
@@ -40,7 +40,7 @@ Destroys the engine and cleans up all listeners.
 
 > **getSnapshot**(): [`StateSnapshot`](StateSnapshot.md)
 
-Defined in: [core/engine.ts:53](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/engine.ts#L53)
+Defined in: [core/engine.ts:53](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/engine.ts#L53)
 
 Returns a full snapshot of current state and substates.
 
@@ -54,7 +54,7 @@ Returns a full snapshot of current state and substates.
 
 > **getState**(): `"uninitialized"` \| `"initializing"` \| `"ready"` \| `"error"` \| `"destroyed"`
 
-Defined in: [core/engine.ts:51](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/engine.ts#L51)
+Defined in: [core/engine.ts:51](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/engine.ts#L51)
 
 Returns the current top-level state.
 
@@ -68,7 +68,7 @@ Returns the current top-level state.
 
 > **initialize**(): `Promise`\<`void`\>
 
-Defined in: [core/engine.ts:47](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/engine.ts#L47)
+Defined in: [core/engine.ts:47](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/engine.ts#L47)
 
 Transitions the engine from `init` → `ready`. Must be called once before use.
 
@@ -82,7 +82,7 @@ Transitions the engine from `init` → `ready`. Must be called once before use.
 
 > **on**\<`K`\>(`event`, `listener`): [`Unsubscribe`](../type-aliases/Unsubscribe.md)
 
-Defined in: [core/engine.ts:60](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/engine.ts#L60)
+Defined in: [core/engine.ts:60](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/engine.ts#L60)
 
 Registers a listener for a lifecycle event.
 
@@ -114,7 +114,7 @@ An unsubscribe function — call it to remove the listener.
 
 > **setSubstates**(`updates`): `void`
 
-Defined in: [core/engine.ts:55](https://github.com/SoftZenIT/b-board/blob/c22afb247f8482392c5e7a60d8facd4174dd8352/src/core/engine.ts#L55)
+Defined in: [core/engine.ts:55](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/core/engine.ts#L55)
 
 Updates one or more ready-phase substates atomically.
 
