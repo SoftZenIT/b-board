@@ -48,7 +48,11 @@
     "type-check": "vue-tsc --noEmit",
     "bootstrap:schemas": "tsx scripts/bootstrap-schemas.ts",
     "validate:data": "tsx scripts/validate-data.ts",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "docs:dev": "vitepress dev docs-site",
+    "docs:build": "vitepress build docs-site",
+    "docs:preview": "vitepress preview docs-site",
+    "docs:api": "typedoc"
   },
   "dependencies": {
     "ajv": "^8.18.0",
@@ -79,6 +83,7 @@
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
     "vite-plugin-dts": "^4.5.4",
+    "vitepress": "^1.6.4",
     "vitest": "^4.1.0",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^2.2.0"
