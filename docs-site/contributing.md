@@ -146,7 +146,7 @@ The short version:
 
 ### Before you start
 
-1. Check [open issues](../../issues) and the Jira board to avoid duplicate work
+1. Check the issue tracker and the Jira board to avoid duplicate work
 2. For significant changes, open an issue or Jira ticket first to discuss the approach
 
 ### Branch naming
