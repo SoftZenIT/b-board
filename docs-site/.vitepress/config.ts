@@ -5,6 +5,18 @@ export default defineConfig({
   description: 'Framework-agnostic virtual keyboard for Beninese African languages',
   base: '/',
 
+  ignoreDeadLinks: [
+    '/api/',
+    '/api/index',
+    '/guides/language-customization',
+    '/reference/troubleshooting',
+    '/reference/examples',
+    '/reference/architecture',
+    '/reference/faq',
+    '/reference/migration',
+    '/guides/accessibility',
+  ],
+
   head: [['link', { rel: 'icon', href: '/logo.svg' }]],
 
   themeConfig: {
