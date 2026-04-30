@@ -215,8 +215,4 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       el.removeEventListener('bboard-error', this.handleError);
     }
   }
-
-  toggleTheme(): void {
-    this.theme = this.theme === 'light' ? 'dark' : 'light';
-  }
 }
