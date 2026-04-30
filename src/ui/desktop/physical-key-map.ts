@@ -64,6 +64,31 @@ export function mapPhysicalCodeToLogicalKey(code: string): KeyId | null {
 }
 
 /**
+ * Physical key codes whose char output is taken directly from KeyboardEvent.key
+ * rather than the bboard keyMap. This makes them respect the OS keyboard layout
+ * (e.g. French AZERTY: Digit1 base = '&', shift = '1').
+ */
+export const PHYSICAL_PASSTHROUGH_CODES = new Set([
+  'Digit1',
+  'Digit2',
+  'Digit3',
+  'Digit4',
+  'Digit5',
+  'Digit6',
+  'Digit7',
+  'Digit8',
+  'Digit9',
+  'Digit0',
+  'Minus',
+  'Equal',
+  'Backquote',
+  'BracketLeft',
+  'BracketRight',
+  'Backslash',
+  'Quote',
+]) as ReadonlySet<string>;
+
+/**
  * Physical key codes (from KeyboardEvent.code) that control the active layer.
  * When any of these keys are held, they affect which layer character keys output from.
  */

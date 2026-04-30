@@ -20,6 +20,7 @@ import {
   mapPhysicalCodeToLogicalKey,
   computePhysicalLayer,
   MODIFIER_KEY_IDS,
+  PHYSICAL_PASSTHROUGH_CODES,
 } from '../ui/desktop/physical-key-map.js';
 import { createCompositionProcessor } from '../composition/index.js';
 import type { CompositionProcessor } from '../composition/index.js';
@@ -991,9 +992,15 @@ export class BeninKeyboard extends LitElement {
         e.preventDefault();
         const heldKeys = this._desktopState.snapshot().heldPhysicalKeys;
         const layer = computePhysicalLayer(heldKeys);
-        const resolvedKey = this._resolvedLayout.keyMap.get(keyId);
-        // Fall back to base layer if the computed layer has no entry for this key
-        const char = resolvedKey?.layers[layer]?.char ?? resolvedKey?.layers['base']?.char ?? '';
+        // Passthrough keys (numbers, symbols) use the OS e.key directly so the
+        // physical layout (e.g. AZERTY: Digit1 base='&', shift='1') is respected.
+        const char = PHYSICAL_PASSTHROUGH_CODES.has(e.code)
+          ? e.key.length === 1
+            ? e.key
+            : ''
+          : (this._resolvedLayout.keyMap.get(keyId)?.layers[layer]?.char ??
+            this._resolvedLayout.keyMap.get(keyId)?.layers['base']?.char ??
+            '');
         const composed = this._compositionProcessor?.process(keyId, char) ?? char;
         if (composed !== null) {
           dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
