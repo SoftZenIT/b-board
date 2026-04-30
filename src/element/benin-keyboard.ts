@@ -771,6 +771,14 @@ export class BeninKeyboard extends LitElement {
       // Was armed but produced the original char → invalid combination
       this._announceAssertive('Combinaison invalide');
     }
+    const capslockKeyId = createKeyId('key-capslock');
+    if (keyId === capslockKeyId) {
+      const newLayer: LayerId = snapshot.activeLayer === 'shift' ? 'base' : 'shift';
+      this._desktopState.setActiveLayer(newLayer);
+      this.requestUpdate();
+      return;
+    }
+
     dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
 
     const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snapshot.activeLayer);
@@ -817,6 +825,13 @@ export class BeninKeyboard extends LitElement {
     } else if (wasArmed && armedTrigger !== null) {
       this._announceAssertive('Combinaison invalide');
     }
+    const capslockKeyIdMobile = createKeyId('key-capslock');
+    if (keyId === capslockKeyIdMobile) {
+      this._mobileState.setActiveLayer(snap.activeLayer === 'shift' ? 'base' : 'shift');
+      this.requestUpdate();
+      return;
+    }
+
     dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
 
     const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snap.activeLayer);

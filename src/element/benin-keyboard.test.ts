@@ -307,3 +307,35 @@ describe('Composition engine integration', () => {
     }
   });
 });
+
+describe('Virtual capslock', () => {
+  it('toggles shift layer when virtual capslock key is clicked (desktop)', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    // Activate capslock virtual key
+    el._activateKey('key-capslock');
+    await el.updateComplete;
+
+    // Capslock itself should not fire a key-press event
+    expect(events).toHaveLength(0);
+
+    // Next key press should use shift layer (uppercase)
+    const keyAId = [...el._resolvedLayout.keyMap.entries()].find(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ([_key, v]: [any, any]) => v.layers?.base?.char === 'a'
+    )?.[0];
+    if (keyAId) {
+      el._activateKey(keyAId);
+      expect(events).toHaveLength(1);
+      expect(events[0].detail.char).toMatch(/[A-Z]/);
+    }
+
+    document.body.removeChild(el);
+  });
+});
