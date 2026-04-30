@@ -187,14 +187,13 @@ describe('createLayoutResolver — cache management', () => {
 
 describe('createLayoutResolver — universal entries', () => {
   it('merges universal entries into keyMap for keys present in layout', () => {
-    const resolver = createLayoutResolver();
+    const resolver = createLayoutResolver({ universalEntries });
     const resolved = resolver.resolve(
       shapeWithExtras,
       profile,
       catalog,
       'desktop-azerty',
-      'yoruba',
-      universalEntries
+      'yoruba'
     );
 
     const backspace = resolved.keyMap.get(keyBackspace);
@@ -208,28 +207,26 @@ describe('createLayoutResolver — universal entries', () => {
   it('skips universal entries whose keyId is not in the layout shape', () => {
     const keyMissing = createKeyId('key-9999');
     const universalWithMissing: KeyCatalogEntry[] = [{ keyId: keyMissing, baseChar: 'x' }];
-    const resolver = createLayoutResolver();
+    const resolver = createLayoutResolver({ universalEntries: universalWithMissing });
     const resolved = resolver.resolve(
       shapeWithExtras,
       profile,
       catalog,
       'desktop-azerty',
-      'yoruba',
-      universalWithMissing
+      'yoruba'
     );
     expect(resolved.keyMap.has(keyMissing)).toBe(false);
   });
 
   it('language entries take precedence over universal entries for same keyId', () => {
     const conflicting: KeyCatalogEntry[] = [{ keyId: keyA, baseChar: 'UNIVERSAL' }];
-    const resolver = createLayoutResolver();
+    const resolver = createLayoutResolver({ universalEntries: conflicting });
     const resolved = resolver.resolve(
       shapeWithExtras,
       profile,
       catalog,
       'desktop-azerty',
-      'yoruba',
-      conflicting
+      'yoruba'
     );
     expect(resolved.keyMap.get(keyA)?.layers.base.char).toBe('a'); // language wins
   });
@@ -244,6 +241,15 @@ describe('createLayoutResolver — universal entries', () => {
       'yoruba'
     );
     expect(resolved.keyMap.has(keyBackspace)).toBe(false);
+  });
+
+  it('two resolvers with different universalEntries produce different results', () => {
+    const resolver1 = createLayoutResolver({ universalEntries: universalEntries });
+    const resolver2 = createLayoutResolver({ universalEntries: [] });
+    const r1 = resolver1.resolve(shapeWithExtras, profile, catalog, 'desktop-azerty', 'yoruba');
+    const r2 = resolver2.resolve(shapeWithExtras, profile, catalog, 'desktop-azerty', 'yoruba');
+    expect(r1.keyMap.has(keyBackspace)).toBe(true);
+    expect(r2.keyMap.has(keyBackspace)).toBe(false);
   });
 });
 

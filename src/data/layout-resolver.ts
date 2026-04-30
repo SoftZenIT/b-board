@@ -14,6 +14,8 @@ import { checkLanguageIntegrity } from './_internal/integrity-checker.js';
 export interface ResolverOptions {
   /** Maximum number of resolved layouts to cache. Defaults to 16. */
   maxCacheSize?: number;
+  /** Universal key entries (e.g. Backspace, digits) shared across all languages. */
+  universalEntries?: readonly KeyCatalogEntry[];
 }
 
 export interface LayoutResolver {
@@ -24,8 +26,7 @@ export interface LayoutResolver {
     profile: LanguageProfile,
     catalog: CompositionRulesCatalog,
     layoutId: LayoutVariantId,
-    languageId: LanguageId,
-    universalEntries?: readonly KeyCatalogEntry[]
+    languageId: LanguageId
   ): ResolvedLayout;
   /** Empties the resolved layout cache. */
   clearCache(): void;
@@ -41,6 +42,7 @@ export interface LayoutResolver {
  */
 export function createLayoutResolver(options?: ResolverOptions): LayoutResolver {
   const maxCacheSize = options?.maxCacheSize ?? 16;
+  const universalEntries = options?.universalEntries;
   const cache = new Map<string, ResolvedLayout>();
 
   return {
@@ -49,8 +51,7 @@ export function createLayoutResolver(options?: ResolverOptions): LayoutResolver 
       profile,
       _catalog /* reserved for future trigger gating */,
       layoutId,
-      languageId,
-      universalEntries
+      languageId
     ) {
       const cacheKey = `${layoutId}::${languageId}`;
       const cached = cache.get(cacheKey);
@@ -77,11 +78,12 @@ export function createLayoutResolver(options?: ResolverOptions): LayoutResolver 
         for (const entry of universalEntries) {
           if (!layoutKeyIds.has(entry.keyId)) continue;
           const layers = {
-            base: createKeyOutput(entry.baseChar),
+            base: createKeyOutput(entry.baseChar, entry.composition?.[0]),
             shift: createKeyOutput(entry.shiftChar ?? entry.baseChar),
             altGr: createKeyOutput(entry.altGrChar ?? ''),
           };
-          keyMap.set(entry.keyId, createResolvedKey(entry.keyId, layers, []));
+          const longPress = entry.longPress ? [...entry.longPress] : [];
+          keyMap.set(entry.keyId, createResolvedKey(entry.keyId, layers, longPress));
         }
       }
 
