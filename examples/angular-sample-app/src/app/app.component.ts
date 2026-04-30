@@ -25,14 +25,52 @@ interface Language {
         <h1>BBoard + Angular</h1>
 
         <div class="controls">
-          <label for="language-select">Language: </label>
-          <select id="language-select" data-testid="language-select" [(ngModel)]="language">
-            @for (l of languages; track l.id) {
-              <option [value]="l.id">{{ l.label }}</option>
-            }
-          </select>
+          <label>
+            Language:
+            <select id="language-select" data-testid="language-select" [(ngModel)]="language">
+              @for (l of languages; track l.id) {
+                <option [value]="l.id">{{ l.label }}</option>
+              }
+            </select>
+          </label>
 
-          <button data-testid="theme-toggle" (click)="toggleTheme()">Theme: {{ theme }}</button>
+          <label>
+            Theme:
+            <select data-testid="theme-select" [(ngModel)]="theme">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="auto">Auto</option>
+            </select>
+          </label>
+
+          <label>
+            Layout:
+            <select data-testid="layout-select" [(ngModel)]="layoutVariant">
+              <option value="desktop-azerty">Desktop AZERTY</option>
+              <option value="mobile-default">Mobile</option>
+            </select>
+          </label>
+
+          <label>
+            Modifier mode:
+            <select data-testid="modifier-mode-select" [(ngModel)]="modifierDisplayMode">
+              <option value="transition">Transition</option>
+              <option value="hint">Hint</option>
+            </select>
+          </label>
+
+          <label>
+            <input type="checkbox" data-testid="open-toggle" [(ngModel)]="open" /> Open
+          </label>
+
+          <label>
+            <input type="checkbox" data-testid="disabled-toggle" [(ngModel)]="disabled" /> Disabled
+          </label>
+
+          <label>
+            <input type="checkbox" data-testid="echo-toggle" [(ngModel)]="showPhysicalEcho" />
+            Physical echo
+          </label>
         </div>
       </header>
 
@@ -48,6 +86,11 @@ interface Language {
           #keyboard
           [attr.language]="language"
           [attr.theme]="theme"
+          [attr.layout-variant]="layoutVariant"
+          [attr.modifier-display-mode]="modifierDisplayMode"
+          [attr.open]="open ? '' : null"
+          [attr.disabled]="disabled ? '' : null"
+          [attr.show-physical-echo]="showPhysicalEcho ? '' : null"
           data-testid="keyboard"
         ></benin-keyboard>
 
@@ -72,11 +115,24 @@ interface Language {
         background: #1a1a1a;
         color: #e0e0e0;
       }
+      .app.dark textarea,
+      .app.dark select {
+        background: #2a2a2a;
+        color: #e0e0e0;
+        border-color: #444;
+      }
       .controls {
         display: flex;
-        gap: 1rem;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.25rem;
         align-items: center;
         margin: 1rem 0;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+      .app.dark .controls {
+        border-color: #444;
       }
       textarea {
         width: 100%;
@@ -110,7 +166,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ];
 
   language = 'yoruba';
-  theme: 'light' | 'dark' = 'light';
+  theme = 'light';
+  layoutVariant = 'desktop-azerty';
+  modifierDisplayMode = 'transition';
+  open = true;
+  disabled = false;
+  showPhysicalEcho = false;
   text = '';
   error: string | null = null;
 
@@ -118,6 +179,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     const { char } = (event as CustomEvent).detail as { char: string };
     if (char === '\b') {
       this.text = this.text.slice(0, -1);
+    } else if (char === '\n') {
+      this.text += '\n';
     } else {
       this.text += char;
     }

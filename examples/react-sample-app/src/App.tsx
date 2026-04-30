@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type LanguageId = 'yoruba' | 'fon-adja' | 'baatonum' | 'dendi';
+type ThemeId = 'light' | 'dark' | 'auto';
+type LayoutVariantId = 'desktop-azerty' | 'mobile-default';
+type ModifierDisplayMode = 'transition' | 'hint';
 
 const LANGUAGES: { id: LanguageId; label: string }[] = [
   { id: 'yoruba', label: 'Yoruba' },
@@ -11,7 +14,12 @@ const LANGUAGES: { id: LanguageId; label: string }[] = [
 
 export default function App() {
   const [language, setLanguage] = useState<LanguageId>('yoruba');
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<ThemeId>('light');
+  const [layoutVariant, setLayoutVariant] = useState<LayoutVariantId>('desktop-azerty');
+  const [modifierDisplayMode, setModifierDisplayMode] = useState<ModifierDisplayMode>('transition');
+  const [open, setOpen] = useState(true);
+  const [disabled, setDisabled] = useState(false);
+  const [showPhysicalEcho, setShowPhysicalEcho] = useState(false);
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const keyboardRef = useRef<HTMLElement>(null);
@@ -57,26 +65,88 @@ export default function App() {
         <h1>BBoard + React</h1>
 
         <div className="controls">
-          <label htmlFor="language-select">Language: </label>
-          <select
-            id="language-select"
-            data-testid="language-select"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as LanguageId)}
-          >
-            {LANGUAGES.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.label}
-              </option>
-            ))}
-          </select>
+          <label>
+            Language:{' '}
+            <select
+              id="language-select"
+              data-testid="language-select"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as LanguageId)}
+            >
+              {LANGUAGES.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-          <button
-            data-testid="theme-toggle"
-            onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
-          >
-            Theme: {theme}
-          </button>
+          <label>
+            Theme:{' '}
+            <select
+              data-testid="theme-select"
+              value={theme}
+              onChange={(e) => setTheme(e.target.value as ThemeId)}
+            >
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="auto">Auto</option>
+            </select>
+          </label>
+
+          <label>
+            Layout:{' '}
+            <select
+              data-testid="layout-select"
+              value={layoutVariant}
+              onChange={(e) => setLayoutVariant(e.target.value as LayoutVariantId)}
+            >
+              <option value="desktop-azerty">Desktop AZERTY</option>
+              <option value="mobile-default">Mobile</option>
+            </select>
+          </label>
+
+          <label>
+            Modifier mode:{' '}
+            <select
+              data-testid="modifier-mode-select"
+              value={modifierDisplayMode}
+              onChange={(e) => setModifierDisplayMode(e.target.value as ModifierDisplayMode)}
+            >
+              <option value="transition">Transition</option>
+              <option value="hint">Hint</option>
+            </select>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              data-testid="open-toggle"
+              checked={open}
+              onChange={(e) => setOpen(e.target.checked)}
+            />{' '}
+            Open
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              data-testid="disabled-toggle"
+              checked={disabled}
+              onChange={(e) => setDisabled(e.target.checked)}
+            />{' '}
+            Disabled
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              data-testid="echo-toggle"
+              checked={showPhysicalEcho}
+              onChange={(e) => setShowPhysicalEcho(e.target.checked)}
+            />{' '}
+            Physical echo
+          </label>
         </div>
       </header>
 
@@ -93,6 +163,11 @@ export default function App() {
           ref={keyboardRef}
           language={language}
           theme={theme}
+          layout-variant={layoutVariant}
+          modifier-display-mode={modifierDisplayMode}
+          open={open}
+          disabled={disabled}
+          show-physical-echo={showPhysicalEcho}
           data-testid="keyboard"
         />
 
@@ -115,11 +190,25 @@ export default function App() {
           background: #1a1a1a;
           color: #e0e0e0;
         }
+        .app.dark textarea,
+        .app.dark select,
+        .app.dark input {
+          background: #2a2a2a;
+          color: #e0e0e0;
+          border-color: #444;
+        }
         .controls {
           display: flex;
-          gap: 1rem;
+          flex-wrap: wrap;
+          gap: 0.75rem 1.25rem;
           align-items: center;
           margin: 1rem 0;
+          padding: 0.75rem;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+        }
+        .app.dark .controls {
+          border-color: #444;
         }
         textarea {
           width: 100%;

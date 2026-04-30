@@ -11,42 +11,104 @@
         margin: 2rem auto;
         padding: 0 1rem;
       }
+      body.dark {
+        background: #1a1a1a;
+        color: #e0e0e0;
+      }
+      body.dark textarea,
+      body.dark select {
+        background: #2a2a2a;
+        color: #e0e0e0;
+        border-color: #444;
+      }
       textarea {
         width: 100%;
         height: 120px;
         font-size: 1.1rem;
         padding: 0.5rem;
         margin-bottom: 1rem;
+        box-sizing: border-box;
       }
       .controls {
         display: flex;
-        gap: 0.5rem;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        align-items: center;
         margin-bottom: 1rem;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
       }
-      select,
-      button {
-        padding: 0.4rem 0.8rem;
+      body.dark .controls {
+        border-color: #444;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.9rem;
+      }
+      select {
+        padding: 0.3rem 0.6rem;
         font-size: 0.9rem;
       }
     </style>
   </head>
   <body>
     <h1>b-board Vanilla Example</h1>
+
     <div class="controls">
-      <select id="lang-select">
-        <option value="yoruba">Yoruba</option>
-        <option value="fon-adja">Fon / Adja</option>
-        <option value="baatonum">Baatɔnum</option>
-        <option value="dendi">Dendi</option>
-      </select>
-      <select id="theme-select">
-        <option value="auto">Auto</option>
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-      </select>
+      <label>
+        Language:
+        <select id="lang-select">
+          <option value="yoruba">Yoruba</option>
+          <option value="fon-adja">Fon / Adja</option>
+          <option value="baatonum">Baatɔnum</option>
+          <option value="dendi">Dendi</option>
+        </select>
+      </label>
+
+      <label>
+        Theme:
+        <select id="theme-select">
+          <option value="auto">Auto</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+
+      <label>
+        Layout:
+        <select id="layout-select">
+          <option value="desktop-azerty">Desktop AZERTY</option>
+          <option value="mobile-default">Mobile</option>
+        </select>
+      </label>
+
+      <label>
+        Modifier mode:
+        <select id="modifier-mode-select">
+          <option value="transition">Transition</option>
+          <option value="hint">Hint</option>
+        </select>
+      </label>
+
+      <label>
+        <input type="checkbox" id="open-toggle" checked /> Open
+      </label>
+
+      <label>
+        <input type="checkbox" id="disabled-toggle" /> Disabled
+      </label>
+
+      <label>
+        <input type="checkbox" id="echo-toggle" /> Physical echo
+      </label>
     </div>
+
     <textarea id="output" placeholder="Characters appear here..."></textarea>
     <benin-keyboard id="kb" language="yoruba" theme="auto"></benin-keyboard>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
