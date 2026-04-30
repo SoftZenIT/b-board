@@ -9,6 +9,8 @@
   { "keyId": "key-8", "baseChar": "8", "shiftChar": "*" },
   { "keyId": "key-9", "baseChar": "9", "shiftChar": "(" },
   { "keyId": "key-0", "baseChar": "0", "shiftChar": ")" },
+  { "keyId": "key-minus", "baseChar": "-", "shiftChar": "_" },
+  { "keyId": "key-equal", "baseChar": "=", "shiftChar": "+" },
   { "keyId": "key-backspace", "baseChar": "\b" },
   { "keyId": "key-enter", "baseChar": "\n" },
   { "keyId": "key-space", "baseChar": " " }

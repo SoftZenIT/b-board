@@ -4,6 +4,19 @@ import { createKeyId, type KeyId, type LayerId } from '../../public/index.js';
 // to logical KeyId in the desktop-azerty layout.
 // AZERTY positions: Row0=AZERTYUIOP, Row1=QSDFGHJKLM, Row2=WXCVBN(specials)
 const CODE_TO_KEY: Record<string, KeyId> = {
+  // Number row (1–0, -, =)
+  Digit1: createKeyId('key-1'),
+  Digit2: createKeyId('key-2'),
+  Digit3: createKeyId('key-3'),
+  Digit4: createKeyId('key-4'),
+  Digit5: createKeyId('key-5'),
+  Digit6: createKeyId('key-6'),
+  Digit7: createKeyId('key-7'),
+  Digit8: createKeyId('key-8'),
+  Digit9: createKeyId('key-9'),
+  Digit0: createKeyId('key-0'),
+  Minus: createKeyId('key-minus'),
+  Equal: createKeyId('key-equal'),
   // Top row (AZERTY: A Z E R T Y U I O P)
   KeyQ: createKeyId('key-a'),
   KeyW: createKeyId('key-z'),
