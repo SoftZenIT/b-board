@@ -19,8 +19,14 @@ export default function App() {
   // React 18 doesn't natively forward custom events from web components,
   // so we attach listeners via ref + useEffect.
   const handleKeyPress = useCallback((e: Event) => {
-    const detail = (e as CustomEvent).detail as { char: string };
-    setText((prev) => prev + detail.char);
+    const { char } = (e as CustomEvent).detail as { char: string };
+    if (char === '\b') {
+      setText((prev) => prev.slice(0, -1));
+    } else if (char === '\n') {
+      setText((prev) => prev + '\n');
+    } else {
+      setText((prev) => prev + char);
+    }
   }, []);
 
   const handleError = useCallback((e: Event) => {

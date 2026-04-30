@@ -115,8 +115,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   error: string | null = null;
 
   private readonly handleKeyPress = (event: Event): void => {
-    const detail = (event as CustomEvent).detail as { char: string };
-    this.text += detail.char;
+    const { char } = (event as CustomEvent).detail as { char: string };
+    if (char === '\b') {
+      this.text = this.text.slice(0, -1);
+    } else {
+      this.text += char;
+    }
   };
 
   private readonly handleError = (event: Event): void => {

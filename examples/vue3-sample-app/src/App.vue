@@ -16,8 +16,12 @@ const text = ref('');
 const error = ref<string | null>(null);
 
 function onKeyPress(e: Event) {
-  const detail = (e as CustomEvent).detail as { char: string };
-  text.value += detail.char;
+  const { char } = (e as CustomEvent).detail as { char: string };
+  if (char === '\b') {
+    text.value = text.value.slice(0, -1);
+  } else {
+    text.value += char;
+  }
 }
 
 function onError(e: Event) {
