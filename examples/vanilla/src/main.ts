@@ -69,3 +69,13 @@ echoToggle.addEventListener('change', () => {
     keyboard.removeAttribute('show-physical-echo');
   }
 });
+
+const floatingToggle = document.getElementById('floating-toggle') as HTMLInputElement;
+
+floatingToggle.addEventListener('change', () => {
+  if (floatingToggle.checked) {
+    keyboard.setAttribute('floating', '');
+  } else {
+    keyboard.removeAttribute('floating');
+  }
+});

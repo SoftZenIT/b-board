@@ -83,8 +83,15 @@ export class BeninKeyboard extends LitElement {
   @property({ type: Boolean, attribute: 'show-physical-echo' }) showPhysicalEcho = false;
   @property({ type: String, attribute: 'modifier-display-mode' })
   modifierDisplayMode: ModifierDisplayMode = 'transition';
+  @property({ type: Boolean, reflect: true }) floating = false;
 
   @state() private _errorState: KeyboardError | null = null;
+
+  private _dragging = false;
+  private _dragOffsetX = 0;
+  private _dragOffsetY = 0;
+  private _currentX = 0;
+  private _currentY = 0;
 
   private readonly _errorHandler: ErrorHandler = createErrorHandler();
   private readonly _themeManager!: ThemeManager;
@@ -197,6 +204,50 @@ export class BeninKeyboard extends LitElement {
         --bboard-color-status-success: #32d74b;
         --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.5);
       }
+    }
+
+    :host([floating]) {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      min-width: min(98vw, 700px);
+      z-index: 9999;
+      filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.25));
+    }
+
+    .drag-handle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      height: 20px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      border-radius: var(--bboard-size-radius-lg) var(--bboard-size-radius-lg) 0 0;
+      background: var(--bboard-color-surface-base);
+      padding-top: 4px;
+    }
+
+    :host([floating]) .drag-handle {
+      display: flex;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .drag-handle-grip {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--bboard-color-surface-special);
+      opacity: 0.6;
+    }
+
+    :host([floating]) .keyboard-container {
+      border-radius: 0 0 var(--bboard-size-radius-lg) var(--bboard-size-radius-lg);
     }
 
     .keyboard-container {
@@ -720,6 +771,11 @@ export class BeninKeyboard extends LitElement {
     if (changedProperties.has('theme')) {
       this._themeManager.theme = this.theme;
     }
+    if (changedProperties.has('floating') && !this.floating) {
+      this._currentX = 0;
+      this._currentY = 0;
+      this.style.transform = '';
+    }
     if (changedProperties.has('layoutVariant')) {
       if (this.layoutVariant.startsWith('mobile-')) {
         this._startResizeObserver();
@@ -945,6 +1001,31 @@ export class BeninKeyboard extends LitElement {
     this.classList.toggle('theme-dark', !isAuto && effectiveTheme === 'dark');
     this.classList.toggle('theme-auto', isAuto);
   }
+
+  private readonly _handleDragStart = (e: PointerEvent): void => {
+    if (!this.floating) return;
+    e.preventDefault();
+    this._dragging = true;
+    this._dragOffsetX = e.clientX - this._currentX;
+    this._dragOffsetY = e.clientY - this._currentY;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    (e.currentTarget as HTMLElement).addEventListener('pointermove', this._handleDragMove);
+    (e.currentTarget as HTMLElement).addEventListener('pointerup', this._handleDragEnd);
+  };
+
+  private readonly _handleDragMove = (e: PointerEvent): void => {
+    if (!this._dragging) return;
+    this._currentX = e.clientX - this._dragOffsetX;
+    this._currentY = e.clientY - this._dragOffsetY;
+    this.style.transform = `translate(calc(-50% + ${this._currentX}px), ${this._currentY}px)`;
+  };
+
+  private readonly _handleDragEnd = (e: PointerEvent): void => {
+    this._dragging = false;
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    (e.currentTarget as HTMLElement).removeEventListener('pointermove', this._handleDragMove);
+    (e.currentTarget as HTMLElement).removeEventListener('pointerup', this._handleDragEnd);
+  };
 
   get effectiveTheme(): 'light' | 'dark' {
     return this._themeManager.effectiveTheme;
@@ -1232,6 +1313,11 @@ export class BeninKeyboard extends LitElement {
       });
 
       return html`
+        ${this.floating
+          ? html`<div class="drag-handle" @pointerdown=${this._handleDragStart}>
+              <div class="drag-handle-grip"></div>
+            </div>`
+          : nothing}
         <div
           class="bboard-mobile-keyboard"
           role="group"
@@ -1280,6 +1366,11 @@ export class BeninKeyboard extends LitElement {
     });
 
     return html`
+      ${this.floating
+        ? html`<div class="drag-handle" @pointerdown=${this._handleDragStart}>
+            <div class="drag-handle-grip"></div>
+          </div>`
+        : nothing}
       <div
         class="keyboard-container"
         role="group"

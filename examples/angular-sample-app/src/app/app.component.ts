@@ -71,6 +71,11 @@ interface Language {
             <input type="checkbox" data-testid="echo-toggle" [(ngModel)]="showPhysicalEcho" />
             Physical echo
           </label>
+
+          <label>
+            <input type="checkbox" data-testid="floating-toggle" [(ngModel)]="floating" />
+            Floating
+          </label>
         </div>
       </header>
 
@@ -91,6 +96,7 @@ interface Language {
           [attr.open]="open ? '' : null"
           [attr.disabled]="disabled ? '' : null"
           [attr.show-physical-echo]="showPhysicalEcho ? '' : null"
+          [attr.floating]="floating ? '' : null"
           data-testid="keyboard"
         ></benin-keyboard>
 
@@ -172,6 +178,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   open = true;
   disabled = false;
   showPhysicalEcho = false;
+  floating = false;
   text = '';
   error: string | null = null;
 

@@ -20,6 +20,7 @@ export default function App() {
   const [open, setOpen] = useState(true);
   const [disabled, setDisabled] = useState(false);
   const [showPhysicalEcho, setShowPhysicalEcho] = useState(false);
+  const [floating, setFloating] = useState(false);
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const keyboardRef = useRef<HTMLElement>(null);
@@ -147,6 +148,16 @@ export default function App() {
             />{' '}
             Physical echo
           </label>
+
+          <label>
+            <input
+              type="checkbox"
+              data-testid="floating-toggle"
+              checked={floating}
+              onChange={(e) => setFloating(e.target.checked)}
+            />{' '}
+            Floating
+          </label>
         </div>
       </header>
 
@@ -168,6 +179,7 @@ export default function App() {
           {...(open ? { open: true } : {})}
           {...(disabled ? { disabled: true } : {})}
           {...(showPhysicalEcho ? { 'show-physical-echo': true } : {})}
+          {...(floating ? { floating: true } : {})}
           data-testid="keyboard"
         />
 

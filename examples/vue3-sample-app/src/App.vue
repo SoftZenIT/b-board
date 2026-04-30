@@ -20,6 +20,7 @@ const modifierDisplayMode = ref<ModifierDisplayMode>('transition');
 const open = ref(true);
 const disabled = ref(false);
 const showPhysicalEcho = ref(false);
+const floating = ref(false);
 const text = ref('');
 const error = ref<string | null>(null);
 
@@ -92,6 +93,10 @@ function onError(e: Event) {
           <input v-model="showPhysicalEcho" type="checkbox" data-testid="echo-toggle" /> Physical
           echo
         </label>
+
+        <label>
+          <input v-model="floating" type="checkbox" data-testid="floating-toggle" /> Floating
+        </label>
       </div>
     </header>
 
@@ -111,6 +116,7 @@ function onError(e: Event) {
         :open="open"
         :disabled="disabled"
         :show-physical-echo="showPhysicalEcho"
+        :floating="floating"
         data-testid="keyboard"
         @bboard-key-press="onKeyPress"
         @bboard-error="onError"
