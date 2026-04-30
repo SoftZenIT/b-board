@@ -2,11 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { createLayoutResolver } from './layout-resolver.js';
 import { createKeyId } from '../public/types.js';
 import type { LayoutShape } from './layout.types.js';
-import type { LanguageProfile } from './language.types.js';
+import type { LanguageProfile, KeyCatalogEntry } from './language.types.js';
 import type { CompositionRulesCatalog } from './registry.types.js';
 
 const keyA = createKeyId('key-a');
 const keyB = createKeyId('key-b');
+const keyBackspace = createKeyId('key-backspace');
+const key1 = createKeyId('key-1');
 
 const shape: LayoutShape = {
   id: 'desktop-azerty',
@@ -41,6 +43,32 @@ const profile: LanguageProfile = {
     { trigger: '`', base: 'a', result: 'à', mode: 'tone' },
   ],
 };
+
+const shapeWithExtras: LayoutShape = {
+  id: 'desktop-azerty',
+  variant: 'desktop',
+  layers: [
+    {
+      name: 'base',
+      rows: [
+        {
+          slots: [
+            { keyId: keyA, width: 1 },
+            { keyId: keyB, width: 1 },
+            { keyId: keyBackspace, width: 1 },
+            { keyId: key1, width: 1 },
+          ],
+        },
+      ],
+    },
+  ],
+  theme: 'light',
+};
+
+const universalEntries: KeyCatalogEntry[] = [
+  { keyId: keyBackspace, baseChar: '\b' },
+  { keyId: key1, baseChar: '1', shiftChar: '!' },
+];
 
 const catalog: CompositionRulesCatalog = {
   version: '1.0.0',
@@ -154,6 +182,68 @@ describe('createLayoutResolver — cache management', () => {
     // p1 was evicted — resolving again produces a NEW object
     const r1Again = resolver.resolve(shape, p1, catalog, 'desktop-azerty', 'yoruba');
     expect(r1Again).not.toBe(r1);
+  });
+});
+
+describe('createLayoutResolver — universal entries', () => {
+  it('merges universal entries into keyMap for keys present in layout', () => {
+    const resolver = createLayoutResolver();
+    const resolved = resolver.resolve(
+      shapeWithExtras,
+      profile,
+      catalog,
+      'desktop-azerty',
+      'yoruba',
+      universalEntries
+    );
+
+    const backspace = resolved.keyMap.get(keyBackspace);
+    expect(backspace?.layers.base.char).toBe('\b');
+
+    const digit1 = resolved.keyMap.get(key1);
+    expect(digit1?.layers.base.char).toBe('1');
+    expect(digit1?.layers.shift.char).toBe('!');
+  });
+
+  it('skips universal entries whose keyId is not in the layout shape', () => {
+    const keyMissing = createKeyId('key-9999');
+    const universalWithMissing: KeyCatalogEntry[] = [{ keyId: keyMissing, baseChar: 'x' }];
+    const resolver = createLayoutResolver();
+    const resolved = resolver.resolve(
+      shapeWithExtras,
+      profile,
+      catalog,
+      'desktop-azerty',
+      'yoruba',
+      universalWithMissing
+    );
+    expect(resolved.keyMap.has(keyMissing)).toBe(false);
+  });
+
+  it('language entries take precedence over universal entries for same keyId', () => {
+    const conflicting: KeyCatalogEntry[] = [{ keyId: keyA, baseChar: 'UNIVERSAL' }];
+    const resolver = createLayoutResolver();
+    const resolved = resolver.resolve(
+      shapeWithExtras,
+      profile,
+      catalog,
+      'desktop-azerty',
+      'yoruba',
+      conflicting
+    );
+    expect(resolved.keyMap.get(keyA)?.layers.base.char).toBe('a'); // language wins
+  });
+
+  it('works without universalEntries (backward-compatible)', () => {
+    const resolver = createLayoutResolver();
+    const resolved = resolver.resolve(
+      shapeWithExtras,
+      profile,
+      catalog,
+      'desktop-azerty',
+      'yoruba'
+    );
+    expect(resolved.keyMap.has(keyBackspace)).toBe(false);
   });
 });
 

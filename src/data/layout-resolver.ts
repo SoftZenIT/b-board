@@ -1,6 +1,6 @@
 import type { LayoutVariantId, LanguageId, KeyId } from '../public/types.js';
 import type { LayoutShape } from './layout.types.js';
-import type { LanguageProfile, CompositionRule } from './language.types.js';
+import type { LanguageProfile, CompositionRule, KeyCatalogEntry } from './language.types.js';
 import type { CompositionRulesCatalog } from './registry.types.js';
 import {
   createKeyOutput,
@@ -24,7 +24,8 @@ export interface LayoutResolver {
     profile: LanguageProfile,
     catalog: CompositionRulesCatalog,
     layoutId: LayoutVariantId,
-    languageId: LanguageId
+    languageId: LanguageId,
+    universalEntries?: readonly KeyCatalogEntry[]
   ): ResolvedLayout;
   /** Empties the resolved layout cache. */
   clearCache(): void;
@@ -48,7 +49,8 @@ export function createLayoutResolver(options?: ResolverOptions): LayoutResolver 
       profile,
       _catalog /* reserved for future trigger gating */,
       layoutId,
-      languageId
+      languageId,
+      universalEntries
     ) {
       const cacheKey = `${layoutId}::${languageId}`;
       const cached = cache.get(cacheKey);
@@ -57,8 +59,33 @@ export function createLayoutResolver(options?: ResolverOptions): LayoutResolver 
       // Cross-file integrity: every language key must exist in the layout
       checkLanguageIntegrity(profile, shape);
 
+      // Build set of keyIds present in this layout (used to filter universal entries)
+      const layoutKeyIds = new Set<KeyId>();
+      for (const layer of shape.layers) {
+        for (const row of layer.rows) {
+          for (const slot of row.slots) {
+            layoutKeyIds.add(slot.keyId as KeyId);
+          }
+        }
+      }
+
       // Build keyMap: keyId → multi-layer resolved behavior
       const keyMap = new Map<KeyId, ResolvedKey>();
+
+      // Merge universal entries first (only those present in this layout)
+      if (universalEntries) {
+        for (const entry of universalEntries) {
+          if (!layoutKeyIds.has(entry.keyId)) continue;
+          const layers = {
+            base: createKeyOutput(entry.baseChar),
+            shift: createKeyOutput(entry.shiftChar ?? entry.baseChar),
+            altGr: createKeyOutput(entry.altGrChar ?? ''),
+          };
+          keyMap.set(entry.keyId, createResolvedKey(entry.keyId, layers, []));
+        }
+      }
+
+      // Language entries override universal entries
       for (const entry of profile.characters) {
         const layers = {
           base: createKeyOutput(entry.baseChar, entry.composition?.[0]),
