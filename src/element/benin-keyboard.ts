@@ -153,6 +153,52 @@ export class BeninKeyboard extends LitElement {
       --bboard-mobile-h-padding: 12px;
     }
 
+    :host(.theme-dark) {
+      --bboard-color-surface-base: #1c1c1e;
+      --bboard-color-surface-sunken: #000000;
+      --bboard-color-surface-key: #3a3a3c;
+      --bboard-color-surface-special: #2c2c2e;
+      --bboard-color-surface-active: #48484a;
+      --bboard-color-text-primary: #ffffff;
+      --bboard-color-text-secondary: #9ca3af;
+      --bboard-color-text-on-primary: #ffffff;
+      --bboard-color-primary-base: #0a84ff;
+      --bboard-color-primary-hover: #409cff;
+      --bboard-color-primary-active: #0062d1;
+      --bboard-color-border-subtle: rgba(255, 255, 255, 0.1);
+      --bboard-color-border-strong: rgba(255, 255, 255, 0.3);
+      --bboard-color-focus-ring: #0a84ff;
+      --bboard-color-status-error: #ff453a;
+      --bboard-color-status-success: #32d74b;
+      --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    :host(.theme-auto) {
+      color-scheme: light dark;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host(.theme-auto) {
+        --bboard-color-surface-base: #1c1c1e;
+        --bboard-color-surface-sunken: #000000;
+        --bboard-color-surface-key: #3a3a3c;
+        --bboard-color-surface-special: #2c2c2e;
+        --bboard-color-surface-active: #48484a;
+        --bboard-color-text-primary: #ffffff;
+        --bboard-color-text-secondary: #9ca3af;
+        --bboard-color-text-on-primary: #ffffff;
+        --bboard-color-primary-base: #0a84ff;
+        --bboard-color-primary-hover: #409cff;
+        --bboard-color-primary-active: #0062d1;
+        --bboard-color-border-subtle: rgba(255, 255, 255, 0.1);
+        --bboard-color-border-strong: rgba(255, 255, 255, 0.3);
+        --bboard-color-focus-ring: #0a84ff;
+        --bboard-color-status-error: #ff453a;
+        --bboard-color-status-success: #32d74b;
+        --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.5);
+      }
+    }
+
     .keyboard-container {
       background: var(--bboard-color-surface-base);
       padding: var(--bboard-space-padding);
@@ -895,11 +941,9 @@ export class BeninKeyboard extends LitElement {
     // Guard: classList manipulation sets attributes, which is forbidden
     // inside a custom-element constructor (the HTML spec throws).
     if (!this.isConnected) return;
-    if (effectiveTheme === 'dark') {
-      this.classList.add('theme-dark');
-    } else {
-      this.classList.remove('theme-dark');
-    }
+    const isAuto = this.theme === 'auto';
+    this.classList.toggle('theme-dark', !isAuto && effectiveTheme === 'dark');
+    this.classList.toggle('theme-auto', isAuto);
   }
 
   get effectiveTheme(): 'light' | 'dark' {
