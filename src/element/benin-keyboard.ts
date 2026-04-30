@@ -36,6 +36,10 @@ import {
 import { validateBrowser, supportsResizeObserver } from '../core/_internal/browser-compat.js';
 import { logger } from '../utils/logger.js';
 
+import type { KeyCatalogEntry } from '../data/language.types.js';
+import universalKeysRaw from '../../data/keys/universal.json';
+const UNIVERSAL_KEYS = universalKeysRaw as unknown as KeyCatalogEntry[];
+
 const BCP47_MAP: Readonly<Record<LanguageId, string>> = {
   yoruba: 'yo',
   'fon-adja': 'fon',
@@ -579,7 +583,7 @@ export class BeninKeyboard extends LitElement {
       loader.loadCompositionRules(),
     ]);
     if (`${this.layoutVariant}:${this.language}` === expectedKey) {
-      const resolver = createLayoutResolver();
+      const resolver = createLayoutResolver({ universalEntries: UNIVERSAL_KEYS });
       this._resolvedLayout = resolver.resolve(
         shape,
         profile,
