@@ -831,7 +831,10 @@ export class BeninKeyboard extends LitElement {
     } else if (keyId === altGrKey) {
       const newLayer: LayerId = snapshot.activeLayer === 'altGr' ? 'base' : 'altGr';
       this._desktopState.setActiveLayer(newLayer);
+    } else if (snapshot.activeLayer === 'shift') {
+      this._desktopState.setActiveLayer('base');
     }
+    this.requestUpdate();
   }
 
   private _activateMobileKey(keyId: KeyId): void {
@@ -882,7 +885,10 @@ export class BeninKeyboard extends LitElement {
       this._mobileState.setActiveLayer(snap.activeLayer === 'shift' ? 'base' : 'shift');
     } else if (keyId === altGrKey) {
       this._mobileState.setActiveLayer(snap.activeLayer === 'altGr' ? 'base' : 'altGr');
+    } else if (snap.activeLayer === 'shift') {
+      this._mobileState.setActiveLayer('base');
     }
+    this.requestUpdate();
   }
 
   private _applyTheme(effectiveTheme: 'light' | 'dark'): void {

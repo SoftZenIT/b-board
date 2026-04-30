@@ -165,9 +165,9 @@ export default function App() {
           theme={theme}
           layout-variant={layoutVariant}
           modifier-display-mode={modifierDisplayMode}
-          open={open}
-          disabled={disabled}
-          show-physical-echo={showPhysicalEcho}
+          {...(open ? { open: true } : {})}
+          {...(disabled ? { disabled: true } : {})}
+          {...(showPhysicalEcho ? { 'show-physical-echo': true } : {})}
           data-testid="keyboard"
         />
 
