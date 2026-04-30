@@ -17,14 +17,24 @@ Framework adapters (React, Vue, Angular) provide convenience helpers but are not
 
 b-board currently supports four Beninese languages:
 
-| Language ID | English Name | Native Name |
-| ----------- | ------------ | ----------- |
-| `yoruba`    | Yoruba       | Yorùbá      |
-| `fon-adja`  | Fon/Adja     | Fon/Adjà    |
-| `baatonum`  | Baatɔnum     | Baatɔnum    |
-| `dendi`     | Dendi        | Dendi       |
+| Language ID | English Name | Native Name     |
+| ----------- | ------------ | --------------- |
+| `yoruba`    | Yoruba       | Yorùbá          |
+| `fon-adja`  | Fon/Adja     | Fɔngbè / Ajagbe |
+| `baatonum`  | Baatɔnum     | Baatɔnum        |
+| `dendi`     | Dendi        | Dendi           |
 
 You can add your own language profile without forking the project. See [Adding a new language](../guides/language-customization.md#step-by-step-adding-a-new-language).
+
+---
+
+## Why are Fon and Adja combined into a single language profile?
+
+Fon (Fɔngbè) and Adja (Ajagbe) are both Gbe languages in the Niger-Congo family. Historically the Fon people descended from Adja migrants who founded the Dahomey kingdom, and linguistically the two languages have developed in lockstep: they share an identical consonant inventory (ɖ, ɣ, ʋ, gb, kp), the same vowel inventory (ɛ, ɔ), the same nasal vowel system (ã, ẽ, ɛ̃, ĩ, õ, ɔ̃, ũ), and the same tonal system with identical orthographic conventions established by Beninese linguistic authorities.
+
+Because there is no keyboard-level difference between the two languages — every character, tone mark, and composition rule is shared — a single profile (`fon-adja`) serves both perfectly. Splitting them would produce two identical profiles with no practical benefit for keyboard users.
+
+They are distinct languages (not dialects), and this grouping does not imply that they are the same. If you need to distinguish them at the application level, you can inspect or override the profile; the keyboard itself is agnostic about which of the two the user is typing.
 
 ---
 

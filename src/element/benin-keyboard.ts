@@ -43,6 +43,11 @@ const UNIVERSAL_KEYS = universalKeysRaw as unknown as KeyCatalogEntry[];
 
 const BCP47_MAP: Readonly<Record<LanguageId, string>> = {
   yoruba: 'yo',
+  // Fon (Fɔngbè) and Adja (Ajagbe) share an identical orthography — same
+  // consonants (ɖ, ɣ, ʋ, gb, kp), same vowels (ɛ, ɔ), same nasal vowel
+  // system, same tone marks — so a single profile covers both. BCP47 'fon'
+  // is the registered subtag for Fon; 'aja' is not a registered BCP47 subtag,
+  // so 'fon' is the best available tag for this combined profile.
   'fon-adja': 'fon',
   baatonum: 'bba',
   dendi: 'ddn',
