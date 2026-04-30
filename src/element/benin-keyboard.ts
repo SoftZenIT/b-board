@@ -108,6 +108,48 @@ export class BeninKeyboard extends LitElement {
       user-select: none;
       -webkit-user-select: none;
       font-family: var(--bboard-font-family);
+
+      /* Default design tokens — override from the outside via CSS custom properties */
+      --bboard-color-surface-base: #e2e4e9;
+      --bboard-color-surface-sunken: #d1d5db;
+      --bboard-color-surface-key: #ffffff;
+      --bboard-color-surface-special: #b4bbc3;
+      --bboard-color-surface-active: #e5e7eb;
+      --bboard-color-text-primary: #000000;
+      --bboard-color-text-secondary: #4b5563;
+      --bboard-color-text-on-primary: #ffffff;
+      --bboard-color-primary-base: #007aff;
+      --bboard-color-primary-hover: #0063e6;
+      --bboard-color-primary-active: #0051bb;
+      --bboard-color-border-subtle: rgba(0, 0, 0, 0.1);
+      --bboard-color-border-strong: rgba(0, 0, 0, 0.2);
+      --bboard-color-focus-ring: #007aff;
+      --bboard-color-status-error: #ff3b30;
+      --bboard-color-status-success: #34c759;
+      --bboard-size-touch-min: 44px;
+      --bboard-size-key-height: 3rem;
+      --bboard-size-key-width: 2.5rem;
+      --bboard-size-radius-sm: 4px;
+      --bboard-size-radius-md: 6px;
+      --bboard-size-radius-lg: 12px;
+      --bboard-space-gap-row: 8px;
+      --bboard-space-gap-key: 6px;
+      --bboard-space-padding: 4px;
+      --bboard-space-inset-sm: 8px;
+      --bboard-space-inset-md: 12px;
+      --bboard-font-family: system-ui, -apple-system, sans-serif;
+      --bboard-font-size-base: 1rem;
+      --bboard-font-size-sm: 0.875rem;
+      --bboard-font-size-lg: 1.25rem;
+      --bboard-font-weight-label: 500;
+      --bboard-font-weight-bold: 700;
+      --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.2);
+      --bboard-shadow-key-pressed: none;
+      --bboard-shadow-popup: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --bboard-opacity-disabled: 0.5;
+      --bboard-mobile-key-height: 44px;
+      --bboard-mobile-row-gap: 8px;
+      --bboard-mobile-h-padding: 12px;
     }
 
     .keyboard-container {
