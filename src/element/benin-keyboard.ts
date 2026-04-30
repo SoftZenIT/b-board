@@ -931,6 +931,7 @@ export class BeninKeyboard extends LitElement {
     if (!e.repeat && this.layoutVariant.startsWith('desktop-') && this._resolvedLayout) {
       const keyId = mapPhysicalCodeToLogicalKey(e.code);
       if (keyId !== null && !MODIFIER_KEY_IDS.has(keyId)) {
+        e.preventDefault();
         const heldKeys = this._desktopState.snapshot().heldPhysicalKeys;
         const layer = computePhysicalLayer(heldKeys);
         const resolvedKey = this._resolvedLayout.keyMap.get(keyId);

@@ -148,6 +148,67 @@ describe('Physical keyboard output', () => {
     document.body.removeChild(el);
   });
 
+  it('calls e.preventDefault() for physical character keys (desktop variant)', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const event = new KeyboardEvent('keydown', {
+      code: 'KeyQ',
+      key: 'q',
+      bubbles: true,
+      cancelable: true,
+    });
+    const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+
+    window.dispatchEvent(event);
+
+    expect(preventDefaultSpy).toHaveBeenCalledOnce();
+
+    document.body.removeChild(el);
+  });
+
+  it('fires bboard-key-press with char "\\b" for physical Backspace key', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { code: 'Backspace', key: 'Backspace', bubbles: true })
+    );
+
+    expect(events).toHaveLength(1);
+    expect(events[0].detail.keyId).toBe('key-backspace');
+    expect(events[0].detail.char).toBe('\b');
+
+    document.body.removeChild(el);
+  });
+
+  it('fires bboard-key-press with char "\\n" for physical Enter key', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { code: 'Enter', key: 'Enter', bubbles: true })
+    );
+
+    expect(events).toHaveLength(1);
+    expect(events[0].detail.keyId).toBe('key-enter');
+    expect(events[0].detail.char).toBe('\n');
+
+    document.body.removeChild(el);
+  });
+
   it('does NOT fire bboard-key-press for physical keys in mobile layout variant', async () => {
     const el = document.createElement('benin-keyboard') as any;
     el.layoutVariant = 'mobile-default';
