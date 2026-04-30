@@ -37,15 +37,52 @@ keyboard.addEventListener('bboard-key-press', (e) => {
 
 ## Configuration
 
-| Attribut                | Type                  | Défaut             | Description                                |
-| ----------------------- | --------------------- | ------------------ | ------------------------------------------ |
-| `language`              | `LanguageId`          | `'yoruba'`         | Profil de langue actif                     |
-| `theme`                 | `ThemeId`             | `'auto'`           | Thème de couleur (`light`, `dark`, `auto`) |
-| `layout-variant`        | `LayoutVariantId`     | `'desktop-azerty'` | Disposition du clavier                     |
-| `modifier-display-mode` | `ModifierDisplayMode` | `'transition'`     | Animation des touches modificatrices       |
-| `open`                  | `boolean`             | `true`             | Indique si le clavier est visible          |
-| `disabled`              | `boolean`             | `false`            | Désactive toute interaction                |
-| `show-physical-echo`    | `boolean`             | `false`            | Affiche les pressions physiques à l'écran  |
+| Attribut                | Type                  | Défaut             | Description                                                                 |
+| ----------------------- | --------------------- | ------------------ | --------------------------------------------------------------------------- |
+| `language`              | `LanguageId`          | `'yoruba'`         | Profil de langue actif                                                      |
+| `theme`                 | `ThemeId`             | `'auto'`           | Thème de couleur (`light`, `dark`, `auto`)                                  |
+| `layout-variant`        | `LayoutVariantId`     | `'desktop-azerty'` | Disposition du clavier                                                      |
+| `modifier-display-mode` | `ModifierDisplayMode` | `'transition'`     | Animation des touches modificatrices (`transition` ou `hint`)               |
+| `open`                  | `boolean`             | `true`             | Afficher ou masquer le clavier ; mettre à `false` pour le replier           |
+| `disabled`              | `boolean`             | `false`            | Désactive toute interaction                                                 |
+| `show-physical-echo`    | `boolean`             | `false`            | Met en surbrillance la touche virtuelle correspondant à une touche physique |
+| `floating`              | `boolean`             | `false`            | Détache le clavier en superposition fixe ; déplaçable via sa poignée        |
+
+### Afficher et masquer le clavier
+
+L'attribut `open` contrôle la visibilité. Retirer cet attribut (ou le mettre à `false`) replie le clavier tout en le conservant dans le DOM — l'état, la langue et le thème sont préservés.
+
+```html
+<!-- Replié au chargement de la page -->
+<benin-keyboard language="yoruba" theme="auto"></benin-keyboard>
+
+<button id="toggle">Afficher le clavier</button>
+```
+
+```ts
+const kb = document.querySelector('benin-keyboard')!;
+const btn = document.getElementById('toggle')!;
+
+btn.addEventListener('click', () => {
+  if (kb.hasAttribute('open')) {
+    kb.removeAttribute('open');
+    btn.textContent = 'Afficher le clavier';
+  } else {
+    kb.setAttribute('open', '');
+    btn.textContent = 'Masquer le clavier';
+  }
+});
+```
+
+### Mode flottant
+
+Lorsque `floating` est défini, le clavier se détache du flux du document et s'affiche en superposition fixe centré en bas de la fenêtre. Une poignée de déplacement apparaît en haut — l'utilisateur peut repositionner le clavier n'importe où sur l'écran en le faisant glisser.
+
+```html
+<benin-keyboard language="yoruba" theme="auto" open floating></benin-keyboard>
+```
+
+Retirer `floating` ramène le clavier à sa position en ligne par défaut.
 
 ## Langues prises en charge
 

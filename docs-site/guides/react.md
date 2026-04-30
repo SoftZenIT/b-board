@@ -40,6 +40,7 @@ interface BeninKeyboardAttributes {
   open?: boolean;
   disabled?: boolean;
   'show-physical-echo'?: boolean;
+  floating?: boolean;
 }
 
 declare global {
@@ -226,6 +227,78 @@ export default function LanguageSwitcher() {
 }
 ```
 
+## Showing and Hiding the Keyboard
+
+The `open` attribute controls whether the keyboard is visible. Toggle it with a boolean state value. Because React may write `open="false"` as a string attribute when you use `open={false}`, use the conditional spread pattern (see [Boolean Attribute Binding](#boolean-attribute-binding) below):
+
+```tsx
+import { useState, useEffect, useRef, useCallback } from 'react';
+import 'b-board';
+
+export default function HideableKeyboard() {
+  const [isOpen, setIsOpen] = useState(true);
+  const [text, setText] = useState('');
+  const keyboardRef = useRef<HTMLElement>(null);
+
+  const handleKeyPress = useCallback((e: Event) => {
+    const { char } = (e as CustomEvent<{ char: string }>).detail;
+    setText((prev) => (char === '\b' ? prev.slice(0, -1) : prev + char));
+  }, []);
+
+  useEffect(() => {
+    const el = keyboardRef.current;
+    if (!el) return;
+    el.addEventListener('bboard-key-press', handleKeyPress);
+    return () => el.removeEventListener('bboard-key-press', handleKeyPress);
+  }, [handleKeyPress]);
+
+  return (
+    <>
+      <button onClick={() => setIsOpen((v) => !v)}>
+        {isOpen ? 'Hide keyboard' : 'Show keyboard'}
+      </button>
+      <textarea value={text} readOnly rows={4} />
+      <benin-keyboard
+        ref={keyboardRef}
+        language="yoruba"
+        theme="auto"
+        {...(isOpen ? { open: true } : {})}
+      />
+    </>
+  );
+}
+```
+
+## Floating Mode
+
+Setting `floating` detaches the keyboard from the document flow and renders it as a fixed overlay centered at the bottom of the viewport. A drag handle appears at the top so the user can reposition it anywhere on screen.
+
+```tsx
+import { useState } from 'react';
+import 'b-board';
+
+export default function FloatingKeyboard() {
+  const [floating, setFloating] = useState(false);
+
+  return (
+    <>
+      <label>
+        <input type="checkbox" checked={floating} onChange={(e) => setFloating(e.target.checked)} />{' '}
+        Floating keyboard
+      </label>
+      <benin-keyboard
+        language="yoruba"
+        theme="auto"
+        open
+        {...(floating ? { floating: true } : {})}
+      />
+    </>
+  );
+}
+```
+
+> **Tip:** You can combine `floating` with `open` toggling — the keyboard stays in its last drag position when re-opened.
+
 ## Boolean Attribute Binding
 
 React's handling of boolean attributes on custom elements can be surprising. Setting `disabled={false}` may still add the attribute to the DOM. Use conditional spreading to avoid this:
@@ -236,6 +309,17 @@ React's handling of boolean attributes on custom elements can be surprising. Set
 
 // Correct — attribute is absent when false:
 <benin-keyboard {...(isDisabled ? { disabled: true } : {})} />
+```
+
+The same pattern applies to `open`, `floating`, and `show-physical-echo`:
+
+```tsx
+<benin-keyboard
+  language="yoruba"
+  {...(isOpen ? { open: true } : {})}
+  {...(isFloating ? { floating: true } : {})}
+  {...(showEcho ? { 'show-physical-echo': true } : {})}
+/>
 ```
 
 ## SSR / Next.js
@@ -263,14 +347,16 @@ export default function KeyboardWrapper() {
 
 ## Common Pitfalls
 
-| Pitfall                           | Cause                                  | Fix                                         |
-| --------------------------------- | -------------------------------------- | ------------------------------------------- |
-| Events never fire                 | React 18 doesn't forward custom events | Use `ref` + `addEventListener`              |
-| Duplicate events                  | Missing cleanup in `useEffect`         | Always return a cleanup function            |
-| Stale state in handler            | Inline handler with stale closure      | Use `useCallback` + functional state update |
-| Keyboard loses state on re-render | Unstable `key` prop                    | Use a stable or absent `key`                |
-| `disabled={false}` still disables | React booleans on custom elements      | Use conditional attribute spreading         |
-| SSR hydration mismatch            | Server doesn't know custom elements    | Use `'use client'` + deferred import        |
+| Pitfall                             | Cause                                  | Fix                                             |
+| ----------------------------------- | -------------------------------------- | ----------------------------------------------- |
+| Events never fire                   | React 18 doesn't forward custom events | Use `ref` + `addEventListener`                  |
+| Duplicate events                    | Missing cleanup in `useEffect`         | Always return a cleanup function                |
+| Stale state in handler              | Inline handler with stale closure      | Use `useCallback` + functional state update     |
+| Keyboard loses state on re-render   | Unstable `key` prop                    | Use a stable or absent `key`                    |
+| `disabled={false}` still disables   | React booleans on custom elements      | Use conditional attribute spreading             |
+| `open={false}` still shows keyboard | Same boolean attribute issue           | Use `{...(isOpen ? { open: true } : {})}`       |
+| `floating={false}` still floats     | Same boolean attribute issue           | Use `{...(floating ? { floating: true } : {})}` |
+| SSR hydration mismatch              | Server doesn't know custom elements    | Use `'use client'` + deferred import            |
 
 ## Live Demo
 

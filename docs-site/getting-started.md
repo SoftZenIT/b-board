@@ -37,15 +37,52 @@ keyboard.addEventListener('bboard-key-press', (e) => {
 
 ## Configuration
 
-| Attribute               | Type                  | Default            | Description                           |
-| ----------------------- | --------------------- | ------------------ | ------------------------------------- |
-| `language`              | `LanguageId`          | `'yoruba'`         | Active language profile               |
-| `theme`                 | `ThemeId`             | `'auto'`           | Color theme (`light`, `dark`, `auto`) |
-| `layout-variant`        | `LayoutVariantId`     | `'desktop-azerty'` | Keyboard layout                       |
-| `modifier-display-mode` | `ModifierDisplayMode` | `'transition'`     | How modifier keys animate             |
-| `open`                  | `boolean`             | `true`             | Whether the keyboard is visible       |
-| `disabled`              | `boolean`             | `false`            | Disables all interaction              |
-| `show-physical-echo`    | `boolean`             | `false`            | Echoes physical key presses on screen |
+| Attribute               | Type                  | Default            | Description                                                         |
+| ----------------------- | --------------------- | ------------------ | ------------------------------------------------------------------- |
+| `language`              | `LanguageId`          | `'yoruba'`         | Active language profile                                             |
+| `theme`                 | `ThemeId`             | `'auto'`           | Color theme (`light`, `dark`, `auto`)                               |
+| `layout-variant`        | `LayoutVariantId`     | `'desktop-azerty'` | Keyboard layout                                                     |
+| `modifier-display-mode` | `ModifierDisplayMode` | `'transition'`     | How modifier keys animate (`transition` or `hint`)                  |
+| `open`                  | `boolean`             | `true`             | Show or hide the keyboard; set to `false` to collapse it            |
+| `disabled`              | `boolean`             | `false`            | Disables all interaction                                            |
+| `show-physical-echo`    | `boolean`             | `false`            | Highlights the matching virtual key when a physical key is pressed  |
+| `floating`              | `boolean`             | `false`            | Detaches the keyboard into a fixed overlay; draggable by its handle |
+
+### Showing and hiding the keyboard
+
+The `open` attribute controls visibility. Removing it (or setting it to `false`) collapses the keyboard while keeping the element in the DOM — state, language, and theme are preserved.
+
+```html
+<!-- Collapsed on page load -->
+<benin-keyboard language="yoruba" theme="auto"></benin-keyboard>
+
+<button id="toggle">Show keyboard</button>
+```
+
+```ts
+const kb = document.querySelector('benin-keyboard')!;
+const btn = document.getElementById('toggle')!;
+
+btn.addEventListener('click', () => {
+  if (kb.hasAttribute('open')) {
+    kb.removeAttribute('open');
+    btn.textContent = 'Show keyboard';
+  } else {
+    kb.setAttribute('open', '');
+    btn.textContent = 'Hide keyboard';
+  }
+});
+```
+
+### Floating mode
+
+When `floating` is set, the keyboard detaches from the document flow and renders as a fixed overlay centered at the bottom of the viewport. A drag handle appears at the top — the user can reposition the keyboard anywhere on screen by dragging it.
+
+```html
+<benin-keyboard language="yoruba" theme="auto" open floating></benin-keyboard>
+```
+
+The keyboard returns to its default inline position when `floating` is removed.
 
 ## Supported Languages
 

@@ -68,6 +68,7 @@ interface BeninKeyboardProps {
   open?: boolean;
   disabled?: boolean;
   'show-physical-echo'?: boolean;
+  floating?: boolean;
 }
 
 declare module 'vue' {
@@ -161,6 +162,51 @@ function onKeyPress(e: Event) {
 ```
 
 > **Conseil :** Utilisez toujours `:language` (raccourci v-bind) plutôt que de définir l'attribut impérativement avec `el.setAttribute(...)`. Contourner la liaison réactive de Vue signifie que Vue ne suivra pas le changement et l'interface peut se désynchroniser.
+
+## Afficher et masquer le clavier
+
+Liez `open` à une ref réactive. Vue définit la propriété DOM directement avec `:open`, donc la valeur booléenne s'applique sans contournement :
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const isOpen = ref(true);
+const text = ref('');
+
+function onKeyPress(e: Event) {
+  text.value += (e as CustomEvent<{ char: string }>).detail.char;
+}
+</script>
+
+<template>
+  <button @click="isOpen = !isOpen">
+    {{ isOpen ? 'Masquer le clavier' : 'Afficher le clavier' }}
+  </button>
+  <textarea v-model="text" rows="4" />
+  <benin-keyboard language="yoruba" theme="auto" :open="isOpen" @bboard-key-press="onKeyPress" />
+</template>
+```
+
+## Mode flottant
+
+Définissez `floating` pour détacher le clavier du flux du document. Il s'affiche en superposition fixe centrée en bas de la fenêtre avec une poignée de déplacement en haut. L'utilisateur peut le repositionner en le faisant glisser.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const floating = ref(false);
+const isOpen = ref(true);
+</script>
+
+<template>
+  <label> <input v-model="floating" type="checkbox" /> Clavier flottant </label>
+  <benin-keyboard language="yoruba" theme="auto" :open="isOpen" :floating="floating" />
+</template>
+```
+
+> **Conseil :** Avec Vue, `:floating="false"` retire correctement l'attribut — contrairement à React, le motif d'étalement conditionnel n'est pas nécessaire ici.
 
 ## Tous les événements
 

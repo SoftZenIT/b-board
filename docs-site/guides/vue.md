@@ -68,6 +68,7 @@ interface BeninKeyboardProps {
   open?: boolean;
   disabled?: boolean;
   'show-physical-echo'?: boolean;
+  floating?: boolean;
 }
 
 declare module 'vue' {
@@ -161,6 +162,51 @@ function onKeyPress(e: Event) {
 ```
 
 > **Tip:** Always use `:language` (v-bind shorthand) rather than setting the attribute imperatively with `el.setAttribute(...)`. Bypassing Vue's reactive binding means Vue won't track the change and the UI may fall out of sync.
+
+## Showing and Hiding the Keyboard
+
+Bind `open` to a reactive ref. Vue sets the DOM property directly when you use `:open`, so the boolean value maps cleanly without any workarounds:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const isOpen = ref(true);
+const text = ref('');
+
+function onKeyPress(e: Event) {
+  text.value += (e as CustomEvent<{ char: string }>).detail.char;
+}
+</script>
+
+<template>
+  <button @click="isOpen = !isOpen">
+    {{ isOpen ? 'Hide keyboard' : 'Show keyboard' }}
+  </button>
+  <textarea v-model="text" rows="4" />
+  <benin-keyboard language="yoruba" theme="auto" :open="isOpen" @bboard-key-press="onKeyPress" />
+</template>
+```
+
+## Floating Mode
+
+Set `floating` to detach the keyboard from the document flow. It renders as a fixed overlay centered at the bottom of the viewport with a drag handle at the top. The user can reposition it by dragging.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const floating = ref(false);
+const isOpen = ref(true);
+</script>
+
+<template>
+  <label> <input v-model="floating" type="checkbox" /> Floating keyboard </label>
+  <benin-keyboard language="yoruba" theme="auto" :open="isOpen" :floating="floating" />
+</template>
+```
+
+> **Tip:** Vue's `:floating="false"` correctly removes the attribute — unlike React, there is no need for a conditional spread pattern here.
 
 ## All Events
 

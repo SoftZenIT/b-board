@@ -85,6 +85,7 @@ interface BeninKeyboardElement extends HTMLElement {
   open: boolean;
   disabled: boolean;
   'show-physical-echo': boolean;
+  floating: boolean;
 }
 
 declare global {
@@ -129,6 +130,44 @@ This pattern:
 - Replaces any selected text with the new character.
 - Inserts at the cursor when nothing is selected.
 - Restores focus so subsequent key presses land in the right place.
+
+## Showing and Hiding the Keyboard
+
+The `open` attribute controls visibility. The keyboard remains mounted in the DOM when hidden — its language, theme, and composition state are preserved.
+
+```ts
+const keyboard = document.querySelector('benin-keyboard')!;
+const btn = document.getElementById('toggle')!;
+
+btn.addEventListener('click', () => {
+  if (keyboard.hasAttribute('open')) {
+    keyboard.removeAttribute('open');
+    btn.textContent = 'Show keyboard';
+  } else {
+    keyboard.setAttribute('open', '');
+    btn.textContent = 'Hide keyboard';
+  }
+});
+```
+
+## Floating Mode
+
+Set the `floating` attribute to detach the keyboard from the document flow. It renders as a fixed overlay centered at the bottom of the viewport with a drag handle at the top. The user can drag it to any position on screen.
+
+```ts
+const keyboard = document.querySelector('benin-keyboard')!;
+const floatingToggle = document.getElementById('floating-toggle') as HTMLInputElement;
+
+floatingToggle.addEventListener('change', () => {
+  if (floatingToggle.checked) {
+    keyboard.setAttribute('floating', '');
+  } else {
+    keyboard.removeAttribute('floating');
+  }
+});
+```
+
+Removing `floating` returns the keyboard to its default inline position and resets any drag offset.
 
 ## Language and Theme Switching
 

@@ -28,6 +28,44 @@ Vous pouvez ajouter votre propre profil de langue sans forker le projet. Consult
 
 ---
 
+## Comment masquer ou afficher le clavier ?
+
+Basculez l'attribut `open`. Lorsque `open` est absent, le clavier se replie ; lorsqu'il est présent, le clavier est visible. L'élément reste dans le DOM dans les deux cas, donc la langue, le thème et l'état de composition sont préservés entre les cycles affichage/masquage.
+
+```ts
+const keyboard = document.querySelector('benin-keyboard')!;
+
+// Masquer
+keyboard.removeAttribute('open');
+
+// Afficher
+keyboard.setAttribute('open', '');
+```
+
+Dans React, utilisez l'étalement conditionnel pour éviter que `open="false"` soit écrit comme une chaîne de caractères :
+
+```tsx
+<benin-keyboard language="yoruba" {...(isOpen ? { open: true } : {})} />
+```
+
+Avec Vue et Angular, le framework gère correctement les booléens via `:open="isOpen"` et `[attr.open]="isOpen ? '' : null"` respectivement.
+
+---
+
+## Comment rendre le clavier flottant au-dessus du contenu ?
+
+Définissez l'attribut `floating`. Le clavier se détache du flux du document et s'affiche en superposition fixe centrée en bas de la fenêtre. Une poignée de déplacement apparaît en haut — l'utilisateur peut le faire glisser n'importe où sur l'écran.
+
+```html
+<benin-keyboard language="yoruba" theme="auto" open floating></benin-keyboard>
+```
+
+Retirer `floating` ramène le clavier à sa position en ligne normale ; tout décalage de glissement est automatiquement réinitialisé.
+
+> **Note d'accessibilité :** En mode flottant, assurez-vous que le clavier n'est pas le seul moyen d'interagir avec votre application. Les utilisateurs ayant des technologies d'assistance peuvent trouver une superposition fixe désorientante s'il n'y a pas de moyen de la fermer.
+
+---
+
 ## Puis-je utiliser b-board dans une application mobile ?
 
 b-board est un Web Component basé sur le DOM, il fonctionne donc partout où un moteur de navigateur complet est disponible.

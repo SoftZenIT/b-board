@@ -78,6 +78,7 @@ interface BeninKeyboardElement extends HTMLElement {
   open: boolean;
   disabled: boolean;
   'show-physical-echo': boolean;
+  floating: boolean;
 }
 
 declare global {
@@ -227,6 +228,79 @@ export class KeyboardDemoComponent {
 }
 ```
 
+## Showing and Hiding the Keyboard
+
+Bind `[attr.open]` to a ternary so the attribute is present (empty string) or absent (`null`):
+
+```ts
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-keyboard-demo',
+  standalone: true,
+  imports: [FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `
+    <button (click)="isOpen = !isOpen">
+      {{ isOpen ? 'Hide keyboard' : 'Show keyboard' }}
+    </button>
+    <textarea [(ngModel)]="text"></textarea>
+    <benin-keyboard
+      [attr.language]="language"
+      [attr.open]="isOpen ? '' : null"
+      (bboard-key-press)="onKeyPress($event)"
+    ></benin-keyboard>
+  `,
+})
+export class KeyboardDemoComponent {
+  language = 'yoruba';
+  isOpen = true;
+  text = '';
+
+  onKeyPress(event: Event): void {
+    this.text += (event as CustomEvent<{ char: string }>).detail.char;
+  }
+}
+```
+
+## Floating Mode
+
+The `floating` attribute works the same way — use `[attr.floating]="isFloating ? '' : null"`:
+
+```ts
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-keyboard-demo',
+  standalone: true,
+  imports: [FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `
+    <label> <input type="checkbox" [(ngModel)]="floating" /> Floating keyboard </label>
+    <benin-keyboard
+      language="yoruba"
+      theme="auto"
+      [attr.open]="isOpen ? '' : null"
+      [attr.floating]="floating ? '' : null"
+      (bboard-key-press)="onKeyPress($event)"
+    ></benin-keyboard>
+  `,
+})
+export class KeyboardDemoComponent {
+  isOpen = true;
+  floating = false;
+  text = '';
+
+  onKeyPress(event: Event): void {
+    this.text += (event as CustomEvent<{ char: string }>).detail.char;
+  }
+}
+```
+
+When `floating` is set, the keyboard becomes a fixed overlay centered at the bottom of the viewport. A drag handle appears at the top — the user can drag it to any position on screen.
+
 ## Boolean Attribute Binding
 
 Use a ternary to produce an empty string (present) or `null` (absent) for boolean attributes:
@@ -234,6 +308,8 @@ Use a ternary to produce an empty string (present) or `null` (absent) for boolea
 ```html
 <!-- Correct — present or absent, never "true"/"false" strings -->
 <benin-keyboard [attr.disabled]="isDisabled ? '' : null"></benin-keyboard>
+<benin-keyboard [attr.open]="isOpen ? '' : null"></benin-keyboard>
+<benin-keyboard [attr.floating]="isFloating ? '' : null"></benin-keyboard>
 ```
 
 ## Change Detection with `OnPush`

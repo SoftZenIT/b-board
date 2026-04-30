@@ -40,6 +40,7 @@ interface BeninKeyboardAttributes {
   open?: boolean;
   disabled?: boolean;
   'show-physical-echo'?: boolean;
+  floating?: boolean;
 }
 
 declare global {
@@ -226,6 +227,78 @@ export default function LanguageSwitcher() {
 }
 ```
 
+## Afficher et masquer le clavier
+
+L'attribut `open` contrôle la visibilité. Utilisez le motif d'étalement conditionnel pour éviter que React n'écrive `open="false"` comme chaîne de caractères dans le DOM :
+
+```tsx
+import { useState, useEffect, useRef, useCallback } from 'react';
+import 'b-board';
+
+export default function HideableKeyboard() {
+  const [isOpen, setIsOpen] = useState(true);
+  const [text, setText] = useState('');
+  const keyboardRef = useRef<HTMLElement>(null);
+
+  const handleKeyPress = useCallback((e: Event) => {
+    const { char } = (e as CustomEvent<{ char: string }>).detail;
+    setText((prev) => (char === '\b' ? prev.slice(0, -1) : prev + char));
+  }, []);
+
+  useEffect(() => {
+    const el = keyboardRef.current;
+    if (!el) return;
+    el.addEventListener('bboard-key-press', handleKeyPress);
+    return () => el.removeEventListener('bboard-key-press', handleKeyPress);
+  }, [handleKeyPress]);
+
+  return (
+    <>
+      <button onClick={() => setIsOpen((v) => !v)}>
+        {isOpen ? 'Masquer le clavier' : 'Afficher le clavier'}
+      </button>
+      <textarea value={text} readOnly rows={4} />
+      <benin-keyboard
+        ref={keyboardRef}
+        language="yoruba"
+        theme="auto"
+        {...(isOpen ? { open: true } : {})}
+      />
+    </>
+  );
+}
+```
+
+## Mode flottant
+
+Définir `floating` détache le clavier du flux du document et l'affiche en superposition fixe centrée en bas de la fenêtre. Une poignée de déplacement apparaît en haut pour permettre à l'utilisateur de le repositionner.
+
+```tsx
+import { useState } from 'react';
+import 'b-board';
+
+export default function FloatingKeyboard() {
+  const [floating, setFloating] = useState(false);
+
+  return (
+    <>
+      <label>
+        <input type="checkbox" checked={floating} onChange={(e) => setFloating(e.target.checked)} />{' '}
+        Clavier flottant
+      </label>
+      <benin-keyboard
+        language="yoruba"
+        theme="auto"
+        open
+        {...(floating ? { floating: true } : {})}
+      />
+    </>
+  );
+}
+```
+
+> **Conseil :** Vous pouvez combiner `floating` avec le basculement `open` — le clavier conserve sa dernière position de glissement à la réouverture.
+
 ## Liaison d'attributs booléens
 
 La gestion des attributs booléens par React sur les éléments personnalisés peut être surprenante. Définir `disabled={false}` peut quand même ajouter l'attribut au DOM. Utilisez un étalement conditionnel pour éviter cela :
@@ -236,6 +309,17 @@ La gestion des attributs booléens par React sur les éléments personnalisés p
 
 // Correct — l'attribut est absent quand false :
 <benin-keyboard {...(isDisabled ? { disabled: true } : {})} />
+```
+
+Le même motif s'applique à `open`, `floating` et `show-physical-echo` :
+
+```tsx
+<benin-keyboard
+  language="yoruba"
+  {...(isOpen ? { open: true } : {})}
+  {...(isFloating ? { floating: true } : {})}
+  {...(showEcho ? { 'show-physical-echo': true } : {})}
+/>
 ```
 
 ## SSR / Next.js
@@ -270,6 +354,8 @@ export default function KeyboardWrapper() {
 | État obsolète dans le gestionnaire      | Gestionnaire en ligne avec fermeture obsolète         | Utilisez `useCallback` + mise à jour d'état fonctionnelle |
 | Le clavier perd son état au re-rendu    | Prop `key` instable                                   | Utilisez une `key` stable ou absente                      |
 | `disabled={false}` désactive quand même | Booléens React sur les éléments personnalisés         | Utilisez l'étalement conditionnel d'attributs             |
+| `open={false}` affiche quand même       | Même problème d'attribut booléen                      | Utilisez `{...(isOpen ? { open: true } : {})}`            |
+| `floating={false}` flotte quand même    | Même problème d'attribut booléen                      | Utilisez `{...(floating ? { floating: true } : {})}`      |
 | Incompatibilité d'hydratation SSR       | Le serveur ne connaît pas les éléments personnalisés  | Utilisez `'use client'` + import différé                  |
 
 ## Démonstration en direct

@@ -85,6 +85,7 @@ interface BeninKeyboardElement extends HTMLElement {
   open: boolean;
   disabled: boolean;
   'show-physical-echo': boolean;
+  floating: boolean;
 }
 
 declare global {
@@ -129,6 +130,44 @@ Ce modèle :
 - Remplace tout texte sélectionné par le nouveau caractère.
 - Insère au niveau du curseur lorsque rien n'est sélectionné.
 - Restaure le focus pour que les pressions suivantes atterrissent au bon endroit.
+
+## Afficher et masquer le clavier
+
+L'attribut `open` contrôle la visibilité. Le clavier reste monté dans le DOM quand il est masqué — sa langue, son thème et son état de composition sont préservés.
+
+```ts
+const keyboard = document.querySelector('benin-keyboard')!;
+const btn = document.getElementById('toggle')!;
+
+btn.addEventListener('click', () => {
+  if (keyboard.hasAttribute('open')) {
+    keyboard.removeAttribute('open');
+    btn.textContent = 'Afficher le clavier';
+  } else {
+    keyboard.setAttribute('open', '');
+    btn.textContent = 'Masquer le clavier';
+  }
+});
+```
+
+## Mode flottant
+
+Définissez l'attribut `floating` pour détacher le clavier du flux du document. Il s'affiche en superposition fixe centrée en bas de la fenêtre avec une poignée de déplacement en haut. L'utilisateur peut le faire glisser vers n'importe quelle position.
+
+```ts
+const keyboard = document.querySelector('benin-keyboard')!;
+const floatingToggle = document.getElementById('floating-toggle') as HTMLInputElement;
+
+floatingToggle.addEventListener('change', () => {
+  if (floatingToggle.checked) {
+    keyboard.setAttribute('floating', '');
+  } else {
+    keyboard.removeAttribute('floating');
+  }
+});
+```
+
+Retirer `floating` ramène le clavier à sa position en ligne par défaut et réinitialise tout décalage de glissement.
 
 ## Changement de langue et de thème
 

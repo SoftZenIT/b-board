@@ -78,6 +78,7 @@ interface BeninKeyboardElement extends HTMLElement {
   open: boolean;
   disabled: boolean;
   'show-physical-echo': boolean;
+  floating: boolean;
 }
 
 declare global {
@@ -227,6 +228,79 @@ export class KeyboardDemoComponent {
 }
 ```
 
+## Afficher et masquer le clavier
+
+Liez `[attr.open]` à un ternaire pour que l'attribut soit présent (chaîne vide) ou absent (`null`) :
+
+```ts
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-keyboard-demo',
+  standalone: true,
+  imports: [FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `
+    <button (click)="isOpen = !isOpen">
+      {{ isOpen ? 'Masquer le clavier' : 'Afficher le clavier' }}
+    </button>
+    <textarea [(ngModel)]="text"></textarea>
+    <benin-keyboard
+      [attr.language]="language"
+      [attr.open]="isOpen ? '' : null"
+      (bboard-key-press)="onKeyPress($event)"
+    ></benin-keyboard>
+  `,
+})
+export class KeyboardDemoComponent {
+  language = 'yoruba';
+  isOpen = true;
+  text = '';
+
+  onKeyPress(event: Event): void {
+    this.text += (event as CustomEvent<{ char: string }>).detail.char;
+  }
+}
+```
+
+## Mode flottant
+
+L'attribut `floating` fonctionne de la même manière — utilisez `[attr.floating]="isFloating ? '' : null"` :
+
+```ts
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-keyboard-demo',
+  standalone: true,
+  imports: [FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `
+    <label> <input type="checkbox" [(ngModel)]="floating" /> Clavier flottant </label>
+    <benin-keyboard
+      language="yoruba"
+      theme="auto"
+      [attr.open]="isOpen ? '' : null"
+      [attr.floating]="floating ? '' : null"
+      (bboard-key-press)="onKeyPress($event)"
+    ></benin-keyboard>
+  `,
+})
+export class KeyboardDemoComponent {
+  isOpen = true;
+  floating = false;
+  text = '';
+
+  onKeyPress(event: Event): void {
+    this.text += (event as CustomEvent<{ char: string }>).detail.char;
+  }
+}
+```
+
+Lorsque `floating` est défini, le clavier devient une superposition fixe centrée en bas de la fenêtre. Une poignée de déplacement apparaît en haut — l'utilisateur peut la faire glisser vers n'importe quelle position.
+
 ## Liaison d'attributs booléens
 
 Utilisez un ternaire pour produire une chaîne vide (présent) ou `null` (absent) pour les attributs booléens :
@@ -234,6 +308,8 @@ Utilisez un ternaire pour produire une chaîne vide (présent) ou `null` (absent
 ```html
 <!-- Correct — présent ou absent, jamais les chaînes "true"/"false" -->
 <benin-keyboard [attr.disabled]="isDisabled ? '' : null"></benin-keyboard>
+<benin-keyboard [attr.open]="isOpen ? '' : null"></benin-keyboard>
+<benin-keyboard [attr.floating]="isFloating ? '' : null"></benin-keyboard>
 ```
 
 ## Détection de changements avec `OnPush`

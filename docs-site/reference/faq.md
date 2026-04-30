@@ -38,6 +38,44 @@ They are distinct languages (not dialects), and this grouping does not imply tha
 
 ---
 
+## How do I hide or show the keyboard?
+
+Toggle the `open` attribute. When `open` is absent the keyboard collapses; when it is present the keyboard is visible. The element stays in the DOM either way, so language, theme, and composition state are preserved across show/hide cycles.
+
+```ts
+const keyboard = document.querySelector('benin-keyboard')!;
+
+// Hide
+keyboard.removeAttribute('open');
+
+// Show
+keyboard.setAttribute('open', '');
+```
+
+In React use conditional spreading to avoid `open="false"` being written as a string:
+
+```tsx
+<benin-keyboard language="yoruba" {...(isOpen ? { open: true } : {})} />
+```
+
+In Vue and Angular the framework handles booleans correctly via `:open="isOpen"` and `[attr.open]="isOpen ? '' : null"` respectively.
+
+---
+
+## How do I make the keyboard float over the page content?
+
+Set the `floating` attribute. The keyboard detaches from the document flow and renders as a fixed overlay centered at the bottom of the viewport. A drag handle appears at the top — the user can drag it anywhere on screen.
+
+```html
+<benin-keyboard language="yoruba" theme="auto" open floating></benin-keyboard>
+```
+
+Remove `floating` to return the keyboard to its normal inline position; any drag offset is reset automatically.
+
+> **Accessibility note:** In floating mode, ensure the keyboard is not the only way to interact with your application. Users with assistive technologies may find a fixed overlay disorienting if there is no way to dismiss it.
+
+---
+
 ## Can I use b-board in a mobile app?
 
 b-board is a DOM-based web component, so it runs wherever a full browser engine is available.
