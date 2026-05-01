@@ -109,7 +109,8 @@ export default defineConfig({
           text: 'Signaler un problème',
         },
         footer: {
-          message: 'Publié sous licence MIT.',
+          message:
+            'Publié sous licence MIT. · <a href="/fr/privacy">Confidentialité</a> · <a href="/fr/security">Sécurité</a>',
           copyright: 'Copyright © 2024-present Sadjad Ousmane',
         },
       },
@@ -134,7 +135,8 @@ export default defineConfig({
     socialLinks: [{ icon: 'github', link: 'https://github.com/SoftZenIT/b-board' }],
 
     footer: {
-      message: 'Released under the MIT License.',
+      message:
+        'Released under the MIT License. · <a href="/privacy">Privacy</a> · <a href="/security">Security</a>',
       copyright: 'Copyright © 2024-present Sadjad Ousmane',
     },
   },
