@@ -61,6 +61,7 @@ jobs:
         run: npx size-limit
 
       - name: Release dry-run
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         run: npx semantic-release --dry-run
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
