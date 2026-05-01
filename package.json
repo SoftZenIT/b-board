@@ -31,6 +31,16 @@
     "fon",
     "i18n"
   ],
+  "size-limit": [
+    {
+      "path": "dist/bboard.es.js",
+      "limit": "55 kB"
+    },
+    {
+      "path": "dist/bboard.umd.js",
+      "limit": "55 kB"
+    }
+  ],
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
@@ -52,7 +62,8 @@
     "docs:dev": "vitepress dev docs-site",
     "docs:build": "vitepress build docs-site",
     "docs:preview": "vitepress preview docs-site",
-    "docs:api": "typedoc"
+    "docs:api": "typedoc",
+    "release": "semantic-release"
   },
   "dependencies": {
     "ajv": "^8.18.0",
