@@ -9,7 +9,7 @@ const props = defineProps<{
 
 const container = ref<HTMLElement>();
 
-const GITHUB_REPO = 'ousmanesadjad/b-board';
+const GITHUB_REPO = 'SoftZenIT/b-board';
 
 const FRAMEWORK_PATHS: Record<string, string> = {
   react: 'examples/react-sample-app',

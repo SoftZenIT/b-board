@@ -1,4 +1,4 @@
-# Contributing to BJ-Keyboard
+# Contributing to b-board
 
 ## Code Style
 

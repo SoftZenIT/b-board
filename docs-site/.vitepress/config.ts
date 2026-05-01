@@ -1,18 +1,18 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
 
 const enNav = [
   { text: 'Guide', link: '/getting-started' },
   { text: 'API Reference', link: '/api/' },
   { text: 'Examples', link: '/reference/examples' },
   { text: 'Contributing', link: '/contributing' },
-]
+];
 
 const frNav = [
   { text: 'Guide', link: '/fr/getting-started' },
   { text: 'Référence API', link: '/api/' },
   { text: 'Exemples', link: '/fr/reference/examples' },
   { text: 'Contribuer', link: '/fr/contributing' },
-]
+];
 
 const enSidebar = {
   '/guides/': [
@@ -46,7 +46,7 @@ const enSidebar = {
     },
   ],
   '/api/': [{ text: 'API Reference', link: '/api/' }],
-}
+};
 
 const frSidebar = {
   '/fr/guides/': [
@@ -80,7 +80,7 @@ const frSidebar = {
     },
   ],
   '/api/': [{ text: 'Référence API', link: '/api/' }],
-}
+};
 
 export default defineConfig({
   title: 'b-board',
@@ -122,11 +122,11 @@ export default defineConfig({
 
     search: { provider: 'local' },
 
-    socialLinks: [{ icon: 'github', link: 'https://github.com/ousmanesadjad/b-board' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/SoftZenIT/b-board' }],
 
     footer: {
       message: 'Released under the MIT License.',
       copyright: 'Copyright © 2024-present Sadjad Ousmane',
     },
   },
-})
+});
