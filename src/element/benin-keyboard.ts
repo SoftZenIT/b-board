@@ -1050,13 +1050,15 @@ export class BeninKeyboard extends LitElement {
   }
 
   attach(target: HTMLElement): void {
-    const isInput = target instanceof HTMLInputElement;
-    const isTextarea = target instanceof HTMLTextAreaElement;
-    const isContenteditable = target.isContentEditable;
-
-    if (!isInput && !isTextarea && !isContenteditable) {
+    if (
+      !(target instanceof HTMLInputElement) &&
+      !(target instanceof HTMLTextAreaElement) &&
+      !target.isContentEditable
+    ) {
       throw new Error('attach() requires an <input>, <textarea>, or contenteditable element');
     }
+
+    this.detach();
 
     const handle = createTargetHandle('attached-target');
     let adapter;
@@ -1080,7 +1082,7 @@ export class BeninKeyboard extends LitElement {
   }
 
   private _dispatchToAdapter(char: string): void {
-    if (!this._attachedHandle) return;
+    if (!this._attachedHandle || char === '') return;
     const operation: InputOperation =
       char === '\b' ? { type: 'delete', length: 1 } : { type: 'insert', text: char };
     this._dispatcher.dispatch(this._attachedHandle, operation);
