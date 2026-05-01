@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 type LanguageId = 'yoruba' | 'fon-adja' | 'baatonum' | 'dendi';
 type ThemeId = 'light' | 'dark' | 'auto';
@@ -21,19 +21,20 @@ const open = ref(true);
 const disabled = ref(false);
 const showPhysicalEcho = ref(false);
 const floating = ref(false);
-const text = ref('');
 const error = ref<string | null>(null);
+const keyboardEl = ref<HTMLElement | null>(null);
+const textareaEl = ref<HTMLTextAreaElement | null>(null);
 
-function onKeyPress(e: Event) {
-  const { char } = (e as CustomEvent).detail as { char: string };
-  if (char === '\b') {
-    text.value = text.value.slice(0, -1);
-  } else if (char === '\n') {
-    text.value += '\n';
-  } else {
-    text.value += char;
-  }
-}
+onMounted(() => {
+  const kb = keyboardEl.value as any;
+  const ta = textareaEl.value;
+  if (kb && ta) kb.attach(ta);
+});
+
+onUnmounted(() => {
+  const kb = keyboardEl.value as any;
+  if (kb) kb.detach();
+});
 
 function onError(e: Event) {
   const detail = (e as CustomEvent).detail as {
@@ -102,13 +103,14 @@ function onError(e: Event) {
 
     <main>
       <textarea
-        v-model="text"
+        ref="textareaEl"
         data-testid="text-output"
         placeholder="Keyboard output appears here…"
         :rows="4"
       />
 
       <benin-keyboard
+        ref="keyboardEl"
         :language="language"
         :theme="theme"
         :layout-variant="layoutVariant"
@@ -118,7 +120,6 @@ function onError(e: Event) {
         :show-physical-echo="showPhysicalEcho"
         :floating="floating"
         data-testid="keyboard"
-        @bboard-key-press="onKeyPress"
         @bboard-error="onError"
       />
 
