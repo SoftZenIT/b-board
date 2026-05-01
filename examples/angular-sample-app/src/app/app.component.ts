@@ -81,8 +81,8 @@ interface Language {
 
       <main>
         <textarea
+          #textareaEl
           data-testid="text-output"
-          [(ngModel)]="text"
           placeholder="Keyboard output appears here…"
           [rows]="4"
         ></textarea>
@@ -163,6 +163,7 @@ interface Language {
 })
 export class AppComponent implements AfterViewInit, OnDestroy {
   @ViewChild('keyboard', { static: false }) keyboardRef!: ElementRef<HTMLElement>;
+  @ViewChild('textareaEl', { static: false }) textareaRef!: ElementRef<HTMLTextAreaElement>;
 
   languages: Language[] = [
     { id: 'yoruba', label: 'Yoruba' },
@@ -179,19 +180,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   disabled = false;
   showPhysicalEcho = false;
   floating = false;
-  text = '';
   error: string | null = null;
-
-  private readonly handleKeyPress = (event: Event): void => {
-    const { char } = (event as CustomEvent).detail as { char: string };
-    if (char === '\b') {
-      this.text = this.text.slice(0, -1);
-    } else if (char === '\n') {
-      this.text += '\n';
-    } else {
-      this.text += char;
-    }
-  };
 
   private readonly handleError = (event: Event): void => {
     const detail = (event as CustomEvent).detail as {
@@ -203,16 +192,16 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   };
 
   ngAfterViewInit(): void {
-    const el = this.keyboardRef.nativeElement;
-    el.addEventListener('bboard-key-press', this.handleKeyPress);
-    el.addEventListener('bboard-error', this.handleError);
+    const kb = this.keyboardRef.nativeElement as any;
+    kb.attach(this.textareaRef.nativeElement);
+    kb.addEventListener('bboard-error', this.handleError);
   }
 
   ngOnDestroy(): void {
-    const el = this.keyboardRef?.nativeElement;
-    if (el) {
-      el.removeEventListener('bboard-key-press', this.handleKeyPress);
-      el.removeEventListener('bboard-error', this.handleError);
+    const kb = this.keyboardRef?.nativeElement as any;
+    if (kb) {
+      kb.detach();
+      kb.removeEventListener('bboard-error', this.handleError);
     }
   }
 }
