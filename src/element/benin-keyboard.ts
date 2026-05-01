@@ -1119,9 +1119,9 @@ export class BeninKeyboard extends LitElement {
       }
     }
 
-    // BBOARD-141/140/142: physical key output — always-on for desktop variants
+    // physical key output — always-on for desktop variants
     // Hold-based modifier layer: computed from heldPhysicalKeys, not UI toggle state
-    // Auto-repeat guard: e.repeat events are skipped (BBOARD-142)
+    // Auto-repeat guard: e.repeat events are skipped
     if (!e.repeat && this.layoutVariant.startsWith('desktop-') && this._resolvedLayout) {
       const keyId = mapPhysicalCodeToLogicalKey(e.code);
       if (keyId !== null && !MODIFIER_KEY_IDS.has(keyId)) {
