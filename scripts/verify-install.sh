@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-TMPDIR=$(mktemp -d)
-trap "rm -rf $TMPDIR" EXIT
+WORK_DIR=$(mktemp -d)
+trap "rm -rf $WORK_DIR" EXIT
 
 echo "Installing b-board in temp directory..."
-cd "$TMPDIR"
+cd "$WORK_DIR"
 npm init -y > /dev/null
 npm install b-board > /dev/null
 
