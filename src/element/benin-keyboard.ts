@@ -1059,11 +1059,14 @@ export class BeninKeyboard extends LitElement {
     }
 
     const handle = createTargetHandle('attached-target');
-    const adapter = isInput
-      ? new InputElementAdapter(handle, target as HTMLInputElement)
-      : isTextarea
-        ? new TextareaAdapter(handle, target as HTMLTextAreaElement)
-        : new ContenteditableAdapter(handle, target);
+    let adapter;
+    if (target instanceof HTMLInputElement) {
+      adapter = new InputElementAdapter(handle, target);
+    } else if (target instanceof HTMLTextAreaElement) {
+      adapter = new TextareaAdapter(handle, target);
+    } else {
+      adapter = new ContenteditableAdapter(handle, target);
+    }
 
     this._dispatcher = new OperationDispatcher();
     this._dispatcher.registerAdapter(adapter);
