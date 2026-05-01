@@ -104,6 +104,10 @@ export default defineConfig({
       themeConfig: {
         nav: frNav,
         sidebar: frSidebar,
+        editLink: {
+          pattern: 'https://github.com/SoftZenIT/b-board/issues/new',
+          text: 'Signaler un problème',
+        },
         footer: {
           message: 'Publié sous licence MIT.',
           copyright: 'Copyright © 2024-present Sadjad Ousmane',
@@ -121,6 +125,11 @@ export default defineConfig({
     sidebar: enSidebar,
 
     search: { provider: 'local' },
+
+    editLink: {
+      pattern: 'https://github.com/SoftZenIT/b-board/issues/new',
+      text: 'Report an issue',
+    },
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/SoftZenIT/b-board' }],
 
