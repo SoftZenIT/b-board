@@ -36,6 +36,11 @@ import {
 } from '../core/_internal/error-handler.js';
 import { validateBrowser, supportsResizeObserver } from '../core/_internal/browser-compat.js';
 import { logger } from '../utils/logger.js';
+import { OperationDispatcher } from '../adapters/dispatcher.js';
+import { InputElementAdapter } from '../adapters/input-adapter.js';
+import { TextareaAdapter } from '../adapters/textarea-adapter.js';
+import { ContenteditableAdapter } from '../adapters/contenteditable-adapter.js';
+import { createTargetHandle, type TargetHandle, type InputOperation } from '../adapters/types.js';
 
 import type { KeyCatalogEntry } from '../data/language.types.js';
 import universalKeysRaw from '../../data/keys/universal.json';
@@ -113,6 +118,8 @@ export class BeninKeyboard extends LitElement {
   private _lastSyncedFocusId: KeyId | null = null;
   private _politeMessage = '';
   private _assertiveMessage = '';
+  private _dispatcher = new OperationDispatcher();
+  private _attachedHandle: TargetHandle | null = null;
 
   static readonly styles = css`
     :host {
@@ -930,6 +937,7 @@ export class BeninKeyboard extends LitElement {
     }
 
     dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
+    this._dispatchToAdapter(composed);
 
     const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snapshot.activeLayer);
     if (keyId === shiftKey || keyId === shiftRightKey) {
@@ -986,6 +994,7 @@ export class BeninKeyboard extends LitElement {
     }
 
     dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
+    this._dispatchToAdapter(composed);
 
     const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snap.activeLayer);
     if (keyId === shiftKey || keyId === shiftRightKey) {
@@ -1041,12 +1050,37 @@ export class BeninKeyboard extends LitElement {
   }
 
   attach(target: HTMLElement): void {
-    console.debug('[BeninKeyboard] attach() called', target);
+    const isInput = target instanceof HTMLInputElement;
+    const isTextarea = target instanceof HTMLTextAreaElement;
+    const isContenteditable = target.isContentEditable;
+
+    if (!isInput && !isTextarea && !isContenteditable) {
+      throw new Error('attach() requires an <input>, <textarea>, or contenteditable element');
+    }
+
+    const handle = createTargetHandle('attached-target');
+    const adapter = isInput
+      ? new InputElementAdapter(handle, target as HTMLInputElement)
+      : isTextarea
+        ? new TextareaAdapter(handle, target as HTMLTextAreaElement)
+        : new ContenteditableAdapter(handle, target);
+
+    this._dispatcher = new OperationDispatcher();
+    this._dispatcher.registerAdapter(adapter);
+    this._attachedHandle = handle;
   }
 
   detach(): void {
-    console.debug('[BeninKeyboard] detach() called');
     this._compositionProcessor?.cancel();
+    this._dispatcher = new OperationDispatcher();
+    this._attachedHandle = null;
+  }
+
+  private _dispatchToAdapter(char: string): void {
+    if (!this._attachedHandle) return;
+    const operation: InputOperation =
+      char === '\b' ? { type: 'delete', length: 1 } : { type: 'insert', text: char };
+    this._dispatcher.dispatch(this._attachedHandle, operation);
   }
 
   openKeyboard(): void {
@@ -1140,6 +1174,7 @@ export class BeninKeyboard extends LitElement {
         const composed = this._compositionProcessor?.process(keyId, char) ?? char;
         if (composed !== null) {
           dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
+          this._dispatchToAdapter(composed);
         }
       }
     }
@@ -1235,6 +1270,7 @@ export class BeninKeyboard extends LitElement {
         );
         const char = resolvedKey.longPress[safeIndex] ?? '';
         dispatchBBoardEvent(this, 'bboard-key-press', { keyId: snap.longPressKeyId, char });
+        this._dispatchToAdapter(char);
       }
       this._mobileState.dismissLongPress();
       this._touchStartKeyId = null;

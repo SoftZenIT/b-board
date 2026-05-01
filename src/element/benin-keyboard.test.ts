@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import './benin-keyboard.js';
+import { InputElementAdapter } from '../adapters/input-adapter.js';
 
 describe('BeninKeyboard Custom Element', () => {
   it('registers <benin-keyboard> with the browser', () => {
@@ -32,6 +33,81 @@ describe('BeninKeyboard Custom Element', () => {
     expect(typeof el.detach).toBe('function');
 
     expect(() => el.attach(target)).not.toThrow();
+  });
+
+  it('attach() with an unsupported element throws', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const div = document.createElement('div');
+    expect(() => el.attach(div)).toThrow(
+      'attach() requires an <input>, <textarea>, or contenteditable element'
+    );
+  });
+
+  it('attach() registers an adapter and dispatches insert on key press', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    (el as any)._dispatchToAdapter('a');
+
+    expect(applySpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'insert', text: 'a' }));
+
+    applySpy.mockRestore();
+    document.body.removeChild(el);
+    document.body.removeChild(input);
+  });
+
+  it('attach() dispatches delete operation for backspace char', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    (el as any)._dispatchToAdapter('\b');
+
+    expect(applySpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'delete', length: 1 }));
+
+    applySpy.mockRestore();
+    document.body.removeChild(el);
+    document.body.removeChild(input);
+  });
+
+  it('detach() stops dispatch', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    el.detach();
+    (el as any)._dispatchToAdapter('a');
+
+    expect(applySpy).not.toHaveBeenCalled();
+
+    applySpy.mockRestore();
+    document.body.removeChild(el);
+    document.body.removeChild(input);
   });
 
   it('should render the canonical desktop layout row count', async () => {
