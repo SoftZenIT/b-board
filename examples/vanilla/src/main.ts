@@ -10,24 +10,7 @@ const openToggle = document.getElementById('open-toggle') as HTMLInputElement;
 const disabledToggle = document.getElementById('disabled-toggle') as HTMLInputElement;
 const echoToggle = document.getElementById('echo-toggle') as HTMLInputElement;
 
-keyboard.addEventListener('bboard-key-press', (e) => {
-  const { char } = (e as CustomEvent<{ char: string }>).detail;
-  const start = output.selectionStart ?? output.value.length;
-  const end = output.selectionEnd ?? output.value.length;
-  if (char === '\b') {
-    if (start !== end) {
-      output.value = output.value.slice(0, start) + output.value.slice(end);
-      output.selectionStart = output.selectionEnd = start;
-    } else if (start > 0) {
-      output.value = output.value.slice(0, start - 1) + output.value.slice(start);
-      output.selectionStart = output.selectionEnd = start - 1;
-    }
-  } else {
-    output.value = output.value.slice(0, start) + char + output.value.slice(end);
-    output.selectionStart = output.selectionEnd = start + char.length;
-  }
-  output.focus();
-});
+(keyboard as any).attach(output);
 
 langSelect.addEventListener('change', () => {
   keyboard.setAttribute('language', langSelect.value);
