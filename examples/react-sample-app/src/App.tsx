@@ -21,22 +21,9 @@ export default function App() {
   const [disabled, setDisabled] = useState(false);
   const [showPhysicalEcho, setShowPhysicalEcho] = useState(false);
   const [floating, setFloating] = useState(false);
-  const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const keyboardRef = useRef<HTMLElement>(null);
-
-  // React 18 doesn't natively forward custom events from web components,
-  // so we attach listeners via ref + useEffect.
-  const handleKeyPress = useCallback((e: Event) => {
-    const { char } = (e as CustomEvent).detail as { char: string };
-    if (char === '\b') {
-      setText((prev) => prev.slice(0, -1));
-    } else if (char === '\n') {
-      setText((prev) => prev + '\n');
-    } else {
-      setText((prev) => prev + char);
-    }
-  }, []);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleError = useCallback((e: Event) => {
     const detail = (e as CustomEvent).detail as {
@@ -51,14 +38,20 @@ export default function App() {
     const el = keyboardRef.current;
     if (!el) return;
 
-    el.addEventListener('bboard-key-press', handleKeyPress);
     el.addEventListener('bboard-error', handleError);
 
     return () => {
-      el.removeEventListener('bboard-key-press', handleKeyPress);
       el.removeEventListener('bboard-error', handleError);
     };
-  }, [handleKeyPress, handleError]);
+  }, [handleError]);
+
+  useEffect(() => {
+    const kb = keyboardRef.current as any;
+    const ta = textareaRef.current;
+    if (!kb || !ta) return;
+    kb.attach(ta);
+    return () => kb.detach();
+  }, []);
 
   return (
     <div className={`app ${theme}`}>
@@ -163,9 +156,8 @@ export default function App() {
 
       <main>
         <textarea
+          ref={textareaRef}
           data-testid="text-output"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
           placeholder="Keyboard output appears here…"
           rows={4}
         />
