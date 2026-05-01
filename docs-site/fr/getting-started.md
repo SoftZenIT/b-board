@@ -12,6 +12,23 @@ b-board est un clavier virtuel framework-agnostic pour les langues africaines du
 npm install b-board
 ```
 
+### Configuration via CDN (sans outil de build)
+
+Pour utiliser `b-board` sans étape de build, chargez le bundle UMD directement depuis jsDelivr :
+
+```html
+<!-- Épingler à une version spécifique (recommandé en production) -->
+<script src="https://cdn.jsdelivr.net/npm/b-board@0.1.0/dist/bboard.umd.js"></script>
+
+<!-- Ou toujours charger la dernière version (pratique pour les prototypes) -->
+<script src="https://cdn.jsdelivr.net/npm/b-board/dist/bboard.umd.js"></script>
+
+<!-- Puis utiliser l'élément directement -->
+<benin-keyboard language="yoruba" theme="auto" open></benin-keyboard>
+```
+
+Aucun `import` ni bundler nécessaire. L'élément personnalisé s'enregistre automatiquement au chargement du script.
+
 ## Démarrage rapide
 
 ### 1. Enregistrer l'élément personnalisé
