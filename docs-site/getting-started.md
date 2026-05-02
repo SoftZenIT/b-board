@@ -37,33 +37,35 @@ No `import` or bundler needed. The custom element registers itself when the scri
 import 'b-board';
 ```
 
-### 2. Add the keyboard to your HTML
+### 2. Add the keyboard and an input to your HTML
 
 ```html
-<input id="my-input" type="text" /> <benin-keyboard language="yoruba" theme="auto"></benin-keyboard>
+<input id="my-input" type="text" />
+<benin-keyboard id="kb" language="yoruba" theme="auto" open></benin-keyboard>
 ```
 
-### 3. Listen for key presses
+### 3. Connect the keyboard to your input
 
 ```ts
 const keyboard = document.querySelector('benin-keyboard');
-keyboard.addEventListener('bboard-key-press', (e) => {
-  console.log(e.detail.char); // the inserted character
-});
+const input = document.getElementById('my-input');
+keyboard.attach(input);
 ```
+
+`attach()` accepts `<input>`, `<textarea>`, or any `contenteditable` element. It handles cursor-aware character insertion, backspace, and composition automatically. Call `detach()` to disconnect (e.g. on page navigation or component teardown).
 
 ## Configuration
 
-| Attribute               | Type                  | Default            | Description                                                         |
-| ----------------------- | --------------------- | ------------------ | ------------------------------------------------------------------- |
-| `language`              | `LanguageId`          | `'yoruba'`         | Active language profile                                             |
-| `theme`                 | `ThemeId`             | `'auto'`           | Color theme (`light`, `dark`, `auto`)                               |
-| `layout-variant`        | `LayoutVariantId`     | `'desktop-azerty'` | Keyboard layout                                                     |
-| `modifier-display-mode` | `ModifierDisplayMode` | `'transition'`     | How modifier keys animate (`transition` or `hint`)                  |
-| `open`                  | `boolean`             | `true`             | Show or hide the keyboard; set to `false` to collapse it            |
-| `disabled`              | `boolean`             | `false`            | Disables all interaction                                            |
-| `show-physical-echo`    | `boolean`             | `false`            | Highlights the matching virtual key when a physical key is pressed  |
-| `floating`              | `boolean`             | `false`            | Detaches the keyboard into a fixed overlay; draggable by its handle |
+| Attribute               | Type                  | Default            | Description                                                                                                                                                                                               |
+| ----------------------- | --------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `language`              | `LanguageId`          | `'yoruba'`         | Active language profile                                                                                                                                                                                   |
+| `theme`                 | `ThemeId`             | `'auto'`           | Color theme (`light`, `dark`, `auto`)                                                                                                                                                                     |
+| `layout-variant`        | `LayoutVariantId`     | `'desktop-azerty'` | Keyboard layout. `'desktop-azerty'` auto-selects `'desktop-azerty-macos'` on macOS and `'desktop-azerty-windows'` on Windows/Linux at runtime. Use the OS-specific IDs only to force a particular layout. |
+| `modifier-display-mode` | `ModifierDisplayMode` | `'transition'`     | How modifier keys animate (`transition` or `hint`)                                                                                                                                                        |
+| `open`                  | `boolean`             | `true`             | Show or hide the keyboard; set to `false` to collapse it                                                                                                                                                  |
+| `disabled`              | `boolean`             | `false`            | Disables all interaction                                                                                                                                                                                  |
+| `show-physical-echo`    | `boolean`             | `false`            | Highlights the matching virtual key when a physical key is pressed                                                                                                                                        |
+| `floating`              | `boolean`             | `false`            | Detaches the keyboard into a fixed overlay; draggable by its handle                                                                                                                                       |
 
 ### Showing and hiding the keyboard
 
