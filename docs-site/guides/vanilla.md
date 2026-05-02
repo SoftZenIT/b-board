@@ -68,6 +68,27 @@ If you are not using a bundler, you can load b-board directly from a CDN:
 </html>
 ```
 
+## Connecting to an Input
+
+Call `attach()` on the keyboard element, passing your `<input>`, `<textarea>`, or `contenteditable` target. The keyboard handles cursor-aware insertion, backspace, and composition automatically — no event listener needed.
+
+```ts
+import 'b-board';
+
+const keyboard = document.querySelector('benin-keyboard')!;
+const input = document.getElementById('my-input') as HTMLInputElement;
+
+keyboard.attach(input);
+```
+
+Call `detach()` to disconnect the keyboard from its target (e.g. on SPA navigation or when tearing down the page):
+
+```ts
+keyboard.detach();
+```
+
+`attach()` throws if the target is not an `<input>`, `<textarea>`, or `contenteditable` element.
+
 ## TypeScript Element Type Declaration
 
 TypeScript doesn't know about custom elements by default. Add a global declaration so `querySelector` and `getElementById` return the right type:
@@ -80,12 +101,18 @@ type ThemeId = 'light' | 'dark' | 'auto';
 interface BeninKeyboardElement extends HTMLElement {
   language: LanguageId;
   theme: ThemeId;
-  'layout-variant': 'desktop-azerty' | 'mobile-default';
+  'layout-variant':
+    | 'desktop-azerty'
+    | 'desktop-azerty-macos'
+    | 'desktop-azerty-windows'
+    | 'mobile-default';
   'modifier-display-mode': 'transition' | 'hint';
   open: boolean;
   disabled: boolean;
   'show-physical-echo': boolean;
   floating: boolean;
+  attach(target: HTMLElement): void;
+  detach(): void;
 }
 
 declare global {
@@ -97,7 +124,11 @@ declare global {
 
 With this declaration `document.querySelector('benin-keyboard')` returns `BeninKeyboardElement | null`, giving you typed access to its properties.
 
-## Cursor Position Handling
+## Advanced: Custom Output Handling
+
+Use `attach()` for standard `<input>`, `<textarea>`, and `contenteditable` targets. Listen to `bboard-key-press` directly when you need custom output behavior — for example, a rich text editor, game input, or analytics tracking.
+
+### Cursor-aware insertion
 
 Simply appending to `textarea.value` loses the cursor position. Use the selection range API to insert the character exactly where the cursor is:
 
