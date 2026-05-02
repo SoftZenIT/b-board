@@ -640,8 +640,8 @@ export class BeninKeyboard extends LitElement {
 
     // Auto-select mobile layout on touch-primary mobile devices
     const isMobile =
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(pointer: coarse)').matches &&
+      typeof globalThis.matchMedia === 'function' &&
+      globalThis.matchMedia('(pointer: coarse)').matches &&
       /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isMobile && !this.hasAttribute('layout-variant')) {
       this.layoutVariant = 'mobile-default';
