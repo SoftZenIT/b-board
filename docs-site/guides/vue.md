@@ -63,7 +63,11 @@ type ThemeId = 'light' | 'dark' | 'auto';
 interface BeninKeyboardProps {
   language?: LanguageId;
   theme?: ThemeId;
-  'layout-variant'?: 'desktop-azerty' | 'mobile-default';
+  'layout-variant'?:
+    | 'desktop-azerty'
+    | 'desktop-azerty-macos'
+    | 'desktop-azerty-windows'
+    | 'mobile-default';
   'modifier-display-mode'?: 'transition' | 'hint';
   open?: boolean;
   disabled?: boolean;
@@ -80,7 +84,38 @@ declare module 'vue' {
 export {};
 ```
 
-## Basic Usage
+## Connecting to an Input
+
+Call `attach()` on the keyboard element to wire it to an `<input>`, `<textarea>`, or `contenteditable` target. The keyboard handles cursor-aware insertion, backspace, and composition automatically.
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
+import 'b-board';
+
+const keyboardRef = ref<HTMLElement | null>(null);
+const inputRef = ref<HTMLInputElement | null>(null);
+
+onMounted(() => {
+  (keyboardRef.value as any)?.attach(inputRef.value);
+});
+
+onUnmounted(() => {
+  (keyboardRef.value as any)?.detach();
+});
+</script>
+
+<template>
+  <input ref="inputRef" type="text" placeholder="Type here…" />
+  <benin-keyboard ref="keyboardRef" language="yoruba" theme="auto" open />
+</template>
+```
+
+Call `detach()` in `onUnmounted` to disconnect cleanly when the component is destroyed.
+
+## Advanced: Custom Output Handling
+
+Use `attach()` for standard input targets. Listen to `bboard-key-press` directly when you need custom output behavior — for example, a rich text editor, game input, or analytics tracking.
 
 ```vue
 <script setup lang="ts">
