@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createKeyId } from '../../public/index.js';
 import {
   mapPhysicalCodeToLogicalKey,
+  buildCodeToKeyMap,
   PHYSICAL_MODIFIER_CODES,
   MODIFIER_KEY_IDS,
   computePhysicalLayer,
@@ -28,23 +29,70 @@ describe('mapPhysicalCodeToLogicalKey', () => {
 
 describe('computePhysicalLayer', () => {
   it('should return "base" with empty set', () => {
-    expect(computePhysicalLayer(new Set())).toBe('base');
+    expect(computePhysicalLayer(new Set(), 'windows')).toBe('base');
   });
 
   it('should return "shift" when ShiftLeft is held', () => {
-    expect(computePhysicalLayer(new Set(['ShiftLeft']))).toBe('shift');
+    expect(computePhysicalLayer(new Set(['ShiftLeft']), 'windows')).toBe('shift');
   });
 
   it('should return "shift" when ShiftRight is held', () => {
-    expect(computePhysicalLayer(new Set(['ShiftRight']))).toBe('shift');
+    expect(computePhysicalLayer(new Set(['ShiftRight']), 'windows')).toBe('shift');
   });
 
   it('should return "altGr" when AltRight is held', () => {
-    expect(computePhysicalLayer(new Set(['AltRight']))).toBe('altGr');
+    expect(computePhysicalLayer(new Set(['AltRight']), 'windows')).toBe('altGr');
   });
 
   it('should return "shift" when both ShiftLeft and AltRight are held (Shift wins)', () => {
-    expect(computePhysicalLayer(new Set(['ShiftLeft', 'AltRight']))).toBe('shift');
+    expect(computePhysicalLayer(new Set(['ShiftLeft', 'AltRight']), 'windows')).toBe('shift');
+  });
+});
+
+describe('buildCodeToKeyMap', () => {
+  it('maps MetaLeft to key-cmd on macos', () => {
+    const map = buildCodeToKeyMap('macos');
+    expect(map['MetaLeft']).toBe(createKeyId('key-cmd'));
+    expect(map['MetaRight']).toBe(createKeyId('key-cmd-right'));
+  });
+
+  it('does not map MetaLeft on windows', () => {
+    const map = buildCodeToKeyMap('windows');
+    expect(map['MetaLeft']).toBeUndefined();
+    expect(map['MetaRight']).toBeUndefined();
+  });
+
+  it('includes all existing mappings on both platforms', () => {
+    const winMap = buildCodeToKeyMap('windows');
+    const macMap = buildCodeToKeyMap('macos');
+    expect(winMap['KeyQ']).toBe(createKeyId('key-a'));
+    expect(macMap['KeyQ']).toBe(createKeyId('key-a'));
+    expect(winMap['Enter']).toBe(createKeyId('key-enter'));
+    expect(macMap['Enter']).toBe(createKeyId('key-enter'));
+  });
+});
+
+describe('computePhysicalLayer (OS-aware)', () => {
+  it('returns "altGr" when AltLeft is held on macos', () => {
+    expect(computePhysicalLayer(new Set(['AltLeft']), 'macos')).toBe('altGr');
+  });
+
+  it('returns "base" when AltLeft is held on windows', () => {
+    expect(computePhysicalLayer(new Set(['AltLeft']), 'windows')).toBe('base');
+  });
+
+  it('returns "altGr" when AltRight is held on both platforms', () => {
+    expect(computePhysicalLayer(new Set(['AltRight']), 'windows')).toBe('altGr');
+    expect(computePhysicalLayer(new Set(['AltRight']), 'macos')).toBe('altGr');
+  });
+});
+
+describe('MODIFIER_KEY_IDS new entries', () => {
+  it('includes key-cmd and key-option', () => {
+    expect(MODIFIER_KEY_IDS.has(createKeyId('key-cmd'))).toBe(true);
+    expect(MODIFIER_KEY_IDS.has(createKeyId('key-cmd-right'))).toBe(true);
+    expect(MODIFIER_KEY_IDS.has(createKeyId('key-option'))).toBe(true);
+    expect(MODIFIER_KEY_IDS.has(createKeyId('key-option-right'))).toBe(true);
   });
 });
 

@@ -1166,7 +1166,7 @@ export class BeninKeyboard extends LitElement {
       if (keyId !== null && !MODIFIER_KEY_IDS.has(keyId)) {
         e.preventDefault();
         const heldKeys = this._desktopState.snapshot().heldPhysicalKeys;
-        const layer = computePhysicalLayer(heldKeys);
+        const layer = computePhysicalLayer(heldKeys, 'windows');
         // Passthrough keys (numbers, symbols) use the OS e.key directly so the
         // physical layout (e.g. AZERTY: Digit1 base='&', shift='1') is respected.
         const char = PHYSICAL_PASSTHROUGH_CODES.has(e.code)
