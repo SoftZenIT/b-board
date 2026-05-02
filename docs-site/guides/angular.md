@@ -123,11 +123,11 @@ export class KeyboardDemoComponent implements AfterViewInit, OnDestroy {
   @ViewChild('inputEl') inputRef!: ElementRef<HTMLInputElement>;
 
   ngAfterViewInit(): void {
-    (this.kbRef.nativeElement as any).attach(this.inputRef.nativeElement);
+    (this.kbRef.nativeElement as BeninKeyboardElement).attach(this.inputRef.nativeElement);
   }
 
   ngOnDestroy(): void {
-    (this.kbRef.nativeElement as any).detach();
+    (this.kbRef.nativeElement as BeninKeyboardElement).detach();
   }
 }
 ```
