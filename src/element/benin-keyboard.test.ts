@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import './benin-keyboard.js';
+import type { BeninKeyboard as BeninKeyboardElement } from './benin-keyboard.js';
 import { InputElementAdapter } from '../adapters/input-adapter.js';
 
 describe('BeninKeyboard Custom Element', () => {
@@ -381,6 +382,35 @@ describe('Composition engine integration', () => {
       expect(events).toHaveLength(1);
       expect(events[0].detail.char).toBe('a');
     }
+  });
+});
+
+describe('OS-aware layout resolution', () => {
+  it('resolves desktop-azerty to desktop-azerty-windows on windows', async () => {
+    // detectOS() returns 'windows' in JSDOM (no Mac platform string)
+    const el = document.createElement('benin-keyboard') as BeninKeyboardElement;
+    el.setAttribute('language', 'yoruba');
+    el.setAttribute('layout-variant', 'desktop-azerty');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect((el as any)._resolveLayoutVariant('desktop-azerty')).toBe('desktop-azerty-windows');
+    document.body.removeChild(el);
+  });
+
+  it('resolves desktop-azerty-macos directly without change', async () => {
+    const el = document.createElement('benin-keyboard') as BeninKeyboardElement;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect((el as any)._resolveLayoutVariant('desktop-azerty-macos')).toBe('desktop-azerty-macos');
+    document.body.removeChild(el);
+  });
+
+  it('resolves mobile-default without change', async () => {
+    const el = document.createElement('benin-keyboard') as BeninKeyboardElement;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect((el as any)._resolveLayoutVariant('mobile-default')).toBe('mobile-default');
+    document.body.removeChild(el);
   });
 });
 

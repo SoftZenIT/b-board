@@ -17,11 +17,12 @@ import { createDesktopRenderModel } from '../ui/desktop/render-model.js';
 import { renderDesktopRows } from '../ui/desktop/rows.js';
 import { createDesktopState } from '../ui/state/desktop-state.js';
 import {
-  mapPhysicalCodeToLogicalKey,
+  buildCodeToKeyMap,
   computePhysicalLayer,
   MODIFIER_KEY_IDS,
   PHYSICAL_PASSTHROUGH_CODES,
 } from '../ui/desktop/physical-key-map.js';
+import { detectOS, type OS } from '../utils/detect-os.js';
 import { createCompositionProcessor } from '../composition/index.js';
 import type { CompositionProcessor } from '../composition/index.js';
 import { createFocusController } from '../ui/state/focus-controller.js';
@@ -96,6 +97,9 @@ export class BeninKeyboard extends LitElement {
   @property({ type: Boolean, reflect: true }) floating = false;
 
   @state() private _errorState: KeyboardError | null = null;
+
+  private _os: OS = 'windows';
+  private _codeToKeyMap: Record<string, KeyId> = buildCodeToKeyMap('windows');
 
   private _dragging = false;
   private _dragOffsetX = 0;
@@ -634,6 +638,9 @@ export class BeninKeyboard extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
+    this._os = detectOS();
+    this._codeToKeyMap = buildCodeToKeyMap(this._os);
+
     // Browser compatibility check — emits errors for missing APIs
     const compatErrors = validateBrowser();
     for (const ke of compatErrors) {
@@ -690,6 +697,13 @@ export class BeninKeyboard extends LitElement {
     this.requestUpdate();
   }
 
+  private _resolveLayoutVariant(id: LayoutVariantId): LayoutVariantId {
+    if (id === 'desktop-azerty') {
+      return this._os === 'macos' ? 'desktop-azerty-macos' : 'desktop-azerty-windows';
+    }
+    return id;
+  }
+
   private async _loadLayout(expectedKey: string): Promise<void> {
     if (!isLayoutVariantId(this.layoutVariant) || !isLanguageId(this.language)) {
       return;
@@ -730,7 +744,7 @@ export class BeninKeyboard extends LitElement {
   private async _tryLoadOnce(expectedKey: string): Promise<boolean> {
     const loader = createDataLoader();
     const [shape, profile, catalog] = await Promise.all([
-      loader.loadLayoutShape(this.layoutVariant),
+      loader.loadLayoutShape(this._resolveLayoutVariant(this.layoutVariant)),
       loader.loadLanguageProfile(this.language),
       loader.loadCompositionRules(),
     ]);
@@ -1162,11 +1176,11 @@ export class BeninKeyboard extends LitElement {
     // Hold-based modifier layer: computed from heldPhysicalKeys, not UI toggle state
     // Auto-repeat guard: e.repeat events are skipped
     if (!e.repeat && this.layoutVariant.startsWith('desktop-') && this._resolvedLayout) {
-      const keyId = mapPhysicalCodeToLogicalKey(e.code);
+      const keyId = (this._codeToKeyMap[e.code] as KeyId | undefined) ?? null;
       if (keyId !== null && !MODIFIER_KEY_IDS.has(keyId)) {
         e.preventDefault();
         const heldKeys = this._desktopState.snapshot().heldPhysicalKeys;
-        const layer = computePhysicalLayer(heldKeys, 'windows');
+        const layer = computePhysicalLayer(heldKeys, this._os);
         // Passthrough keys (numbers, symbols) use the OS e.key directly so the
         // physical layout (e.g. AZERTY: Digit1 base='&', shift='1') is respected.
         const char = PHYSICAL_PASSTHROUGH_CODES.has(e.code)
@@ -1386,7 +1400,7 @@ export class BeninKeyboard extends LitElement {
     const snapshot = this._desktopState.snapshot();
     const heldKeyIds: Set<string> = new Set();
     for (const code of snapshot.heldPhysicalKeys) {
-      const keyId = mapPhysicalCodeToLogicalKey(code);
+      const keyId = (this._codeToKeyMap[code] as KeyId | undefined) ?? null;
       if (keyId !== null) heldKeyIds.add(keyId);
     }
 
