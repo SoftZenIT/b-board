@@ -73,12 +73,18 @@ type ThemeId = 'light' | 'dark' | 'auto';
 interface BeninKeyboardElement extends HTMLElement {
   language: LanguageId;
   theme: ThemeId;
-  'layout-variant': 'desktop-azerty' | 'mobile-default';
+  'layout-variant':
+    | 'desktop-azerty'
+    | 'desktop-azerty-macos'
+    | 'desktop-azerty-windows'
+    | 'mobile-default';
   'modifier-display-mode': 'transition' | 'hint';
   open: boolean;
   disabled: boolean;
   'show-physical-echo': boolean;
   floating: boolean;
+  attach(target: HTMLElement): void;
+  detach(): void;
 }
 
 declare global {
@@ -88,7 +94,49 @@ declare global {
 }
 ```
 
-## Utilisation de base dans un template
+## Connexion à un champ de saisie
+
+Appelez `attach()` sur l'élément clavier pour le connecter à un `<input>`, `<textarea>` ou `contenteditable`. Le clavier gère automatiquement l'insertion, la touche Retour arrière et la composition.
+
+```ts
+import {
+  Component,
+  AfterViewInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  CUSTOM_ELEMENTS_SCHEMA,
+} from '@angular/core';
+import 'b-board';
+
+@Component({
+  selector: 'app-keyboard-demo',
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `
+    <input #inputEl type="text" placeholder="Saisissez ici…" />
+    <benin-keyboard #kb language="yoruba" theme="auto" open></benin-keyboard>
+  `,
+})
+export class KeyboardDemoComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('kb') kbRef!: ElementRef<HTMLElement>;
+  @ViewChild('inputEl') inputRef!: ElementRef<HTMLInputElement>;
+
+  ngAfterViewInit(): void {
+    (this.kbRef.nativeElement as BeninKeyboardElement).attach(this.inputRef.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    (this.kbRef.nativeElement as BeninKeyboardElement).detach();
+  }
+}
+```
+
+Appelez `detach()` dans `ngOnDestroy` pour déconnecter proprement lors de la destruction du composant.
+
+## Avancé : gestion personnalisée de la sortie
+
+Utilisez `attach()` pour les cibles standard. Écoutez `bboard-key-press` directement pour un comportement personnalisé.
 
 ```ts
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';

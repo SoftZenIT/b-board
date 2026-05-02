@@ -1,5 +1,18 @@
 # Foire aux questions
 
+## Comment connecter le clavier à un champ de saisie ?
+
+Appelez `attach()` sur l'élément clavier en passant votre élément `<input>`, `<textarea>` ou `contenteditable`. Le clavier gère automatiquement l'insertion sensible à la position du curseur, la touche Retour arrière et la composition — aucun écouteur d'événement n'est nécessaire :
+
+```ts
+const keyboard = document.querySelector('benin-keyboard')!;
+keyboard.attach(document.getElementById('my-input') as HTMLInputElement);
+```
+
+Appelez `detach()` pour déconnecter le clavier de sa cible. Faites-le dans le hook de nettoyage de votre framework — retour de `useEffect` en React, `onUnmounted` en Vue, `ngOnDestroy` en Angular — pour éviter les fuites mémoire.
+
+---
+
 ## b-board fonctionne-t-il sans framework ?
 
 Oui. b-board est un Web Component construit avec Lit. Il fonctionne dans tout environnement qui prend en charge l'API Custom Elements — les projets HTML simple, JavaScript Vanilla et TypeScript fonctionnent tous sans framework requis :

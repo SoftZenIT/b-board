@@ -40,30 +40,32 @@ import 'b-board';
 ### 2. Ajouter le clavier dans votre HTML
 
 ```html
-<input id="my-input" type="text" /> <benin-keyboard language="yoruba" theme="auto"></benin-keyboard>
+<input id="my-input" type="text" />
+<benin-keyboard id="kb" language="yoruba" theme="auto" open></benin-keyboard>
 ```
 
-### 3. Écouter les pressions de touches
+### 3. Connecter le clavier à votre champ de saisie
 
 ```ts
 const keyboard = document.querySelector('benin-keyboard');
-keyboard.addEventListener('bboard-key-press', (e) => {
-  console.log(e.detail.char); // le caractère inséré
-});
+const input = document.getElementById('my-input');
+keyboard.attach(input);
 ```
+
+`attach()` accepte les éléments `<input>`, `<textarea>` et `contenteditable`. Il gère automatiquement l'insertion sensible à la position du curseur, la touche Retour arrière et la composition. Appelez `detach()` pour déconnecter le clavier (ex. lors d'une navigation ou d'un démontage de composant).
 
 ## Configuration
 
-| Attribut                | Type                  | Défaut             | Description                                                                 |
-| ----------------------- | --------------------- | ------------------ | --------------------------------------------------------------------------- |
-| `language`              | `LanguageId`          | `'yoruba'`         | Profil de langue actif                                                      |
-| `theme`                 | `ThemeId`             | `'auto'`           | Thème de couleur (`light`, `dark`, `auto`)                                  |
-| `layout-variant`        | `LayoutVariantId`     | `'desktop-azerty'` | Disposition du clavier                                                      |
-| `modifier-display-mode` | `ModifierDisplayMode` | `'transition'`     | Animation des touches modificatrices (`transition` ou `hint`)               |
-| `open`                  | `boolean`             | `true`             | Afficher ou masquer le clavier ; mettre à `false` pour le replier           |
-| `disabled`              | `boolean`             | `false`            | Désactive toute interaction                                                 |
-| `show-physical-echo`    | `boolean`             | `false`            | Met en surbrillance la touche virtuelle correspondant à une touche physique |
-| `floating`              | `boolean`             | `false`            | Détache le clavier en superposition fixe ; déplaçable via sa poignée        |
+| Attribut                | Type                  | Défaut             | Description                                                                                                                                                                                                                                                      |
+| ----------------------- | --------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `language`              | `LanguageId`          | `'yoruba'`         | Profil de langue actif                                                                                                                                                                                                                                           |
+| `theme`                 | `ThemeId`             | `'auto'`           | Thème de couleur (`light`, `dark`, `auto`)                                                                                                                                                                                                                       |
+| `layout-variant`        | `LayoutVariantId`     | `'desktop-azerty'` | Disposition du clavier. `'desktop-azerty'` sélectionne automatiquement `'desktop-azerty-macos'` sur macOS et `'desktop-azerty-windows'` sur Windows/Linux. Utilisez les identifiants spécifiques au système uniquement pour forcer une disposition particulière. |
+| `modifier-display-mode` | `ModifierDisplayMode` | `'transition'`     | Animation des touches modificatrices (`transition` ou `hint`)                                                                                                                                                                                                    |
+| `open`                  | `boolean`             | `true`             | Afficher ou masquer le clavier ; mettre à `false` pour le replier                                                                                                                                                                                                |
+| `disabled`              | `boolean`             | `false`            | Désactive toute interaction                                                                                                                                                                                                                                      |
+| `show-physical-echo`    | `boolean`             | `false`            | Met en surbrillance la touche virtuelle correspondant à une touche physique                                                                                                                                                                                      |
+| `floating`              | `boolean`             | `false`            | Détache le clavier en superposition fixe ; déplaçable via sa poignée                                                                                                                                                                                             |
 
 ### Afficher et masquer le clavier
 

@@ -63,7 +63,11 @@ type ThemeId = 'light' | 'dark' | 'auto';
 interface BeninKeyboardProps {
   language?: LanguageId;
   theme?: ThemeId;
-  'layout-variant'?: 'desktop-azerty' | 'mobile-default';
+  'layout-variant'?:
+    | 'desktop-azerty'
+    | 'desktop-azerty-macos'
+    | 'desktop-azerty-windows'
+    | 'mobile-default';
   'modifier-display-mode'?: 'transition' | 'hint';
   open?: boolean;
   disabled?: boolean;
@@ -80,7 +84,38 @@ declare module 'vue' {
 export {};
 ```
 
-## Utilisation de base
+## Connexion à un champ de saisie
+
+Appelez `attach()` sur l'élément clavier pour le connecter à un `<input>`, `<textarea>` ou `contenteditable`. Le clavier gère automatiquement l'insertion, la touche Retour arrière et la composition.
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
+import 'b-board';
+
+const keyboardRef = ref<HTMLElement | null>(null);
+const inputRef = ref<HTMLInputElement | null>(null);
+
+onMounted(() => {
+  (keyboardRef.value as any)?.attach(inputRef.value);
+});
+
+onUnmounted(() => {
+  (keyboardRef.value as any)?.detach();
+});
+</script>
+
+<template>
+  <input ref="inputRef" type="text" placeholder="Saisissez ici…" />
+  <benin-keyboard ref="keyboardRef" language="yoruba" theme="auto" open />
+</template>
+```
+
+Appelez `detach()` dans `onUnmounted` pour déconnecter proprement lors de la destruction du composant.
+
+## Avancé : gestion personnalisée de la sortie
+
+Utilisez `attach()` pour les cibles standard. Écoutez `bboard-key-press` directement pour un comportement personnalisé.
 
 ```vue
 <script setup lang="ts">

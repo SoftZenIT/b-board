@@ -163,6 +163,8 @@ Les adaptateurs font le pont entre le clavier et les éléments hôtes natifs. C
 | `TextareaAdapter`        | `<textarea>`                                     |
 | `ContentEditableAdapter` | Tout élément avec `contenteditable`              |
 
+**Intégration standard :** Appelez `keyboard.attach(target)` pour lier le clavier à un élément `<input>`, `<textarea>` ou `contenteditable`. L'élément sélectionne automatiquement l'adaptateur approprié et l'enregistre auprès de l'`OperationDispatcher`. Appelez `keyboard.detach()` pour supprimer la liaison — faites-le dans le hook de nettoyage de votre framework pour éviter les fuites mémoire.
+
 Tous les adaptateurs partagent une interface commune définie dans `src/public/`. L'`AdapterRegistry` (dans `src/adapters/`) sélectionne automatiquement l'adaptateur correct en fonction du type d'élément cible.
 
 ---
@@ -185,6 +187,8 @@ Les profils de langue sont des fichiers JSON. Le chargeur prend en charge deux t
 
 - **Transport bundler** — le fichier est importé comme un asset statique (Vite / webpack).
 - **Transport fetch** — le fichier est récupéré au moment de l'exécution via `fetch()`.
+
+**Formes de disposition intégrées :** Les variantes de disposition bureau spécifiques au système (`desktop-azerty-macos`, `desktop-azerty-windows`) sont des objets TypeScript pré-construits exportés directement depuis `src/data/layouts/`. `loadLayoutShape()` consulte d'abord un registre `BUILT_IN_SHAPES` ; si une correspondance est trouvée, la forme est retournée immédiatement sans requête réseau ni validation JSON.
 
 ### Validation AJV
 

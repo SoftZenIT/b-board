@@ -21,6 +21,37 @@ Importez le package dans votre fichier d'entrée pour enregistrer l'élément pe
 import 'b-board';
 ```
 
+## Connexion à un champ de saisie
+
+Appelez `attach()` sur l'élément clavier pour le connecter à un `<input>`, `<textarea>` ou `contenteditable`. Le clavier gère automatiquement l'insertion, la touche Retour arrière et la composition.
+
+```tsx
+import { useEffect, useRef } from 'react';
+import 'b-board';
+
+export default function App() {
+  const keyboardRef = useRef<HTMLElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const kb = keyboardRef.current as any;
+    if (kb && inputRef.current) {
+      kb.attach(inputRef.current);
+      return () => kb.detach();
+    }
+  }, []);
+
+  return (
+    <>
+      <input ref={inputRef} type="text" placeholder="Saisissez ici…" />
+      <benin-keyboard ref={keyboardRef} language="yoruba" theme="auto" open />
+    </>
+  );
+}
+```
+
+Retournez `kb.detach()` depuis `useEffect` pour déconnecter proprement lors du démontage.
+
 ## Déclaration de types TypeScript
 
 React ne reconnaît pas automatiquement les éléments personnalisés. Créez un fichier `src/bboard.d.ts` pour ajouter la prise en charge des types JSX :
@@ -35,7 +66,11 @@ type ThemeId = 'light' | 'dark' | 'auto';
 interface BeninKeyboardAttributes {
   language?: LanguageId;
   theme?: ThemeId;
-  'layout-variant'?: 'desktop-azerty' | 'mobile-default';
+  'layout-variant'?:
+    | 'desktop-azerty'
+    | 'desktop-azerty-macos'
+    | 'desktop-azerty-windows'
+    | 'mobile-default';
   'modifier-display-mode'?: 'transition' | 'hint';
   open?: boolean;
   disabled?: boolean;
@@ -70,7 +105,9 @@ export default function App() {
 }
 ```
 
-## Gestion des événements
+## Avancé : gestion personnalisée de la sortie
+
+Utilisez `attach()` pour les cibles standard. Écoutez `bboard-key-press` directement pour un comportement personnalisé — éditeur riche, jeu, analytique.
 
 ### Pourquoi `addEventListener` plutôt que les props d'événement JSX ?
 

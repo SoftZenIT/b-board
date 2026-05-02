@@ -32,9 +32,7 @@ Après cet import, l'élément personnalisé `<benin-keyboard>` est défini et p
   const keyboard = document.querySelector('benin-keyboard');
   const output = document.getElementById('output');
 
-  keyboard.addEventListener('bboard-key-press', (e) => {
-    output.value += e.detail.char;
-  });
+  keyboard.attach(output);
 </script>
 ```
 
@@ -60,13 +58,32 @@ Si vous n'utilisez pas de bundler, vous pouvez charger b-board directement depui
       const keyboard = document.querySelector('benin-keyboard');
       const output = document.getElementById('output');
 
-      keyboard.addEventListener('bboard-key-press', (e) => {
-        output.value += e.detail.char;
-      });
+      keyboard.attach(output);
     </script>
   </body>
 </html>
 ```
+
+## Connexion à un champ de saisie
+
+Appelez `attach()` sur l'élément clavier en passant votre cible `<input>`, `<textarea>` ou `contenteditable`. Le clavier gère automatiquement l'insertion sensible à la position du curseur, la touche Retour arrière et la composition — aucun écouteur d'événement n'est nécessaire.
+
+```ts
+import 'b-board';
+
+const keyboard = document.querySelector('benin-keyboard')!;
+const input = document.getElementById('my-input') as HTMLInputElement;
+
+keyboard.attach(input);
+```
+
+Appelez `detach()` pour déconnecter le clavier de sa cible (ex. lors d'une navigation SPA) :
+
+```ts
+keyboard.detach();
+```
+
+`attach()` lève une erreur si la cible n'est pas un élément `<input>`, `<textarea>` ou `contenteditable`.
 
 ## Déclaration de type TypeScript
 
@@ -80,12 +97,18 @@ type ThemeId = 'light' | 'dark' | 'auto';
 interface BeninKeyboardElement extends HTMLElement {
   language: LanguageId;
   theme: ThemeId;
-  'layout-variant': 'desktop-azerty' | 'mobile-default';
+  'layout-variant':
+    | 'desktop-azerty'
+    | 'desktop-azerty-macos'
+    | 'desktop-azerty-windows'
+    | 'mobile-default';
   'modifier-display-mode': 'transition' | 'hint';
   open: boolean;
   disabled: boolean;
   'show-physical-echo': boolean;
   floating: boolean;
+  attach(target: HTMLElement): void;
+  detach(): void;
 }
 
 declare global {
@@ -97,7 +120,11 @@ declare global {
 
 Avec cette déclaration, `document.querySelector('benin-keyboard')` retourne `BeninKeyboardElement | null`, vous donnant un accès typé à ses propriétés.
 
-## Gestion de la position du curseur
+## Avancé : gestion personnalisée de la sortie
+
+Utilisez `attach()` pour les cibles de saisie standard. Écoutez `bboard-key-press` directement lorsque vous avez besoin d'un comportement de sortie personnalisé — par exemple, un éditeur de texte enrichi, une saisie de jeu ou un suivi analytique.
+
+### Insertion sensible à la position du curseur
 
 Simplement ajouter à `textarea.value` perd la position du curseur. Utilisez l'API de plage de sélection pour insérer le caractère exactement là où se trouve le curseur :
 
