@@ -124,6 +124,8 @@ export class BeninKeyboard extends LitElement {
   private _assertiveMessage = '';
   private _dispatcher = new OperationDispatcher();
   private _attachedHandle: TargetHandle | null = null;
+  private _attachedTarget: HTMLElement | null = null;
+  private _savedInputMode: string | null | undefined = undefined;
 
   static readonly styles = css`
     :host {
@@ -1083,6 +1085,11 @@ export class BeninKeyboard extends LitElement {
 
     this.detach();
 
+    // Suppress native OS virtual keyboard on the target
+    this._attachedTarget = target;
+    this._savedInputMode = target.getAttribute('inputmode'); // null if absent
+    target.setAttribute('inputmode', 'none');
+
     const handle = createTargetHandle('attached-target');
     let adapter;
     if (target instanceof HTMLInputElement) {
@@ -1100,6 +1107,18 @@ export class BeninKeyboard extends LitElement {
 
   detach(): void {
     this._compositionProcessor?.cancel();
+
+    // Restore the target's original inputmode
+    if (this._attachedTarget) {
+      if (this._savedInputMode === null) {
+        this._attachedTarget.removeAttribute('inputmode');
+      } else if (this._savedInputMode !== undefined) {
+        this._attachedTarget.setAttribute('inputmode', this._savedInputMode);
+      }
+      this._attachedTarget = null;
+      this._savedInputMode = undefined;
+    }
+
     this._dispatcher = new OperationDispatcher();
     this._attachedHandle = null;
   }

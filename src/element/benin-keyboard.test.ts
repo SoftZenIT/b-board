@@ -516,3 +516,43 @@ describe('auto mobile detection', () => {
     document.body.removeChild(el);
   });
 });
+
+describe('native keyboard suppression', () => {
+  it('sets inputmode="none" on the target when attach() is called', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const input = document.createElement('input');
+    el.attach(input);
+    expect(input.getAttribute('inputmode')).toBe('none');
+  });
+
+  it('restores original inputmode on detach() when it was set', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const input = document.createElement('input');
+    input.setAttribute('inputmode', 'text');
+    el.attach(input);
+    expect(input.getAttribute('inputmode')).toBe('none');
+    el.detach();
+    expect(input.getAttribute('inputmode')).toBe('text');
+  });
+
+  it('removes inputmode attribute on detach() when it was absent', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const input = document.createElement('input');
+    el.attach(input);
+    el.detach();
+    expect(input.hasAttribute('inputmode')).toBe(false);
+  });
+
+  it('restores inputmode of first target when attach() is called on a second target', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const input1 = document.createElement('input');
+    const input2 = document.createElement('input');
+    input1.setAttribute('inputmode', 'numeric');
+    el.attach(input1);
+    el.attach(input2); // triggers implicit detach of input1
+    expect(input1.getAttribute('inputmode')).toBe('numeric');
+    expect(input2.getAttribute('inputmode')).toBe('none');
+    el.detach();
+    expect(input2.hasAttribute('inputmode')).toBe(false);
+  });
+});
