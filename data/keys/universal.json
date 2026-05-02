@@ -13,5 +13,5 @@
   { "keyId": "key-equal", "baseChar": "=", "shiftChar": "+" },
   { "keyId": "key-backspace", "baseChar": "\b" },
   { "keyId": "key-enter", "baseChar": "\n" },
-  { "keyId": "key-space", "baseChar": " " }
+  { "keyId": "key-space", "baseChar": " ", "longPress": [" "] }
 ]

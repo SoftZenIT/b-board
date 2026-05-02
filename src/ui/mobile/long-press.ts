@@ -1,6 +1,12 @@
 import { html, type TemplateResult } from 'lit';
 import type { LongPressPopupModel } from './render-model.js';
 
+/** Returns a visible label for a character in the long-press popup. */
+export function displayLabel(char: string): string {
+  if (char === ' ') return '⎵'; // non-breaking space — show visible symbol
+  return char;
+}
+
 export function renderLongPressPopup(popup: LongPressPopupModel): TemplateResult {
   return html`
     <div
@@ -18,7 +24,7 @@ export function renderLongPressPopup(popup: LongPressPopupModel): TemplateResult
             data-char=${char}
             data-index=${index}
           >
-            ${char}
+            ${displayLabel(char)}
           </div>
         `
       )}

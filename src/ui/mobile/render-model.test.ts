@@ -176,6 +176,42 @@ describe('createMobileRenderModel', () => {
     expect(model.longPressPopup).toBeNull();
   });
 
+  it('marks key-space with hasLongPress and longPressChars when it has a non-breaking space long-press', () => {
+    const rows = [createLayoutRow([createLayoutSlot(createKeyId('key-space'), 5, ' ')])];
+    const shape = createLayoutShape(
+      'mobile-default',
+      'mobile',
+      [createLayoutLayer('base', rows)],
+      'auto'
+    );
+    const keyMap = new Map([
+      [
+        createKeyId('key-space'),
+        createResolvedKey(
+          createKeyId('key-space'),
+          { base: createKeyOutput(' '), shift: createKeyOutput(' '), altGr: createKeyOutput(' ') },
+          [' ']
+        ),
+      ],
+    ]);
+    const layout = createResolvedLayout(
+      shape,
+      {
+        languageId: 'yoruba',
+        name: 'Yoruba',
+        nativeName: 'Yorùbá',
+        characters: [],
+        compositionRules: [],
+      },
+      keyMap,
+      new Map()
+    );
+    const model = createMobileRenderModel(layout, baseState);
+    const space = model.rows[0].keys.find((k) => k.keyId === 'key-space')!;
+    expect(space.hasLongPress).toBe(true);
+    expect(space.longPressChars).toEqual([' ']);
+  });
+
   it('passes widthBucket through to the model', () => {
     const state: MobileRenderState = { ...baseState, widthBucket: 'xs' };
     const model = createMobileRenderModel(makeLayout(), state);

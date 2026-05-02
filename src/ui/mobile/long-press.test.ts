@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'lit';
 import { createKeyId } from '../../public/index.js';
-import { renderLongPressPopup } from './long-press.js';
+import { renderLongPressPopup, displayLabel } from './long-press.js';
 import type { LongPressPopupModel } from './render-model.js';
 
 function makePopup(overrides: Partial<LongPressPopupModel> = {}): LongPressPopupModel {
@@ -57,6 +57,10 @@ describe('renderLongPressPopup', () => {
     expect(options[0].classList.contains('is-selected')).toBe(false);
     expect(options[1].classList.contains('is-selected')).toBe(false);
     expect(options[2].classList.contains('is-selected')).toBe(true);
+  });
+
+  it('renders non-breaking space (U+00A0) as the visible ⎵ symbol', () => {
+    expect(displayLabel(' ')).toBe('⎵');
   });
 
   it('listbox has aria-label "Alternate characters"', () => {
