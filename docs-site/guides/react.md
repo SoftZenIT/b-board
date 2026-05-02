@@ -21,6 +21,37 @@ Import the package in your entry file to register the custom element:
 import 'b-board';
 ```
 
+## Connecting to an Input
+
+Call `attach()` on the keyboard element to wire it to an `<input>`, `<textarea>`, or `contenteditable` target. The keyboard handles cursor-aware insertion, backspace, and composition automatically.
+
+```tsx
+import { useEffect, useRef } from 'react';
+import 'b-board';
+
+export default function App() {
+  const keyboardRef = useRef<HTMLElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const kb = keyboardRef.current as any;
+    if (kb && inputRef.current) {
+      kb.attach(inputRef.current);
+      return () => kb.detach();
+    }
+  }, []);
+
+  return (
+    <>
+      <input ref={inputRef} type="text" placeholder="Type here…" />
+      <benin-keyboard ref={keyboardRef} language="yoruba" theme="auto" open />
+    </>
+  );
+}
+```
+
+Return `kb.detach()` from `useEffect` to disconnect cleanly on unmount.
+
 ## TypeScript Type Declaration
 
 React does not automatically recognize custom elements. Create a `src/bboard.d.ts` file to add JSX type support:
@@ -35,7 +66,11 @@ type ThemeId = 'light' | 'dark' | 'auto';
 interface BeninKeyboardAttributes {
   language?: LanguageId;
   theme?: ThemeId;
-  'layout-variant'?: 'desktop-azerty' | 'mobile-default';
+  'layout-variant'?:
+    | 'desktop-azerty'
+    | 'desktop-azerty-macos'
+    | 'desktop-azerty-windows'
+    | 'mobile-default';
   'modifier-display-mode'?: 'transition' | 'hint';
   open?: boolean;
   disabled?: boolean;
@@ -70,7 +105,9 @@ export default function App() {
 }
 ```
 
-## Event Handling
+## Advanced: Custom Output Handling
+
+Use `attach()` for standard input targets. Listen to `bboard-key-press` directly when you need custom output behavior — for example, a rich text editor, game input, or analytics tracking.
 
 ### Why `addEventListener` instead of JSX event props?
 
