@@ -595,3 +595,45 @@ describe('long-press backspace deletes previous word', () => {
     document.body.removeChild(input);
   });
 });
+
+describe('long-press shift enables caps lock', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('sets capsLocked=true and activeLayer=shift after 300ms hold on key-shift', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const shiftKeyId = 'key-shift';
+    (el as any)._mobileState.startLongPress(shiftKeyId, () => {});
+    vi.advanceTimersByTime(300);
+    (el as any)._handleTouchEnd();
+
+    expect((el as any)._mobileState.snapshot().capsLocked).toBe(true);
+    expect((el as any)._mobileState.snapshot().activeLayer).toBe('shift');
+    document.body.removeChild(el);
+  });
+
+  it('disables caps lock when shift long-press is triggered again while locked', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // Enable caps lock
+    (el as any)._mobileState.setCapsLock(true);
+    (el as any)._mobileState.setActiveLayer('shift');
+
+    // Long-press shift again
+    const shiftKeyId = 'key-shift';
+    (el as any)._mobileState.startLongPress(shiftKeyId, () => {});
+    vi.advanceTimersByTime(300);
+    (el as any)._handleTouchEnd();
+
+    expect((el as any)._mobileState.snapshot().capsLocked).toBe(false);
+    expect((el as any)._mobileState.snapshot().activeLayer).toBe('base');
+    document.body.removeChild(el);
+  });
+});

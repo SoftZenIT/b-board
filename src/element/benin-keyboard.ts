@@ -1024,10 +1024,17 @@ export class BeninKeyboard extends LitElement {
 
     const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snap.activeLayer);
     if (keyId === shiftKey || keyId === shiftRightKey) {
-      this._mobileState.setActiveLayer(snap.activeLayer === 'shift' ? 'base' : 'shift');
+      if (snap.capsLocked) {
+        // Tap shift while caps-locked: disable caps lock and return to base
+        this._mobileState.setCapsLock(false);
+        this._mobileState.setActiveLayer('base');
+      } else {
+        this._mobileState.setActiveLayer(snap.activeLayer === 'shift' ? 'base' : 'shift');
+      }
     } else if (keyId === altGrKey) {
       this._mobileState.setActiveLayer(snap.activeLayer === 'altGr' ? 'base' : 'altGr');
-    } else if (snap.activeLayer === 'shift') {
+    } else if (snap.activeLayer === 'shift' && !snap.capsLocked) {
+      // Only revert to base after a character key if caps lock is not active
       this._mobileState.setActiveLayer('base');
     }
     this.requestUpdate();
@@ -1320,6 +1327,17 @@ export class BeninKeyboard extends LitElement {
         this._dispatcher.dispatch(this._attachedHandle, op);
         dispatchBBoardEvent(this, 'bboard-key-press', { keyId: backspaceKeyId, char: '\b' });
       }
+      this._mobileState.dismissLongPress();
+      this._touchStartKeyId = null;
+      this.requestUpdate();
+      return;
+    }
+    // Long-press shift: toggle caps lock
+    const shiftKeyId = createKeyId('key-shift');
+    if (snap.longPressArmed && snap.longPressKeyId === shiftKeyId && !snap.longPressVisible) {
+      const newCapsLocked = !snap.capsLocked;
+      this._mobileState.setCapsLock(newCapsLocked);
+      this._mobileState.setActiveLayer(newCapsLocked ? 'shift' : 'base');
       this._mobileState.dismissLongPress();
       this._touchStartKeyId = null;
       this.requestUpdate();
