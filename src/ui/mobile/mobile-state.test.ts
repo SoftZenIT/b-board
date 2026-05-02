@@ -106,3 +106,56 @@ describe('createMobileState', () => {
     expect(state.snapshot().longPressVisible).toBe(false);
   });
 });
+
+describe('longPressArmed', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it('is false before the timer fires', () => {
+    const state = createMobileState();
+    state.startLongPress(createKeyId('key-backspace'), vi.fn());
+    expect(state.snapshot().longPressArmed).toBe(false);
+  });
+
+  it('is true after 300ms', () => {
+    const state = createMobileState();
+    state.startLongPress(createKeyId('key-backspace'), vi.fn());
+    vi.advanceTimersByTime(300);
+    expect(state.snapshot().longPressArmed).toBe(true);
+  });
+
+  it('is reset by cancelLongPress', () => {
+    const state = createMobileState();
+    state.startLongPress(createKeyId('key-backspace'), vi.fn());
+    vi.advanceTimersByTime(300);
+    state.cancelLongPress();
+    expect(state.snapshot().longPressArmed).toBe(false);
+  });
+
+  it('is reset by dismissLongPress', () => {
+    const state = createMobileState();
+    state.startLongPress(createKeyId('key-backspace'), vi.fn());
+    vi.advanceTimersByTime(300);
+    state.dismissLongPress();
+    expect(state.snapshot().longPressArmed).toBe(false);
+  });
+});
+
+describe('capsLocked', () => {
+  it('defaults to false', () => {
+    expect(createMobileState().snapshot().capsLocked).toBe(false);
+  });
+
+  it('setCapsLock(true) enables caps lock', () => {
+    const state = createMobileState();
+    state.setCapsLock(true);
+    expect(state.snapshot().capsLocked).toBe(true);
+  });
+
+  it('setCapsLock(false) disables caps lock', () => {
+    const state = createMobileState();
+    state.setCapsLock(true);
+    state.setCapsLock(false);
+    expect(state.snapshot().capsLocked).toBe(false);
+  });
+});
