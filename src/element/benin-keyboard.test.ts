@@ -445,3 +445,82 @@ describe('Virtual capslock', () => {
     document.body.removeChild(el);
   });
 });
+
+describe('auto mobile detection', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('sets layout-variant to mobile-default on mobile devices', async () => {
+    vi.stubGlobal('navigator', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0)' });
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: (query: string) => ({
+        matches: query === '(pointer: coarse)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }),
+    });
+
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.getAttribute('layout-variant')).toBe('mobile-default');
+    document.body.removeChild(el);
+  });
+
+  it('does NOT override an explicitly set layout-variant', async () => {
+    vi.stubGlobal('navigator', { userAgent: 'Mozilla/5.0 (Android 14)' });
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: (query: string) => ({
+        matches: query === '(pointer: coarse)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }),
+    });
+
+    const el = document.createElement('benin-keyboard') as any;
+    el.setAttribute('layout-variant', 'desktop-azerty');
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.getAttribute('layout-variant')).toBe('desktop-azerty');
+    document.body.removeChild(el);
+  });
+
+  it('does NOT set mobile-default on desktop (pointer: fine)', async () => {
+    vi.stubGlobal('navigator', { userAgent: 'Mozilla/5.0 (Windows NT 10.0)' });
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: (_query: string) => ({
+        matches: false,
+        media: _query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }),
+    });
+
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.getAttribute('layout-variant')).toBeNull();
+    document.body.removeChild(el);
+  });
+});

@@ -638,6 +638,15 @@ export class BeninKeyboard extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
+    // Auto-select mobile layout on touch-primary mobile devices
+    const isMobile =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(pointer: coarse)').matches &&
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile && !this.hasAttribute('layout-variant')) {
+      this.setAttribute('layout-variant', 'mobile-default');
+    }
+
     this._os = detectOS();
     this._codeToKeyMap = buildCodeToKeyMap(this._os);
 
