@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import './benin-keyboard.js';
+import { InputElementAdapter } from '../adapters/input-adapter.js';
 
 describe('BeninKeyboard Custom Element', () => {
   it('registers <benin-keyboard> with the browser', () => {
@@ -32,6 +33,81 @@ describe('BeninKeyboard Custom Element', () => {
     expect(typeof el.detach).toBe('function');
 
     expect(() => el.attach(target)).not.toThrow();
+  });
+
+  it('attach() with an unsupported element throws', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const div = document.createElement('div');
+    expect(() => el.attach(div)).toThrow(
+      'attach() requires an <input>, <textarea>, or contenteditable element'
+    );
+  });
+
+  it('attach() registers an adapter and dispatches insert on key press', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    (el as any)._dispatchToAdapter('a');
+
+    expect(applySpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'insert', text: 'a' }));
+
+    applySpy.mockRestore();
+    document.body.removeChild(el);
+    document.body.removeChild(input);
+  });
+
+  it('attach() dispatches delete operation for backspace char', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    (el as any)._dispatchToAdapter('\b');
+
+    expect(applySpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'delete', length: 1 }));
+
+    applySpy.mockRestore();
+    document.body.removeChild(el);
+    document.body.removeChild(input);
+  });
+
+  it('detach() stops dispatch', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    el.detach();
+    (el as any)._dispatchToAdapter('a');
+
+    expect(applySpy).not.toHaveBeenCalled();
+
+    applySpy.mockRestore();
+    document.body.removeChild(el);
+    document.body.removeChild(input);
   });
 
   it('should render the canonical desktop layout row count', async () => {
@@ -148,6 +224,67 @@ describe('Physical keyboard output', () => {
     document.body.removeChild(el);
   });
 
+  it('calls e.preventDefault() for physical character keys (desktop variant)', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const event = new KeyboardEvent('keydown', {
+      code: 'KeyQ',
+      key: 'q',
+      bubbles: true,
+      cancelable: true,
+    });
+    const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+
+    window.dispatchEvent(event);
+
+    expect(preventDefaultSpy).toHaveBeenCalledOnce();
+
+    document.body.removeChild(el);
+  });
+
+  it('fires bboard-key-press with char "\\b" for physical Backspace key', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { code: 'Backspace', key: 'Backspace', bubbles: true })
+    );
+
+    expect(events).toHaveLength(1);
+    expect(events[0].detail.keyId).toBe('key-backspace');
+    expect(events[0].detail.char).toBe('\b');
+
+    document.body.removeChild(el);
+  });
+
+  it('fires bboard-key-press with char "\\n" for physical Enter key', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { code: 'Enter', key: 'Enter', bubbles: true })
+    );
+
+    expect(events).toHaveLength(1);
+    expect(events[0].detail.keyId).toBe('key-enter');
+    expect(events[0].detail.char).toBe('\n');
+
+    document.body.removeChild(el);
+  });
+
   it('does NOT fire bboard-key-press for physical keys in mobile layout variant', async () => {
     const el = document.createElement('benin-keyboard') as any;
     el.layoutVariant = 'mobile-default';
@@ -244,5 +381,37 @@ describe('Composition engine integration', () => {
       expect(events).toHaveLength(1);
       expect(events[0].detail.char).toBe('a');
     }
+  });
+});
+
+describe('Virtual capslock', () => {
+  it('toggles shift layer when virtual capslock key is clicked (desktop)', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    // Activate capslock virtual key
+    el._activateKey('key-capslock');
+    await el.updateComplete;
+
+    // Capslock itself should not fire a key-press event
+    expect(events).toHaveLength(0);
+
+    // Next key press should use shift layer (uppercase)
+    const keyAId = [...el._resolvedLayout.keyMap.entries()].find(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ([_key, v]: [any, any]) => v.layers?.base?.char === 'a'
+    )?.[0];
+    if (keyAId) {
+      el._activateKey(keyAId);
+      expect(events).toHaveLength(1);
+      expect(events[0].detail.char).toMatch(/[A-Z]/);
+    }
+
+    document.body.removeChild(el);
   });
 });

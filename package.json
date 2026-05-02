@@ -1,7 +1,7 @@
 {
   "name": "b-board",
   "version": "0.1.0",
-  "description": "BJ-Keyboard — framework-agnostic virtual keyboard UI library with multi-language support",
+  "description": "b-board — framework-agnostic virtual keyboard for Beninese African languages",
   "type": "module",
   "main": "./dist/bboard.umd.js",
   "module": "./dist/bboard.es.js",
@@ -31,6 +31,16 @@
     "fon",
     "i18n"
   ],
+  "size-limit": [
+    {
+      "path": "dist/bboard.es.js",
+      "limit": "55 kB"
+    },
+    {
+      "path": "dist/bboard.umd.js",
+      "limit": "55 kB"
+    }
+  ],
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
@@ -48,7 +58,12 @@
     "type-check": "vue-tsc --noEmit",
     "bootstrap:schemas": "tsx scripts/bootstrap-schemas.ts",
     "validate:data": "tsx scripts/validate-data.ts",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "docs:dev": "vitepress dev docs-site",
+    "docs:build": "vitepress build docs-site",
+    "docs:preview": "vitepress preview docs-site",
+    "docs:api": "typedoc",
+    "release": "semantic-release"
   },
   "dependencies": {
     "ajv": "^8.18.0",
@@ -58,6 +73,14 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@playwright/test": "^1.58.2",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.6",
+    "@semantic-release/npm": "^13.1.5",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "@size-limit/preset-small-lib": "^12.1.0",
+    "@stackblitz/sdk": "^1.11.0",
     "@types/node": "^25.5.0",
     "@typescript-eslint/eslint-plugin": "^8.57.1",
     "@typescript-eslint/parser": "^8.57.1",
@@ -74,11 +97,16 @@
     "lint-staged": "^16.4.0",
     "playwright": "^1.58.2",
     "prettier": "^3.8.1",
+    "semantic-release": "^25.0.3",
+    "size-limit": "^12.1.0",
     "ts-json-schema-generator": "^2.9.0",
     "tsx": "^4.21.0",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
     "vite-plugin-dts": "^4.5.4",
+    "vitepress": "^1.6.4",
     "vitest": "^4.1.0",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^2.2.0"

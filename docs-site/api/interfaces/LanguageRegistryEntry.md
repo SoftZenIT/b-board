@@ -1,0 +1,37 @@
+[**b-board**](../README.md)
+
+---
+
+[b-board](../README.md) / LanguageRegistryEntry
+
+# Interface: LanguageRegistryEntry
+
+Defined in: [data/registry.types.ts:9](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/registry.types.ts#L9)
+
+A single entry in the registry pointing to a data file.
+
+## Example
+
+```ts
+const entry: LanguageRegistryEntry = { id: 'yoruba', path: 'data/languages/yoruba.json' };
+```
+
+## Properties
+
+### id
+
+> **id**: `"yoruba"` \| `"fon-adja"` \| `"baatonum"` \| `"dendi"`
+
+Defined in: [data/registry.types.ts:11](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/registry.types.ts#L11)
+
+Language identifier.
+
+---
+
+### path
+
+> **path**: `string`
+
+Defined in: [data/registry.types.ts:13](https://github.com/SoftZenIT/b-board/blob/fbde7c09877b4cf77622343e6f26b0c36b001484/src/data/registry.types.ts#L13)
+
+Relative path to the language JSON file.

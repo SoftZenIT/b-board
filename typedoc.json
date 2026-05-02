@@ -1,0 +1,16 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/public/index.ts"],
+  "out": "docs-site/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "entryPointStrategy": "resolve",
+  "readme": "none",
+  "githubPages": false,
+  "hideGenerator": true,
+  "categorizeByGroup": true,
+  "groupOrder": ["Classes", "Functions", "Interfaces", "Type Aliases", "Variables"],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "skipErrorChecking": true
+}

@@ -1,0 +1,17 @@
+[
+  { "keyId": "key-1", "baseChar": "1", "shiftChar": "!" },
+  { "keyId": "key-2", "baseChar": "2", "shiftChar": "@" },
+  { "keyId": "key-3", "baseChar": "3", "shiftChar": "#" },
+  { "keyId": "key-4", "baseChar": "4", "shiftChar": "$" },
+  { "keyId": "key-5", "baseChar": "5", "shiftChar": "%" },
+  { "keyId": "key-6", "baseChar": "6", "shiftChar": "^" },
+  { "keyId": "key-7", "baseChar": "7", "shiftChar": "&" },
+  { "keyId": "key-8", "baseChar": "8", "shiftChar": "*" },
+  { "keyId": "key-9", "baseChar": "9", "shiftChar": "(" },
+  { "keyId": "key-0", "baseChar": "0", "shiftChar": ")" },
+  { "keyId": "key-minus", "baseChar": "-", "shiftChar": "_" },
+  { "keyId": "key-equal", "baseChar": "=", "shiftChar": "+" },
+  { "keyId": "key-backspace", "baseChar": "\b" },
+  { "keyId": "key-enter", "baseChar": "\n" },
+  { "keyId": "key-space", "baseChar": " " }
+]

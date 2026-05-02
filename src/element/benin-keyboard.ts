@@ -20,6 +20,7 @@ import {
   mapPhysicalCodeToLogicalKey,
   computePhysicalLayer,
   MODIFIER_KEY_IDS,
+  PHYSICAL_PASSTHROUGH_CODES,
 } from '../ui/desktop/physical-key-map.js';
 import { createCompositionProcessor } from '../composition/index.js';
 import type { CompositionProcessor } from '../composition/index.js';
@@ -35,9 +36,23 @@ import {
 } from '../core/_internal/error-handler.js';
 import { validateBrowser, supportsResizeObserver } from '../core/_internal/browser-compat.js';
 import { logger } from '../utils/logger.js';
+import { OperationDispatcher } from '../adapters/dispatcher.js';
+import { InputElementAdapter } from '../adapters/input-adapter.js';
+import { TextareaAdapter } from '../adapters/textarea-adapter.js';
+import { ContenteditableAdapter } from '../adapters/contenteditable-adapter.js';
+import { createTargetHandle, type TargetHandle, type InputOperation } from '../adapters/types.js';
+
+import type { KeyCatalogEntry } from '../data/language.types.js';
+import universalKeysRaw from '../../data/keys/universal.json';
+const UNIVERSAL_KEYS = universalKeysRaw as unknown as KeyCatalogEntry[];
 
 const BCP47_MAP: Readonly<Record<LanguageId, string>> = {
   yoruba: 'yo',
+  // Fon (Fɔngbè) and Adja (Ajagbe) share an identical orthography — same
+  // consonants (ɖ, ɣ, ʋ, gb, kp), same vowels (ɛ, ɔ), same nasal vowel
+  // system, same tone marks — so a single profile covers both. BCP47 'fon'
+  // is the registered subtag for Fon; 'aja' is not a registered BCP47 subtag,
+  // so 'fon' is the best available tag for this combined profile.
   'fon-adja': 'fon',
   baatonum: 'bba',
   dendi: 'ddn',
@@ -78,8 +93,15 @@ export class BeninKeyboard extends LitElement {
   @property({ type: Boolean, attribute: 'show-physical-echo' }) showPhysicalEcho = false;
   @property({ type: String, attribute: 'modifier-display-mode' })
   modifierDisplayMode: ModifierDisplayMode = 'transition';
+  @property({ type: Boolean, reflect: true }) floating = false;
 
   @state() private _errorState: KeyboardError | null = null;
+
+  private _dragging = false;
+  private _dragOffsetX = 0;
+  private _dragOffsetY = 0;
+  private _currentX = 0;
+  private _currentY = 0;
 
   private readonly _errorHandler: ErrorHandler = createErrorHandler();
   private readonly _themeManager!: ThemeManager;
@@ -96,6 +118,8 @@ export class BeninKeyboard extends LitElement {
   private _lastSyncedFocusId: KeyId | null = null;
   private _politeMessage = '';
   private _assertiveMessage = '';
+  private _dispatcher = new OperationDispatcher();
+  private _attachedHandle: TargetHandle | null = null;
 
   static readonly styles = css`
     :host {
@@ -104,6 +128,138 @@ export class BeninKeyboard extends LitElement {
       user-select: none;
       -webkit-user-select: none;
       font-family: var(--bboard-font-family);
+
+      /* Default design tokens — override from the outside via CSS custom properties */
+      --bboard-color-surface-base: #e2e4e9;
+      --bboard-color-surface-sunken: #d1d5db;
+      --bboard-color-surface-key: #ffffff;
+      --bboard-color-surface-special: #b4bbc3;
+      --bboard-color-surface-active: #e5e7eb;
+      --bboard-color-text-primary: #000000;
+      --bboard-color-text-secondary: #4b5563;
+      --bboard-color-text-on-primary: #ffffff;
+      --bboard-color-primary-base: #007aff;
+      --bboard-color-primary-hover: #0063e6;
+      --bboard-color-primary-active: #0051bb;
+      --bboard-color-border-subtle: rgba(0, 0, 0, 0.1);
+      --bboard-color-border-strong: rgba(0, 0, 0, 0.2);
+      --bboard-color-focus-ring: #007aff;
+      --bboard-color-status-error: #ff3b30;
+      --bboard-color-status-success: #34c759;
+      --bboard-size-touch-min: 44px;
+      --bboard-size-key-height: 3rem;
+      --bboard-size-key-width: 2.5rem;
+      --bboard-size-radius-sm: 4px;
+      --bboard-size-radius-md: 6px;
+      --bboard-size-radius-lg: 12px;
+      --bboard-space-gap-row: 8px;
+      --bboard-space-gap-key: 6px;
+      --bboard-space-padding: 4px;
+      --bboard-space-inset-sm: 8px;
+      --bboard-space-inset-md: 12px;
+      --bboard-font-family: system-ui, -apple-system, sans-serif;
+      --bboard-font-size-base: 1rem;
+      --bboard-font-size-sm: 0.875rem;
+      --bboard-font-size-lg: 1.25rem;
+      --bboard-font-weight-label: 500;
+      --bboard-font-weight-bold: 700;
+      --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.2);
+      --bboard-shadow-key-pressed: none;
+      --bboard-shadow-popup: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --bboard-opacity-disabled: 0.5;
+      --bboard-mobile-key-height: 44px;
+      --bboard-mobile-row-gap: 8px;
+      --bboard-mobile-h-padding: 12px;
+    }
+
+    :host(.theme-dark) {
+      --bboard-color-surface-base: #1c1c1e;
+      --bboard-color-surface-sunken: #000000;
+      --bboard-color-surface-key: #3a3a3c;
+      --bboard-color-surface-special: #2c2c2e;
+      --bboard-color-surface-active: #48484a;
+      --bboard-color-text-primary: #ffffff;
+      --bboard-color-text-secondary: #9ca3af;
+      --bboard-color-text-on-primary: #ffffff;
+      --bboard-color-primary-base: #0a84ff;
+      --bboard-color-primary-hover: #409cff;
+      --bboard-color-primary-active: #0062d1;
+      --bboard-color-border-subtle: rgba(255, 255, 255, 0.1);
+      --bboard-color-border-strong: rgba(255, 255, 255, 0.3);
+      --bboard-color-focus-ring: #0a84ff;
+      --bboard-color-status-error: #ff453a;
+      --bboard-color-status-success: #32d74b;
+      --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    :host(.theme-auto) {
+      color-scheme: light dark;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host(.theme-auto) {
+        --bboard-color-surface-base: #1c1c1e;
+        --bboard-color-surface-sunken: #000000;
+        --bboard-color-surface-key: #3a3a3c;
+        --bboard-color-surface-special: #2c2c2e;
+        --bboard-color-surface-active: #48484a;
+        --bboard-color-text-primary: #ffffff;
+        --bboard-color-text-secondary: #9ca3af;
+        --bboard-color-text-on-primary: #ffffff;
+        --bboard-color-primary-base: #0a84ff;
+        --bboard-color-primary-hover: #409cff;
+        --bboard-color-primary-active: #0062d1;
+        --bboard-color-border-subtle: rgba(255, 255, 255, 0.1);
+        --bboard-color-border-strong: rgba(255, 255, 255, 0.3);
+        --bboard-color-focus-ring: #0a84ff;
+        --bboard-color-status-error: #ff453a;
+        --bboard-color-status-success: #32d74b;
+        --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    :host([floating]) {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      min-width: min(98vw, 700px);
+      z-index: 9999;
+      filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.25));
+    }
+
+    .drag-handle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      height: 20px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      border-radius: var(--bboard-size-radius-lg) var(--bboard-size-radius-lg) 0 0;
+      background: var(--bboard-color-surface-base);
+      padding-top: 4px;
+    }
+
+    :host([floating]) .drag-handle {
+      display: flex;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .drag-handle-grip {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--bboard-color-surface-special);
+      opacity: 0.6;
+    }
+
+    :host([floating]) .keyboard-container {
+      border-radius: 0 0 var(--bboard-size-radius-lg) var(--bboard-size-radius-lg);
     }
 
     .keyboard-container {
@@ -579,7 +735,7 @@ export class BeninKeyboard extends LitElement {
       loader.loadCompositionRules(),
     ]);
     if (`${this.layoutVariant}:${this.language}` === expectedKey) {
-      const resolver = createLayoutResolver();
+      const resolver = createLayoutResolver({ universalEntries: UNIVERSAL_KEYS });
       this._resolvedLayout = resolver.resolve(
         shape,
         profile,
@@ -626,6 +782,11 @@ export class BeninKeyboard extends LitElement {
     }
     if (changedProperties.has('theme')) {
       this._themeManager.theme = this.theme;
+    }
+    if (changedProperties.has('floating') && !this.floating) {
+      this._currentX = 0;
+      this._currentY = 0;
+      this.style.transform = '';
     }
     if (changedProperties.has('layoutVariant')) {
       if (this.layoutVariant.startsWith('mobile-')) {
@@ -767,7 +928,16 @@ export class BeninKeyboard extends LitElement {
       // Was armed but produced the original char → invalid combination
       this._announceAssertive('Combinaison invalide');
     }
+    const capslockKeyId = createKeyId('key-capslock');
+    if (keyId === capslockKeyId) {
+      const newLayer: LayerId = snapshot.activeLayer === 'shift' ? 'base' : 'shift';
+      this._desktopState.setActiveLayer(newLayer);
+      this.requestUpdate();
+      return;
+    }
+
     dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
+    this._dispatchToAdapter(composed);
 
     const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snapshot.activeLayer);
     if (keyId === shiftKey || keyId === shiftRightKey) {
@@ -776,7 +946,10 @@ export class BeninKeyboard extends LitElement {
     } else if (keyId === altGrKey) {
       const newLayer: LayerId = snapshot.activeLayer === 'altGr' ? 'base' : 'altGr';
       this._desktopState.setActiveLayer(newLayer);
+    } else if (snapshot.activeLayer === 'shift') {
+      this._desktopState.setActiveLayer('base');
     }
+    this.requestUpdate();
   }
 
   private _activateMobileKey(keyId: KeyId): void {
@@ -813,26 +986,60 @@ export class BeninKeyboard extends LitElement {
     } else if (wasArmed && armedTrigger !== null) {
       this._announceAssertive('Combinaison invalide');
     }
+    const capslockKeyIdMobile = createKeyId('key-capslock');
+    if (keyId === capslockKeyIdMobile) {
+      this._mobileState.setActiveLayer(snap.activeLayer === 'shift' ? 'base' : 'shift');
+      this.requestUpdate();
+      return;
+    }
+
     dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
+    this._dispatchToAdapter(composed);
 
     const { shiftKey, shiftRightKey, altGrKey } = getModifierKeyIds(snap.activeLayer);
     if (keyId === shiftKey || keyId === shiftRightKey) {
       this._mobileState.setActiveLayer(snap.activeLayer === 'shift' ? 'base' : 'shift');
     } else if (keyId === altGrKey) {
       this._mobileState.setActiveLayer(snap.activeLayer === 'altGr' ? 'base' : 'altGr');
+    } else if (snap.activeLayer === 'shift') {
+      this._mobileState.setActiveLayer('base');
     }
+    this.requestUpdate();
   }
 
   private _applyTheme(effectiveTheme: 'light' | 'dark'): void {
     // Guard: classList manipulation sets attributes, which is forbidden
     // inside a custom-element constructor (the HTML spec throws).
     if (!this.isConnected) return;
-    if (effectiveTheme === 'dark') {
-      this.classList.add('theme-dark');
-    } else {
-      this.classList.remove('theme-dark');
-    }
+    const isAuto = this.theme === 'auto';
+    this.classList.toggle('theme-dark', !isAuto && effectiveTheme === 'dark');
+    this.classList.toggle('theme-auto', isAuto);
   }
+
+  private readonly _handleDragStart = (e: PointerEvent): void => {
+    if (!this.floating) return;
+    e.preventDefault();
+    this._dragging = true;
+    this._dragOffsetX = e.clientX - this._currentX;
+    this._dragOffsetY = e.clientY - this._currentY;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    (e.currentTarget as HTMLElement).addEventListener('pointermove', this._handleDragMove);
+    (e.currentTarget as HTMLElement).addEventListener('pointerup', this._handleDragEnd);
+  };
+
+  private readonly _handleDragMove = (e: PointerEvent): void => {
+    if (!this._dragging) return;
+    this._currentX = e.clientX - this._dragOffsetX;
+    this._currentY = e.clientY - this._dragOffsetY;
+    this.style.transform = `translate(calc(-50% + ${this._currentX}px), ${this._currentY}px)`;
+  };
+
+  private readonly _handleDragEnd = (e: PointerEvent): void => {
+    this._dragging = false;
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    (e.currentTarget as HTMLElement).removeEventListener('pointermove', this._handleDragMove);
+    (e.currentTarget as HTMLElement).removeEventListener('pointerup', this._handleDragEnd);
+  };
 
   get effectiveTheme(): 'light' | 'dark' {
     return this._themeManager.effectiveTheme;
@@ -843,12 +1050,42 @@ export class BeninKeyboard extends LitElement {
   }
 
   attach(target: HTMLElement): void {
-    console.debug('[BeninKeyboard] attach() called', target);
+    if (
+      !(target instanceof HTMLInputElement) &&
+      !(target instanceof HTMLTextAreaElement) &&
+      !target.isContentEditable
+    ) {
+      throw new Error('attach() requires an <input>, <textarea>, or contenteditable element');
+    }
+
+    this.detach();
+
+    const handle = createTargetHandle('attached-target');
+    let adapter;
+    if (target instanceof HTMLInputElement) {
+      adapter = new InputElementAdapter(handle, target);
+    } else if (target instanceof HTMLTextAreaElement) {
+      adapter = new TextareaAdapter(handle, target);
+    } else {
+      adapter = new ContenteditableAdapter(handle, target);
+    }
+
+    this._dispatcher = new OperationDispatcher();
+    this._dispatcher.registerAdapter(adapter);
+    this._attachedHandle = handle;
   }
 
   detach(): void {
-    console.debug('[BeninKeyboard] detach() called');
     this._compositionProcessor?.cancel();
+    this._dispatcher = new OperationDispatcher();
+    this._attachedHandle = null;
+  }
+
+  private _dispatchToAdapter(char: string): void {
+    if (!this._attachedHandle || char === '') return;
+    const operation: InputOperation =
+      char === '\b' ? { type: 'delete', length: 1 } : { type: 'insert', text: char };
+    this._dispatcher.dispatch(this._attachedHandle, operation);
   }
 
   openKeyboard(): void {
@@ -921,20 +1158,28 @@ export class BeninKeyboard extends LitElement {
       }
     }
 
-    // BBOARD-141/140/142: physical key output — always-on for desktop variants
+    // physical key output — always-on for desktop variants
     // Hold-based modifier layer: computed from heldPhysicalKeys, not UI toggle state
-    // Auto-repeat guard: e.repeat events are skipped (BBOARD-142)
+    // Auto-repeat guard: e.repeat events are skipped
     if (!e.repeat && this.layoutVariant.startsWith('desktop-') && this._resolvedLayout) {
       const keyId = mapPhysicalCodeToLogicalKey(e.code);
       if (keyId !== null && !MODIFIER_KEY_IDS.has(keyId)) {
+        e.preventDefault();
         const heldKeys = this._desktopState.snapshot().heldPhysicalKeys;
-        const layer = computePhysicalLayer(heldKeys);
-        const resolvedKey = this._resolvedLayout.keyMap.get(keyId);
-        // Fall back to base layer if the computed layer has no entry for this key
-        const char = resolvedKey?.layers[layer]?.char ?? resolvedKey?.layers['base']?.char ?? '';
+        const layer = computePhysicalLayer(heldKeys, 'windows');
+        // Passthrough keys (numbers, symbols) use the OS e.key directly so the
+        // physical layout (e.g. AZERTY: Digit1 base='&', shift='1') is respected.
+        const char = PHYSICAL_PASSTHROUGH_CODES.has(e.code)
+          ? e.key.length === 1
+            ? e.key
+            : ''
+          : (this._resolvedLayout.keyMap.get(keyId)?.layers[layer]?.char ??
+            this._resolvedLayout.keyMap.get(keyId)?.layers['base']?.char ??
+            '');
         const composed = this._compositionProcessor?.process(keyId, char) ?? char;
         if (composed !== null) {
           dispatchBBoardEvent(this, 'bboard-key-press', { keyId, char: composed });
+          this._dispatchToAdapter(composed);
         }
       }
     }
@@ -1030,6 +1275,7 @@ export class BeninKeyboard extends LitElement {
         );
         const char = resolvedKey.longPress[safeIndex] ?? '';
         dispatchBBoardEvent(this, 'bboard-key-press', { keyId: snap.longPressKeyId, char });
+        this._dispatchToAdapter(char);
       }
       this._mobileState.dismissLongPress();
       this._touchStartKeyId = null;
@@ -1113,6 +1359,11 @@ export class BeninKeyboard extends LitElement {
       });
 
       return html`
+        ${this.floating
+          ? html`<div class="drag-handle" @pointerdown=${this._handleDragStart}>
+              <div class="drag-handle-grip"></div>
+            </div>`
+          : nothing}
         <div
           class="bboard-mobile-keyboard"
           role="group"
@@ -1161,6 +1412,11 @@ export class BeninKeyboard extends LitElement {
     });
 
     return html`
+      ${this.floating
+        ? html`<div class="drag-handle" @pointerdown=${this._handleDragStart}>
+            <div class="drag-handle-grip"></div>
+          </div>`
+        : nothing}
       <div
         class="keyboard-container"
         role="group"

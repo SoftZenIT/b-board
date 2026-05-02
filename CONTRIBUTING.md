@@ -1,4 +1,4 @@
-# Contributing to BJ-Keyboard
+# Contributing to b-board
 
 ## Code Style
 
@@ -16,7 +16,20 @@
 
 ## Commit Message Standards
 
-Follow Conventional Commits:
+Follow [Conventional Commits](https://www.conventionalcommits.org/). Commit messages directly control automated versioning — the release pipeline reads your commits to determine the next version number.
+
+Format: `type(scope): short description`
+
+### Version bump rules
+
+| Commit type                             | Example                                   | Version bump                  |
+| --------------------------------------- | ----------------------------------------- | ----------------------------- |
+| `feat:`                                 | `feat(core): add dendi language profile`  | **minor** (`0.1.0` → `0.2.0`) |
+| `fix:`                                  | `fix(data): handle missing tone mark`     | **patch** (`0.1.0` → `0.1.1`) |
+| `BREAKING CHANGE:` in footer            | any commit + `BREAKING CHANGE: removed X` | **major** (`0.1.0` → `1.0.0`) |
+| `chore:`, `docs:`, `test:`, `refactor:` | —                                         | **no release**                |
+
+### Examples
 
 ```
 feat(core): add state machine transition validation
@@ -25,9 +38,7 @@ test(ui): add desktop keyboard render snapshot
 docs(architecture): update module boundary diagram
 ```
 
-Format: `type(scope): short description`
-
-Types: `feat`, `fix`, `test`, `docs`, `refactor`, `chore`, `perf`
+A dry-run of the release pipeline runs on every PR — the CI output shows exactly what version your commits would produce before merging.
 
 ## Task Workflow
 
