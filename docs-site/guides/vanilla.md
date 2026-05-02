@@ -24,7 +24,7 @@ After this import the `<benin-keyboard>` custom element is defined and ready to 
 
 ```html
 <textarea id="output"></textarea>
-<benin-keyboard language="yoruba" theme="auto"></benin-keyboard>
+<benin-keyboard language="yoruba" theme="auto" open></benin-keyboard>
 
 <script type="module">
   import 'b-board';
@@ -32,9 +32,7 @@ After this import the `<benin-keyboard>` custom element is defined and ready to 
   const keyboard = document.querySelector('benin-keyboard');
   const output = document.getElementById('output');
 
-  keyboard.addEventListener('bboard-key-press', (e) => {
-    output.value += e.detail.char;
-  });
+  keyboard.attach(output);
 </script>
 ```
 
@@ -60,9 +58,7 @@ If you are not using a bundler, you can load b-board directly from a CDN:
       const keyboard = document.querySelector('benin-keyboard');
       const output = document.getElementById('output');
 
-      keyboard.addEventListener('bboard-key-press', (e) => {
-        output.value += e.detail.char;
-      });
+      keyboard.attach(output);
     </script>
   </body>
 </html>
@@ -126,7 +122,7 @@ With this declaration `document.querySelector('benin-keyboard')` returns `BeninK
 
 ## Advanced: Custom Output Handling
 
-Use `attach()` for standard `<input>`, `<textarea>`, and `contenteditable` targets. Listen to `bboard-key-press` directly when you need custom output behavior — for example, a rich text editor, game input, or analytics tracking.
+Use `attach()` for standard `<input>` and `<textarea>` targets — it handles cursor position, backspace, and composition for you. Listen to `bboard-key-press` directly only when you need behavior beyond standard text insertion: custom rich text editors, game inputs, or analytics tracking.
 
 ### Cursor-aware insertion
 
