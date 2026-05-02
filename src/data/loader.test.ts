@@ -147,3 +147,21 @@ describe('createDataLoader — fetch transport', () => {
     );
   });
 });
+
+describe('loadLayoutShape built-in variants', () => {
+  it('loads desktop-azerty-windows without fetching', async () => {
+    const loader = createDataLoader(); // no baseUrl — bundler mode
+    const shape = await loader.loadLayoutShape('desktop-azerty-windows');
+    expect(shape.id).toBe('desktop-azerty-windows');
+    expect(shape.variant).toBe('desktop');
+  });
+
+  it('loads desktop-azerty-macos without fetching', async () => {
+    const loader = createDataLoader();
+    const shape = await loader.loadLayoutShape('desktop-azerty-macos');
+    expect(shape.id).toBe('desktop-azerty-macos');
+    expect(shape.variant).toBe('desktop');
+    const baseLayer = shape.layers.find((l) => l.name === 'base')!;
+    expect(baseLayer.rows[4].slots.some((s) => s.keyId === 'key-cmd')).toBe(true);
+  });
+});

@@ -9,6 +9,8 @@ import {
   validateCompositionRules,
 } from './_internal/validator.js';
 import { checkLayoutIntegrity, checkCompositionIntegrity } from './_internal/integrity-checker.js';
+import { DESKTOP_AZERTY_WINDOWS } from './layouts/desktop-azerty-windows.js';
+import { DESKTOP_AZERTY_MACOS } from './layouts/desktop-azerty-macos.js';
 
 /** Thrown when a data file cannot be fetched or imported. */
 export class DataLoaderError extends Error {
@@ -47,9 +49,14 @@ export interface DataLoader {
 
 // ── Known data file paths ────────────────────────────────────────────────────
 
-const LAYOUT_PATHS: Record<LayoutVariantId, string> = {
+const LAYOUT_PATHS: Partial<Record<LayoutVariantId, string>> = {
   'desktop-azerty': 'data/layouts/desktop-azerty.json',
   'mobile-default': 'data/layouts/mobile-default.json',
+};
+
+const BUILT_IN_SHAPES: Partial<Record<LayoutVariantId, LayoutShape>> = {
+  'desktop-azerty-windows': DESKTOP_AZERTY_WINDOWS,
+  'desktop-azerty-macos': DESKTOP_AZERTY_MACOS,
 };
 
 const LANGUAGE_PATHS: Record<LanguageId, string> = {
@@ -138,7 +145,12 @@ export function createDataLoader(options?: DataLoaderOptions): DataLoader {
     },
 
     async loadLayoutShape(id: LayoutVariantId): Promise<LayoutShape> {
+      const builtin = BUILT_IN_SHAPES[id];
+      if (builtin !== undefined) return builtin;
       const path = LAYOUT_PATHS[id];
+      if (path === undefined) {
+        throw new DataLoaderError(`[DataLoader] No path registered for layout variant: '${id}'`);
+      }
       const raw = await load(path, `../../data/layouts/${id}.json`, BUNDLER_LAYOUT_GLOB);
       const validated = validateLayoutShape(raw);
       checkLayoutIntegrity(validated);
