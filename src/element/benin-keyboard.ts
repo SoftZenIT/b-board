@@ -1285,7 +1285,12 @@ export class BeninKeyboard extends LitElement {
     this._mobileState.startLongPress(keyId, () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (navigator as any).vibrate?.(10);
-      this._mobileState.setLongPressVisible(true);
+      // Only show the popup for keys that have long-press chars; action keys
+      // (backspace, shift) are handled silently via longPressArmed in _handleTouchEnd
+      const resolvedKey = this._resolvedLayout?.keyMap.get(keyId);
+      if (resolvedKey?.longPress?.length) {
+        this._mobileState.setLongPressVisible(true);
+      }
       this.requestUpdate();
     });
   };

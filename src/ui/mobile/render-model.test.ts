@@ -190,7 +190,7 @@ describe('createMobileRenderModel', () => {
         createResolvedKey(
           createKeyId('key-space'),
           { base: createKeyOutput(' '), shift: createKeyOutput(' '), altGr: createKeyOutput(' ') },
-          [' ']
+          [' ']
         ),
       ],
     ]);
@@ -209,7 +209,7 @@ describe('createMobileRenderModel', () => {
     const model = createMobileRenderModel(layout, baseState);
     const space = model.rows[0].keys.find((k) => k.keyId === 'key-space')!;
     expect(space.hasLongPress).toBe(true);
-    expect(space.longPressChars).toEqual([' ']);
+    expect(space.longPressChars).toEqual([' ']);
   });
 
   it('passes widthBucket through to the model', () => {

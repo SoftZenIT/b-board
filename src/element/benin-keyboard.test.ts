@@ -582,9 +582,7 @@ describe('long-press backspace deletes previous word', () => {
       .mockReturnValue({ success: true });
 
     const backspaceKeyId = 'key-backspace';
-    (el as any)._mobileState.startLongPress(backspaceKeyId, () => {
-      (el as any)._mobileState.setLongPressVisible(false);
-    });
+    (el as any)._mobileState.startLongPress(backspaceKeyId, vi.fn());
     vi.advanceTimersByTime(300);
 
     (el as any)._handleTouchEnd();
