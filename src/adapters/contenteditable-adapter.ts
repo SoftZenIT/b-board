@@ -22,6 +22,10 @@ export class ContenteditableAdapter extends BaseAdapter {
     };
   }
 
+  getWordLengthBeforeCursor(): number {
+    return 1;
+  }
+
   applyOperation(operation: InputOperation): OperationResult {
     // SECURITY: Use document.execCommand('insertText') to let browser handle
     // safe DOM insertion without risking innerHTML XSS injection.

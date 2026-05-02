@@ -556,3 +556,42 @@ describe('native keyboard suppression', () => {
     expect(input2.hasAttribute('inputmode')).toBe(false);
   });
 });
+
+describe('long-press backspace deletes previous word', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('dispatches a delete operation covering the previous word after 300ms hold', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    input.value = 'hello world';
+    document.body.appendChild(input);
+    // jsdom doesn't persist setSelectionRange until attached
+    input.focus();
+    input.setSelectionRange(11, 11);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    const backspaceKeyId = 'key-backspace';
+    (el as any)._mobileState.startLongPress(backspaceKeyId, () => {
+      (el as any)._mobileState.setLongPressVisible(false);
+    });
+    vi.advanceTimersByTime(300);
+
+    (el as any)._handleTouchEnd();
+
+    expect(applySpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'delete', length: 5 }));
+
+    document.body.removeChild(el);
+    document.body.removeChild(input);
+  });
+});

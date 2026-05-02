@@ -26,6 +26,19 @@ export abstract class BaseAdapter implements TargetAdapter {
     };
   }
 
+  getWordLengthBeforeCursor(): number {
+    const el = this.element as HTMLInputElement | HTMLTextAreaElement;
+    const cursor = el.selectionStart;
+    if (cursor == null || cursor === 0) return 1;
+    const before = el.value.slice(0, cursor);
+    const trimmed = before.trimEnd();
+    if (trimmed.length === 0) return before.length || 1;
+    const lastSpace = Math.max(trimmed.lastIndexOf(' '), trimmed.lastIndexOf('\n'));
+    const wordLen = trimmed.length - (lastSpace + 1);
+    const trailingSpaces = before.length - trimmed.length;
+    return Math.max(1, wordLen + trailingSpaces);
+  }
+
   applyOperation(operation: InputOperation): OperationResult {
     try {
       const el = this.element as TextSelectionElement;

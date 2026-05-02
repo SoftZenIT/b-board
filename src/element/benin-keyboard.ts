@@ -124,6 +124,7 @@ export class BeninKeyboard extends LitElement {
   private _assertiveMessage = '';
   private _dispatcher = new OperationDispatcher();
   private _attachedHandle: TargetHandle | null = null;
+  private _currentAdapter: import('../adapters/types.js').TargetAdapter | null = null;
   private _attachedTarget: HTMLElement | null = null;
   private _savedInputMode: string | null | undefined = undefined;
 
@@ -1100,6 +1101,7 @@ export class BeninKeyboard extends LitElement {
       adapter = new ContenteditableAdapter(handle, target);
     }
 
+    this._currentAdapter = adapter;
     this._dispatcher = new OperationDispatcher();
     this._dispatcher.registerAdapter(adapter);
     this._attachedHandle = handle;
@@ -1119,6 +1121,7 @@ export class BeninKeyboard extends LitElement {
       this._savedInputMode = undefined;
     }
 
+    this._currentAdapter = null;
     this._dispatcher = new OperationDispatcher();
     this._attachedHandle = null;
   }
@@ -1308,6 +1311,20 @@ export class BeninKeyboard extends LitElement {
 
   private readonly _handleTouchEnd = () => {
     const snap = this._mobileState.snapshot();
+    // Long-press backspace: delete the previous word
+    const backspaceKeyId = createKeyId('key-backspace');
+    if (snap.longPressArmed && snap.longPressKeyId === backspaceKeyId && !snap.longPressVisible) {
+      if (this._attachedHandle && this._currentAdapter) {
+        const wordLen = this._currentAdapter.getWordLengthBeforeCursor();
+        const op: InputOperation = { type: 'delete', length: wordLen };
+        this._dispatcher.dispatch(this._attachedHandle, op);
+        dispatchBBoardEvent(this, 'bboard-key-press', { keyId: backspaceKeyId, char: '\b' });
+      }
+      this._mobileState.dismissLongPress();
+      this._touchStartKeyId = null;
+      this.requestUpdate();
+      return;
+    }
     if (snap.longPressVisible && snap.longPressKeyId !== null) {
       const resolvedKey = this._resolvedLayout?.keyMap.get(snap.longPressKeyId);
       if (resolvedKey?.longPress?.length) {
