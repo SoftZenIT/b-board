@@ -163,6 +163,8 @@ Adapters bridge the keyboard to native host elements. Each adapter listens for o
 | `TextareaAdapter`        | `<textarea>`                                      |
 | `ContentEditableAdapter` | Any element with `contenteditable`                |
 
+**Standard integration:** Call `keyboard.attach(target)` to bind the keyboard to an `<input>`, `<textarea>`, or `contenteditable` element. The element selects the correct adapter automatically and registers it with the `OperationDispatcher`. Call `keyboard.detach()` to remove the binding — do this in your framework's cleanup hook to avoid memory leaks.
+
 All adapters share a common interface defined in `src/public/`. The `AdapterRegistry` (in `src/adapters/`) selects the correct adapter automatically based on the target element type.
 
 ---
@@ -185,6 +187,8 @@ Language profiles are JSON files. The loader supports two transports:
 
 - **Bundler transport** — the file is imported as a static asset (Vite / webpack).
 - **Fetch transport** — the file is fetched at runtime via `fetch()`.
+
+**Built-in layout shapes:** OS-specific desktop layout variants (`desktop-azerty-macos`, `desktop-azerty-windows`) are pre-built TypeScript objects exported directly from `src/data/layouts/`. `loadLayoutShape()` checks a `BUILT_IN_SHAPES` registry first; if found, the shape is returned immediately without any network request or JSON validation. This also means OS variants are included in the bundle and available synchronously.
 
 ### AJV Validation
 

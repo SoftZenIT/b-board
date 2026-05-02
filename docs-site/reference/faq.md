@@ -13,6 +13,19 @@ Framework adapters (React, Vue, Angular) provide convenience helpers but are not
 
 ---
 
+## How do I connect the keyboard to an input field?
+
+Call `attach()` on the keyboard element, passing your `<input>`, `<textarea>`, or `contenteditable` element. The keyboard handles cursor-aware insertion, backspace, and composition automatically — no event listener required:
+
+```ts
+const keyboard = document.querySelector('benin-keyboard')!;
+keyboard.attach(document.getElementById('my-input') as HTMLInputElement);
+```
+
+Call `detach()` to disconnect the keyboard from its target. Do this in your framework's cleanup hook — `useEffect` return in React, `onUnmounted` in Vue, `ngOnDestroy` in Angular — to avoid memory leaks.
+
+---
+
 ## Which languages are supported?
 
 b-board currently supports four Beninese languages:
