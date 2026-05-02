@@ -125,6 +125,7 @@ export const MODIFIER_KEY_IDS = new Set([
   createKeyId('key-altgr'),
   createKeyId('key-alt'),
   createKeyId('key-ctrl'),
+  createKeyId('key-ctrl-right'),
   createKeyId('key-cmd'),
   createKeyId('key-cmd-right'),
   createKeyId('key-option'),
@@ -135,9 +136,10 @@ export const MODIFIER_KEY_IDS = new Set([
  * Computes the effective keyboard layer from a set of held physical keys.
  * Layer precedence (hold-based, not toggle):
  * 1. If Shift (Left or Right) is held → 'shift'
- * 2. Else if AltRight is held → 'altGr'
+ * 2. Else if AltRight is held, or AltLeft is held on macOS → 'altGr'
  * 3. Else → 'base'
  * (Shift wins if both Shift and AltGr are held simultaneously)
+ * @param os - The detected OS; on macOS, AltLeft also triggers the altGr layer.
  */
 export function computePhysicalLayer(heldPhysicalKeys: ReadonlySet<string>, os: OS): LayerId {
   if (heldPhysicalKeys.has('ShiftLeft') || heldPhysicalKeys.has('ShiftRight')) {

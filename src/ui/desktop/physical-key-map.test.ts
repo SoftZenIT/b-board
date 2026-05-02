@@ -94,6 +94,10 @@ describe('MODIFIER_KEY_IDS new entries', () => {
     expect(MODIFIER_KEY_IDS.has(createKeyId('key-option'))).toBe(true);
     expect(MODIFIER_KEY_IDS.has(createKeyId('key-option-right'))).toBe(true);
   });
+
+  it('includes key-ctrl-right', () => {
+    expect(MODIFIER_KEY_IDS.has(createKeyId('key-ctrl-right'))).toBe(true);
+  });
 });
 
 describe('MODIFIER_KEY_IDS', () => {
