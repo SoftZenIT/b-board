@@ -644,7 +644,7 @@ export class BeninKeyboard extends LitElement {
       window.matchMedia('(pointer: coarse)').matches &&
       /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isMobile && !this.hasAttribute('layout-variant')) {
-      this.setAttribute('layout-variant', 'mobile-default');
+      this.layoutVariant = 'mobile-default';
     }
 
     this._os = detectOS();
