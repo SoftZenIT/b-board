@@ -6,7 +6,7 @@ import { DESKTOP_AZERTY_WINDOWS } from './desktop-azerty-windows.js';
 const LAYER_SUFFIX: Record<string, string> = {
   base: '',
   shift: 'shift',
-  altGr: 'altgr',
+  altGr: '', // modifier keys are not affected by AltGr — use base IDs
 };
 
 function macBottomRow(layerName: string): LayoutRow {

@@ -50,6 +50,13 @@ describe('DESKTOP_AZERTY_MACOS', () => {
     expect(keyIds).toContain(createKeyId('key-option-shift'));
   });
 
+  it('altGr bottom row uses base modifier key IDs (not altgr-suffixed)', () => {
+    const altGrLayer = DESKTOP_AZERTY_MACOS.layers.find((l) => l.name === 'altGr')!;
+    const keyIds = altGrLayer.rows[4].slots.map((s) => s.keyId);
+    expect(keyIds).toContain(createKeyId('key-cmd'));
+    expect(keyIds).not.toContain(createKeyId('key-cmd-altgr'));
+  });
+
   it('rows 0-3 are identical to Windows layout', () => {
     for (let l = 0; l < DESKTOP_AZERTY_WINDOWS.layers.length; l++) {
       for (let r = 0; r < 4; r++) {
