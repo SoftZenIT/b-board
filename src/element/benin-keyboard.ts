@@ -179,6 +179,17 @@ export class BeninKeyboard extends LitElement {
       --bboard-mobile-key-height: 44px;
       --bboard-mobile-row-gap: 8px;
       --bboard-mobile-h-padding: 12px;
+      --bboard-mobile-bg: #ede7f6;
+      --bboard-mobile-key-bg: #ffffff;
+      --bboard-mobile-action-bg: #d1c4e9;
+      --bboard-mobile-key-radius: 12px;
+      --bboard-mobile-key-color: #1a1a2e;
+      --bboard-mobile-hint-color: #b39ddb;
+      --bboard-mobile-r4-special-width: 72px;
+      --bboard-mobile-r4-space-width: 160px;
+      --bboard-mobile-r4-gap: 10px;
+      --bboard-mobile-space-label-color: #9e9e9e;
+      --bboard-mobile-space-label-size: 12px;
     }
 
     :host(.theme-dark) {
