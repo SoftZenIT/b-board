@@ -361,13 +361,19 @@ export class BeninKeyboard extends LitElement {
     /* ── Mobile keyboard container ──────────────────────────────────── */
 
     .bboard-mobile-keyboard {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding-top: var(--bboard-mobile-row-gap);
       padding-bottom: max(var(--bboard-mobile-row-gap), env(safe-area-inset-bottom, 0px));
       padding-left: max(var(--bboard-mobile-h-padding), env(safe-area-inset-left, 0px));
       padding-right: max(var(--bboard-mobile-h-padding), env(safe-area-inset-right, 0px));
       display: flex;
       flex-direction: column;
       gap: var(--bboard-mobile-row-gap);
-      position: relative;
+      background: var(--bboard-mobile-bg);
     }
 
     /* ── Mobile row ─────────────────────────────────────────────────── */
@@ -378,16 +384,35 @@ export class BeninKeyboard extends LitElement {
       gap: var(--bboard-space-gap-key);
     }
 
+    .bboard-mobile-row[data-row-index='3'] {
+      justify-content: center;
+      gap: var(--bboard-mobile-r4-gap);
+    }
+
+    .bboard-mobile-row[data-row-index='3'] .bboard-mobile-key {
+      flex: none;
+      width: var(--bboard-mobile-r4-special-width);
+    }
+
+    .bboard-mobile-row[data-row-index='3'] .bboard-mobile-key[data-key-id='key-space'],
+    .bboard-mobile-row[data-row-index='3'] .bboard-mobile-key[data-key-id='key-space-shift'] {
+      width: var(--bboard-mobile-r4-space-width);
+      font-size: 12px;
+      color: #9e9e9e;
+      letter-spacing: 0.5px;
+    }
+
     /* ── Mobile key ─────────────────────────────────────────────────── */
 
     .bboard-mobile-key {
       flex: var(--bboard-key-width-multiplier, 1);
+      height: var(--bboard-mobile-key-height);
       min-width: 44px;
       min-height: 44px;
-      border-radius: var(--bboard-size-radius-md);
-      background: var(--bboard-color-surface-key);
-      color: var(--bboard-color-text-primary);
-      box-shadow: var(--bboard-shadow-key);
+      border-radius: var(--bboard-mobile-key-radius);
+      background: var(--bboard-mobile-key-bg);
+      color: var(--bboard-mobile-key-color);
+      box-shadow: none;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -397,7 +422,6 @@ export class BeninKeyboard extends LitElement {
       border: none;
       cursor: pointer;
       position: relative;
-      align-self: stretch;
       transition:
         background 80ms ease,
         transform 80ms ease;
@@ -407,6 +431,15 @@ export class BeninKeyboard extends LitElement {
       background: var(--bboard-color-surface-active);
       box-shadow: var(--bboard-shadow-key-pressed);
       transform: translateY(1px);
+    }
+
+    .bboard-mobile-key.bboard-key-action {
+      background: var(--bboard-mobile-action-bg);
+      color: var(--bboard-mobile-key-color);
+    }
+
+    .bboard-mobile-key.bboard-key-action.is-active {
+      background: var(--bboard-color-surface-active);
     }
 
     .bboard-mobile-key.is-disabled {
@@ -441,6 +474,10 @@ export class BeninKeyboard extends LitElement {
       font-size: 0.65em;
       color: var(--bboard-color-text-secondary);
       line-height: 1;
+    }
+
+    .bboard-mobile-key .bboard-key__long-press-dot {
+      color: var(--bboard-mobile-hint-color);
     }
 
     /* ── Long-press popup ───────────────────────────────────────────── */
