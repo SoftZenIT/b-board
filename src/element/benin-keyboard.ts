@@ -127,6 +127,8 @@ export class BeninKeyboard extends LitElement {
   private _currentAdapter: import('../adapters/types.js').TargetAdapter | null = null;
   private _attachedTarget: HTMLElement | null = null;
   private _savedInputMode: string | null | undefined = undefined;
+  private _suppressionMethod: 'virtualKeyboard' | 'inputmode' | null = null;
+  private _savedVKPolicy: string | null | undefined = undefined;
 
   static readonly styles = css`
     :host {
@@ -1132,8 +1134,16 @@ export class BeninKeyboard extends LitElement {
 
     // Suppress native OS virtual keyboard on the target
     this._attachedTarget = target;
-    this._savedInputMode = target.getAttribute('inputmode'); // null if absent
-    target.setAttribute('inputmode', 'none');
+    if ('virtualKeyboard' in navigator) {
+      this._suppressionMethod = 'virtualKeyboard';
+      this._savedVKPolicy = target.getAttribute('virtualkeyboardpolicy');
+      target.setAttribute('virtualkeyboardpolicy', 'manual');
+      (navigator as any).virtualKeyboard.overlaysContent = true;
+    } else {
+      this._suppressionMethod = 'inputmode';
+      this._savedInputMode = target.getAttribute('inputmode');
+      target.setAttribute('inputmode', 'none');
+    }
 
     const handle = createTargetHandle('attached-target');
     let adapter;
@@ -1156,13 +1166,19 @@ export class BeninKeyboard extends LitElement {
 
     // Restore the target's original inputmode
     if (this._attachedTarget) {
-      if (this._savedInputMode === null) {
-        this._attachedTarget.removeAttribute('inputmode');
-      } else if (this._savedInputMode !== undefined) {
-        this._attachedTarget.setAttribute('inputmode', this._savedInputMode);
+      if (this._suppressionMethod === 'virtualKeyboard') {
+        if (this._savedVKPolicy == null)
+          this._attachedTarget.removeAttribute('virtualkeyboardpolicy');
+        else this._attachedTarget.setAttribute('virtualkeyboardpolicy', this._savedVKPolicy);
+        (navigator as any).virtualKeyboard.overlaysContent = false;
+        this._savedVKPolicy = undefined;
+      } else if (this._suppressionMethod === 'inputmode') {
+        if (this._savedInputMode == null) this._attachedTarget.removeAttribute('inputmode');
+        else this._attachedTarget.setAttribute('inputmode', this._savedInputMode);
+        this._savedInputMode = undefined;
       }
+      this._suppressionMethod = null;
       this._attachedTarget = null;
-      this._savedInputMode = undefined;
     }
 
     this._currentAdapter = null;
