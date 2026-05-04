@@ -1435,9 +1435,11 @@ export class BeninKeyboard extends LitElement {
         activeModifierKeyIds.add(altGrKey);
       }
 
+      const languageDisplayName = LANGUAGE_DISPLAY_NAMES[this.language] ?? this.language;
       const model = createMobileRenderModel(this._resolvedLayout, {
         ...snap,
         activeModifierKeyIds,
+        languageDisplayName,
       });
 
       return html`

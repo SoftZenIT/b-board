@@ -105,6 +105,7 @@ const baseState: MobileRenderState = {
   longPressVisible: false,
   longPressSelectedIndex: 0,
   widthBucket: 'sm',
+  languageDisplayName: 'Yoruba',
 };
 
 describe('createMobileRenderModel', () => {

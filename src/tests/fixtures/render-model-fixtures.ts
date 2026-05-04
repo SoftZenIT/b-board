@@ -220,6 +220,7 @@ export function defaultMobileState(overrides: Partial<MobileRenderState> = {}): 
     longPressVisible: false,
     longPressSelectedIndex: 0,
     widthBucket: 'md',
+    languageDisplayName: 'Yoruba',
     ...overrides,
   };
 }

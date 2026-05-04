@@ -17,6 +17,7 @@ export interface MobileRenderState {
   longPressVisible: boolean;
   longPressSelectedIndex: number;
   widthBucket: 'xs' | 'sm' | 'md';
+  languageDisplayName: string;
 }
 
 export interface MobileRenderKey {
@@ -101,7 +102,11 @@ export function createMobileRenderModel(
         const { baseKeyId, effectiveLayer } = resolveLayerKey(slot.keyId, state.activeLayer);
         const resolvedKey =
           resolvedLayout.keyMap.get(slot.keyId) ?? resolvedLayout.keyMap.get(baseKeyId as KeyId);
-        const primaryLabel = slot.label ?? resolvedKey?.layers[effectiveLayer]?.char ?? '';
+        const rawLabel = slot.label ?? resolvedKey?.layers[effectiveLayer]?.char ?? '';
+        const primaryLabel =
+          slot.keyId === 'key-space' || slot.keyId === 'key-space-shift'
+            ? state.languageDisplayName
+            : rawLabel;
         const hidden = state.hiddenKeys.has(slot.keyId);
         const disabled = state.disabledKeys.has(slot.keyId);
         const active = state.activeModifierKeyIds.has(slot.keyId);
