@@ -397,8 +397,8 @@ export class BeninKeyboard extends LitElement {
     .bboard-mobile-row[data-row-index='3'] .bboard-mobile-key[data-key-id='key-space'],
     .bboard-mobile-row[data-row-index='3'] .bboard-mobile-key[data-key-id='key-space-shift'] {
       width: var(--bboard-mobile-r4-space-width);
-      font-size: 12px;
-      color: #9e9e9e;
+      font-size: var(--bboard-mobile-space-label-size);
+      color: var(--bboard-mobile-space-label-color);
       letter-spacing: 0.5px;
     }
 

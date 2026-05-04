@@ -67,6 +67,8 @@
   --bboard-mobile-r4-special-width: 72px;
   --bboard-mobile-r4-space-width: 160px;
   --bboard-mobile-r4-gap: 10px;
+  --bboard-mobile-space-label-color: #9e9e9e;
+  --bboard-mobile-space-label-size: 12px;
 }
 
 /* Dark Theme Overrides */
