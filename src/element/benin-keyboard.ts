@@ -47,6 +47,16 @@ import type { KeyCatalogEntry } from '../data/language.types.js';
 import universalKeysRaw from '../../data/keys/universal.json';
 const UNIVERSAL_KEYS = universalKeysRaw as unknown as KeyCatalogEntry[];
 
+/** Minimal VirtualKeyboard API surface (Chrome 94+, not yet in TypeScript lib). */
+interface VirtualKeyboard {
+  overlaysContent: boolean;
+}
+function getVirtualKeyboard(): VirtualKeyboard | undefined {
+  return 'virtualKeyboard' in navigator
+    ? (navigator as Navigator & { virtualKeyboard: VirtualKeyboard }).virtualKeyboard
+    : undefined;
+}
+
 const BCP47_MAP: Readonly<Record<LanguageId, string>> = {
   yoruba: 'yo',
   // Fon (Fɔngbè) and Adja (Ajagbe) share an identical orthography — same
@@ -1168,7 +1178,7 @@ export class BeninKeyboard extends LitElement {
       this._suppressionMethod = 'virtualKeyboard';
       this._savedVKPolicy = target.getAttribute('virtualkeyboardpolicy');
       target.setAttribute('virtualkeyboardpolicy', 'manual');
-      (navigator as any).virtualKeyboard.overlaysContent = true;
+      getVirtualKeyboard()!.overlaysContent = true;
     } else {
       this._suppressionMethod = 'inputmode';
       this._savedInputMode = target.getAttribute('inputmode');
@@ -1218,7 +1228,7 @@ export class BeninKeyboard extends LitElement {
           if (this._savedVKPolicy == null)
             this._attachedTarget.removeAttribute('virtualkeyboardpolicy');
           else this._attachedTarget.setAttribute('virtualkeyboardpolicy', this._savedVKPolicy);
-          (navigator as any).virtualKeyboard.overlaysContent = false;
+          getVirtualKeyboard()!.overlaysContent = false;
         } finally {
           this._savedVKPolicy = undefined;
         }

@@ -13,9 +13,14 @@ const languages = [
   { id: 'dendi' as const, label: 'Dendi' },
 ];
 
+const isMobile =
+  typeof globalThis.matchMedia === 'function' &&
+  globalThis.matchMedia('(pointer: coarse)').matches &&
+  /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 const language = ref<LanguageId>('yoruba');
 const theme = ref<ThemeId>('light');
-const layoutVariant = ref<LayoutVariantId>('desktop-azerty');
+const layoutVariant = ref<LayoutVariantId>(isMobile ? 'mobile-default' : 'desktop-azerty');
 const modifierDisplayMode = ref<ModifierDisplayMode>('transition');
 const open = ref(true);
 const disabled = ref(false);
