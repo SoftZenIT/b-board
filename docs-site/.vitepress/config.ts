@@ -89,8 +89,6 @@ export default defineConfig({
 
   head: [['link', { rel: 'icon', href: '/logo.svg' }]],
 
-  ignoreDeadLinks: true,
-
   locales: {
     root: {
       label: 'English',

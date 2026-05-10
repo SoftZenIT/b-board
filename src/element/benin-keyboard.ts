@@ -129,6 +129,7 @@ export class BeninKeyboard extends LitElement {
   private _savedInputMode: string | null | undefined = undefined;
   private _suppressionMethod: 'virtualKeyboard' | 'inputmode' | null = null;
   private _savedVKPolicy: string | null | undefined = undefined;
+  private _kbResizeObserver: ResizeObserver | null = null;
 
   static readonly styles = css`
     :host {
@@ -210,6 +211,12 @@ export class BeninKeyboard extends LitElement {
       --bboard-color-status-error: #ff453a;
       --bboard-color-status-success: #32d74b;
       --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.5);
+      --bboard-mobile-bg: #2c2c2e;
+      --bboard-mobile-key-bg: #3a3a3c;
+      --bboard-mobile-action-bg: #48484a;
+      --bboard-mobile-key-color: #ffffff;
+      --bboard-mobile-hint-color: #9ca3af;
+      --bboard-mobile-space-label-color: #6b7280;
     }
 
     :host(.theme-auto) {
@@ -235,6 +242,12 @@ export class BeninKeyboard extends LitElement {
         --bboard-color-status-error: #ff453a;
         --bboard-color-status-success: #32d74b;
         --bboard-shadow-key: 0 1px 0 rgba(0, 0, 0, 0.5);
+        --bboard-mobile-bg: #2c2c2e;
+        --bboard-mobile-key-bg: #3a3a3c;
+        --bboard-mobile-action-bg: #48484a;
+        --bboard-mobile-key-color: #ffffff;
+        --bboard-mobile-hint-color: #9ca3af;
+        --bboard-mobile-space-label-color: #6b7280;
       }
     }
 
@@ -438,6 +451,7 @@ export class BeninKeyboard extends LitElement {
       transition:
         background 80ms ease,
         transform 80ms ease;
+      will-change: transform, background;
     }
 
     .bboard-mobile-key.is-active {
@@ -1078,8 +1092,13 @@ export class BeninKeyboard extends LitElement {
         // Tap shift while caps-locked: disable caps lock and return to base
         this._mobileState.setCapsLock(false);
         this._mobileState.setActiveLayer('base');
+        this._announceAssertive('Majuscules désactivées');
       } else {
-        this._mobileState.setActiveLayer(snap.activeLayer === 'shift' ? 'base' : 'shift');
+        const nextLayer = snap.activeLayer === 'shift' ? 'base' : 'shift';
+        this._mobileState.setActiveLayer(nextLayer);
+        this._announceAssertive(
+          nextLayer === 'shift' ? 'Majuscules activées' : 'Majuscules désactivées'
+        );
       }
     } else if (keyId === altGrKey) {
       this._mobileState.setActiveLayer(snap.activeLayer === 'altGr' ? 'base' : 'altGr');
@@ -1156,6 +1175,19 @@ export class BeninKeyboard extends LitElement {
       target.setAttribute('inputmode', 'none');
     }
 
+    // Keep scroll-padding-bottom in sync with keyboard height so fixed keyboard
+    // doesn't obscure content at the bottom of the page.
+    const keyboardEl = this.shadowRoot?.querySelector(
+      '.bboard-mobile-keyboard'
+    ) as HTMLElement | null;
+    if (keyboardEl) {
+      this._kbResizeObserver = new ResizeObserver(() => {
+        const h = keyboardEl.getBoundingClientRect().height;
+        document.documentElement.style.scrollPaddingBottom = `${h}px`;
+      });
+      this._kbResizeObserver.observe(keyboardEl);
+    }
+
     const handle = createTargetHandle('attached-target');
     let adapter;
     if (target instanceof HTMLInputElement) {
@@ -1175,14 +1207,21 @@ export class BeninKeyboard extends LitElement {
   detach(): void {
     this._compositionProcessor?.cancel();
 
-    // Restore the target's original inputmode
+    // Restore the target's original keyboard suppression and page scroll offset
+    this._kbResizeObserver?.disconnect();
+    this._kbResizeObserver = null;
+    document.documentElement.style.scrollPaddingBottom = '';
+
     if (this._attachedTarget) {
       if (this._suppressionMethod === 'virtualKeyboard') {
-        if (this._savedVKPolicy == null)
-          this._attachedTarget.removeAttribute('virtualkeyboardpolicy');
-        else this._attachedTarget.setAttribute('virtualkeyboardpolicy', this._savedVKPolicy);
-        (navigator as any).virtualKeyboard.overlaysContent = false;
-        this._savedVKPolicy = undefined;
+        try {
+          if (this._savedVKPolicy == null)
+            this._attachedTarget.removeAttribute('virtualkeyboardpolicy');
+          else this._attachedTarget.setAttribute('virtualkeyboardpolicy', this._savedVKPolicy);
+          (navigator as any).virtualKeyboard.overlaysContent = false;
+        } finally {
+          this._savedVKPolicy = undefined;
+        }
       } else if (this._suppressionMethod === 'inputmode') {
         if (this._savedInputMode == null) this._attachedTarget.removeAttribute('inputmode');
         else this._attachedTarget.setAttribute('inputmode', this._savedInputMode);
@@ -1407,6 +1446,9 @@ export class BeninKeyboard extends LitElement {
       const newCapsLocked = !snap.capsLocked;
       this._mobileState.setCapsLock(newCapsLocked);
       this._mobileState.setActiveLayer(newCapsLocked ? 'shift' : 'base');
+      this._announceAssertive(
+        newCapsLocked ? 'Verrouillage majuscules activé' : 'Verrouillage majuscules désactivé'
+      );
       this._mobileState.dismissLongPress();
       this._touchStartKeyId = null;
       this.requestUpdate();

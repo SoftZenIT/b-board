@@ -18,6 +18,7 @@ export function renderLongPressPopup(popup: LongPressPopupModel): TemplateResult
       ${popup.items.map(
         (char, index) => html`
           <div
+            id="lp-${popup.anchorKeyId}-${index}"
             role="option"
             class="bboard-long-press-item ${index === popup.selectedIndex ? 'is-selected' : ''}"
             aria-selected=${index === popup.selectedIndex ? 'true' : 'false'}

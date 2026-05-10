@@ -17,6 +17,7 @@ export interface MobileRenderState {
   longPressVisible: boolean;
   longPressSelectedIndex: number;
   widthBucket: 'xs' | 'sm' | 'md';
+  /** Derived from the active language; used as the space-bar label. Do not set manually. */
   languageDisplayName: string;
 }
 
@@ -33,6 +34,8 @@ export interface MobileRenderKey {
   isToggle: boolean;
   hasLongPress: boolean;
   longPressChars: string[];
+  /** ID of the currently selected long-press option, or null if no popup is open for this key. */
+  activeDescendantId: string | null;
 }
 
 export interface MobileRenderRow {
@@ -120,6 +123,16 @@ export function createMobileRenderModel(
           firstFocusableFound = true;
         }
 
+        const isLongPressAnchor =
+          state.longPressVisible &&
+          state.longPressKeyId === slot.keyId &&
+          longPressChars.length > 0;
+        const selectedIdx = Math.max(
+          0,
+          Math.min(state.longPressSelectedIndex, longPressChars.length - 1)
+        );
+        const activeDescendantId = isLongPressAnchor ? `lp-${slot.keyId}-${selectedIdx}` : null;
+
         return {
           keyId: slot.keyId,
           width: slot.width,
@@ -133,6 +146,7 @@ export function createMobileRenderModel(
           isToggle: TOGGLE_KEY_IDS.has(slot.keyId),
           hasLongPress: longPressChars.length > 0,
           longPressChars,
+          activeDescendantId,
         };
       }),
     })) ?? [];
