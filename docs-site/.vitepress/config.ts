@@ -85,7 +85,7 @@ const frSidebar = {
 export default defineConfig({
   title: 'b-board',
   description: 'Framework-agnostic virtual keyboard for Beninese African languages',
-  base: '/',
+  base: '/b-board/',
 
   head: [['link', { rel: 'icon', href: '/logo.svg' }]],
 
