@@ -10,6 +10,8 @@ jobs:
   ci:
     name: Lint, Type Check, Test & Build
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
