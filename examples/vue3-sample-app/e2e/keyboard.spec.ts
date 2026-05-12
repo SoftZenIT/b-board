@@ -32,12 +32,12 @@ test.describe('BBoard Vue 3 Integration', () => {
   });
 
   test('theme toggle changes theme', async ({ page }) => {
-    const toggle = page.getByTestId('theme-toggle');
+    const select = page.getByTestId('theme-select');
 
-    await expect(toggle).toContainText('light');
+    await expect(select).toHaveValue('light');
 
-    await toggle.click();
-    await expect(toggle).toContainText('dark');
+    await select.selectOption('dark');
+    await expect(select).toHaveValue('dark');
 
     const keyboard = page.locator('benin-keyboard');
     await expect(keyboard).toHaveJSProperty('theme', 'dark');

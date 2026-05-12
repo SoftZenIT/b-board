@@ -37,16 +37,13 @@ test.describe('BBoard React Integration', () => {
   });
 
   test('theme toggle changes theme', async ({ page }) => {
-    const toggle = page.getByTestId('theme-toggle');
+    const select = page.getByTestId('theme-select');
 
-    // Initial theme is light
-    await expect(toggle).toContainText('light');
+    await expect(select).toHaveValue('light');
 
-    // Click to switch to dark
-    await toggle.click();
-    await expect(toggle).toContainText('dark');
+    await select.selectOption('dark');
+    await expect(select).toHaveValue('dark');
 
-    // Verify keyboard theme attribute
     const keyboard = page.locator('benin-keyboard');
     await expect(keyboard).toHaveAttribute('theme', 'dark');
   });

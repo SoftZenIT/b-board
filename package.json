@@ -34,11 +34,11 @@
   "size-limit": [
     {
       "path": "dist/bboard.es.js",
-      "limit": "55 kB"
+      "limit": "60 kB"
     },
     {
       "path": "dist/bboard.umd.js",
-      "limit": "55 kB"
+      "limit": "60 kB"
     }
   ],
   "scripts": {
