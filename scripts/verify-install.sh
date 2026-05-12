@@ -4,21 +4,21 @@ set -euo pipefail
 WORK_DIR=$(mktemp -d)
 trap "rm -rf $WORK_DIR" EXIT
 
-echo "Installing b-board in temp directory..."
+echo "Installing @softzenit/b-board in temp directory..."
 cd "$WORK_DIR"
 npm init -y > /dev/null
-npm install b-board > /dev/null
+npm install @softzenit/b-board > /dev/null
 
 echo "Verifying package import..."
 node --input-type=module <<'EOF'
-import 'b-board';
+import '@softzenit/b-board';
 // In Node, customElements is not defined — just check the import doesn't throw
 console.log('Import succeeded');
 EOF
 
 echo "Verifying UMD bundle loads..."
 node -e "
-const mod = require('b-board');
+const mod = require('@softzenit/b-board');
 console.log('UMD require succeeded, exports:', Object.keys(mod));
 "
 
