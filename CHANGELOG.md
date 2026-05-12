@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/SoftZenIT/b-board/compare/v1.0.0...v1.0.1) (2026-05-12)
+
+### Bug Fixes
+
+- **ci:** pass NPM_TOKEN to semantic-release dry-run step ([54090c2](https://github.com/SoftZenIT/b-board/commit/54090c2b65ea95cd8cb7a55109661d19b1889ae0))
+
 # 1.0.0 (2026-05-12)
 
 ### Bug Fixes
