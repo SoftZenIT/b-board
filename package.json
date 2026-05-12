@@ -1,6 +1,6 @@
 {
   "name": "b-board",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "b-board — framework-agnostic virtual keyboard for Beninese African languages",
   "type": "module",
   "main": "./dist/bboard.umd.js",
