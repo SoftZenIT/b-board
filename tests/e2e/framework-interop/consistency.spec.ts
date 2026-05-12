@@ -57,18 +57,15 @@ for (const framework of FRAMEWORKS) {
     });
 
     test('theme toggle updates keyboard property', async ({ page }) => {
-      const toggle = page.getByTestId('theme-toggle');
+      const select = page.getByTestId('theme-select');
       const keyboard = page.locator('benin-keyboard');
 
-      // Start with light
       await expect(keyboard).toHaveJSProperty('theme', 'light');
 
-      // Toggle to dark
-      await toggle.click();
+      await select.selectOption('dark');
       await expect(keyboard).toHaveJSProperty('theme', 'dark');
 
-      // Toggle back to light
-      await toggle.click();
+      await select.selectOption('light');
       await expect(keyboard).toHaveJSProperty('theme', 'light');
     });
 
