@@ -1124,7 +1124,7 @@ export class BeninKeyboard extends LitElement {
     // inside a custom-element constructor (the HTML spec throws).
     if (!this.isConnected) return;
     const isAuto = this.theme === 'auto';
-    this.classList.toggle('theme-dark', !isAuto && effectiveTheme === 'dark');
+    this.classList.toggle('theme-dark', effectiveTheme === 'dark');
     this.classList.toggle('theme-auto', isAuto);
   }
 
