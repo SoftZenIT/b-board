@@ -39,24 +39,23 @@
         {
           "height": 52,
           "slots": [
-            { "keyId": "key-shift",     "width": 1.5, "label": "⇧" },
-            { "keyId": "key-w",         "width": 1 },
-            { "keyId": "key-x",         "width": 1 },
-            { "keyId": "key-c",         "width": 1 },
-            { "keyId": "key-v",         "width": 1 },
-            { "keyId": "key-b",         "width": 1 },
-            { "keyId": "key-n",         "width": 1 },
-            { "keyId": "key-e-dot",     "width": 1 },
+            { "keyId": "key-shift", "width": 1.5, "label": "⇧" },
+            { "keyId": "key-w", "width": 1 },
+            { "keyId": "key-x", "width": 1 },
+            { "keyId": "key-c", "width": 1 },
+            { "keyId": "key-v", "width": 1 },
+            { "keyId": "key-b", "width": 1 },
+            { "keyId": "key-n", "width": 1 },
+            { "keyId": "key-e-dot", "width": 1 },
             { "keyId": "key-backspace", "width": 1.5, "label": "⌫" }
           ]
         },
         {
           "height": 56,
           "slots": [
-            { "keyId": "key-altgr",  "width": 1.5, "label": "AltGr" },
-            { "keyId": "key-o-dot",  "width": 1 },
-            { "keyId": "key-space",  "width": 5,   "label": " " },
-            { "keyId": "key-enter",  "width": 2.5, "label": "⏎" }
+            { "keyId": "key-o-dot", "width": 1 },
+            { "keyId": "key-space", "width": 5 },
+            { "keyId": "key-enter", "width": 2.5, "label": "⏎" }
           ]
         }
       ]
@@ -97,24 +96,23 @@
         {
           "height": 52,
           "slots": [
-            { "keyId": "key-shift-shift",     "width": 1.5, "label": "⇧" },
-            { "keyId": "key-w-shift",          "width": 1 },
-            { "keyId": "key-x-shift",          "width": 1 },
-            { "keyId": "key-c-shift",          "width": 1 },
-            { "keyId": "key-v-shift",          "width": 1 },
-            { "keyId": "key-b-shift",          "width": 1 },
-            { "keyId": "key-n-shift",          "width": 1 },
-            { "keyId": "key-e-dot-shift",      "width": 1 },
-            { "keyId": "key-backspace-shift",  "width": 1.5, "label": "⌫" }
+            { "keyId": "key-shift-shift", "width": 1.5, "label": "⇧" },
+            { "keyId": "key-w-shift", "width": 1 },
+            { "keyId": "key-x-shift", "width": 1 },
+            { "keyId": "key-c-shift", "width": 1 },
+            { "keyId": "key-v-shift", "width": 1 },
+            { "keyId": "key-b-shift", "width": 1 },
+            { "keyId": "key-n-shift", "width": 1 },
+            { "keyId": "key-e-dot-shift", "width": 1 },
+            { "keyId": "key-backspace-shift", "width": 1.5, "label": "⌫" }
           ]
         },
         {
           "height": 56,
           "slots": [
-            { "keyId": "key-altgr-shift",  "width": 1.5, "label": "AltGr" },
-            { "keyId": "key-o-dot-shift",  "width": 1 },
-            { "keyId": "key-space-shift",  "width": 5,   "label": " " },
-            { "keyId": "key-enter-shift",  "width": 2.5, "label": "⏎" }
+            { "keyId": "key-o-dot-shift", "width": 1 },
+            { "keyId": "key-space-shift", "width": 5 },
+            { "keyId": "key-enter-shift", "width": 2.5, "label": "⏎" }
           ]
         }
       ]

@@ -16,17 +16,47 @@ import { createLifecycle } from './_internal/lifecycle.js';
 import { createInvariantsChecker } from './_internal/invariants.js';
 import { logger } from '../utils/logger.js';
 
+/**
+ * Options passed to {@link createKeyboardEngine}.
+ */
 export interface KeyboardEngineOptions {
+  /** A fully resolved layout produced by the data layer's resolve function. */
   resolvedLayout: ResolvedLayout;
-  checkInvariants?: boolean; // defaults to true
+  /**
+   * Whether to run invariant checks on every state transition.
+   * Disable in production for a small performance gain.
+   * @defaultValue `true`
+   */
+  checkInvariants?: boolean;
 }
 
+/**
+ * The keyboard engine facade — manages state, lifecycle events, and substates.
+ * Create via {@link createKeyboardEngine}.
+ *
+ * @example
+ * ```ts
+ * const engine = createKeyboardEngine({ resolvedLayout })
+ * engine.on('ready', ({ substates }) => console.log('ready', substates))
+ * await engine.initialize()
+ * engine.destroy()
+ * ```
+ */
 export interface KeyboardEngine {
+  /** Transitions the engine from `init` → `ready`. Must be called once before use. */
   initialize(): Promise<void>;
+  /** Destroys the engine and cleans up all listeners. */
   destroy(): void;
+  /** Returns the current top-level state. */
   getState(): KeyboardState;
+  /** Returns a full snapshot of current state and substates. */
   getSnapshot(): StateSnapshot;
+  /** Updates one or more ready-phase substates atomically. */
   setSubstates(updates: Partial<ReadySubstates>): void;
+  /**
+   * Registers a listener for a lifecycle event.
+   * @returns An unsubscribe function — call it to remove the listener.
+   */
   on<K extends LifecycleEventName>(
     event: K,
     listener: (payload: LifecycleEventMap[K]) => void | Promise<void>

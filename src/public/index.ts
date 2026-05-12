@@ -1,3 +1,14 @@
+/**
+ * @packageDocumentation
+ * b-board public API — the single entry point for all consumer imports.
+ * Do not import from internal modules directly.
+ *
+ * @example
+ * ```ts
+ * import { createKeyboardEngine, DataLayerImpl } from 'b-board'
+ * ```
+ */
+
 // BJ-Keyboard Public API
 // This is the single entry point for all public exports.
 // Internal modules must NOT be imported directly by consumers.

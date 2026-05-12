@@ -18,6 +18,7 @@ function makeKey(overrides: Partial<MobileRenderKey> = {}): MobileRenderKey {
     isToggle: false,
     hasLongPress: true,
     longPressChars: ['à', 'á'],
+    activeDescendantId: null,
     ...overrides,
   };
 }

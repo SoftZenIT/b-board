@@ -1,4 +1,4 @@
-# BJ-Keyboard (`b-board`)
+# b-board
 
 ![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)
 

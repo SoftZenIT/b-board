@@ -1,9 +1,23 @@
 import { createKeyId, type KeyId, type LayerId } from '../../public/index.js';
+import type { OS } from '../../utils/detect-os.js';
 
 // Maps browser KeyboardEvent.code (physical key position, US QWERTY reference)
 // to logical KeyId in the desktop-azerty layout.
 // AZERTY positions: Row0=AZERTYUIOP, Row1=QSDFGHJKLM, Row2=WXCVBN(specials)
 const CODE_TO_KEY: Record<string, KeyId> = {
+  // Number row (1–0, -, =)
+  Digit1: createKeyId('key-1'),
+  Digit2: createKeyId('key-2'),
+  Digit3: createKeyId('key-3'),
+  Digit4: createKeyId('key-4'),
+  Digit5: createKeyId('key-5'),
+  Digit6: createKeyId('key-6'),
+  Digit7: createKeyId('key-7'),
+  Digit8: createKeyId('key-8'),
+  Digit9: createKeyId('key-9'),
+  Digit0: createKeyId('key-0'),
+  Minus: createKeyId('key-minus'),
+  Equal: createKeyId('key-equal'),
   // Top row (AZERTY: A Z E R T Y U I O P)
   KeyQ: createKeyId('key-a'),
   KeyW: createKeyId('key-z'),
@@ -50,6 +64,42 @@ export function mapPhysicalCodeToLogicalKey(code: string): KeyId | null {
   return CODE_TO_KEY[code] ?? null;
 }
 
+export function buildCodeToKeyMap(os: OS): Record<string, KeyId> {
+  if (os === 'macos') {
+    return {
+      ...CODE_TO_KEY,
+      MetaLeft: createKeyId('key-cmd'),
+      MetaRight: createKeyId('key-cmd-right'),
+    };
+  }
+  return { ...CODE_TO_KEY };
+}
+
+/**
+ * Physical key codes whose char output is taken directly from KeyboardEvent.key
+ * rather than the bboard keyMap. This makes them respect the OS keyboard layout
+ * (e.g. French AZERTY: Digit1 base = '&', shift = '1').
+ */
+export const PHYSICAL_PASSTHROUGH_CODES = new Set([
+  'Digit1',
+  'Digit2',
+  'Digit3',
+  'Digit4',
+  'Digit5',
+  'Digit6',
+  'Digit7',
+  'Digit8',
+  'Digit9',
+  'Digit0',
+  'Minus',
+  'Equal',
+  'Backquote',
+  'BracketLeft',
+  'BracketRight',
+  'Backslash',
+  'Quote',
+]) as ReadonlySet<string>;
+
 /**
  * Physical key codes (from KeyboardEvent.code) that control the active layer.
  * When any of these keys are held, they affect which layer character keys output from.
@@ -75,21 +125,27 @@ export const MODIFIER_KEY_IDS = new Set([
   createKeyId('key-altgr'),
   createKeyId('key-alt'),
   createKeyId('key-ctrl'),
+  createKeyId('key-ctrl-right'),
+  createKeyId('key-cmd'),
+  createKeyId('key-cmd-right'),
+  createKeyId('key-option'),
+  createKeyId('key-option-right'),
 ]) as ReadonlySet<KeyId>;
 
 /**
  * Computes the effective keyboard layer from a set of held physical keys.
  * Layer precedence (hold-based, not toggle):
  * 1. If Shift (Left or Right) is held → 'shift'
- * 2. Else if AltRight is held → 'altGr'
+ * 2. Else if AltRight is held, or AltLeft is held on macOS → 'altGr'
  * 3. Else → 'base'
  * (Shift wins if both Shift and AltGr are held simultaneously)
+ * @param os - The detected OS; on macOS, AltLeft also triggers the altGr layer.
  */
-export function computePhysicalLayer(heldPhysicalKeys: ReadonlySet<string>): LayerId {
+export function computePhysicalLayer(heldPhysicalKeys: ReadonlySet<string>, os: OS): LayerId {
   if (heldPhysicalKeys.has('ShiftLeft') || heldPhysicalKeys.has('ShiftRight')) {
     return 'shift';
   }
-  if (heldPhysicalKeys.has('AltRight')) {
+  if (heldPhysicalKeys.has('AltRight') || (os === 'macos' && heldPhysicalKeys.has('AltLeft'))) {
     return 'altGr';
   }
   return 'base';

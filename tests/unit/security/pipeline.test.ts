@@ -7,6 +7,7 @@ describe('InsertionPipeline', () => {
     handle: createTargetHandle('test-handle'),
     element: document.createElement('input'),
     getSelection: vi.fn(),
+    getWordLengthBeforeCursor: vi.fn().mockReturnValue(1),
     applyOperation: vi.fn().mockReturnValue({ success: true }),
     focus: vi.fn(),
     blur: vi.fn(),

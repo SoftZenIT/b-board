@@ -54,6 +54,23 @@
   --bboard-mobile-key-height: 44px;
   --bboard-mobile-row-gap: 8px;
   --bboard-mobile-h-padding: 12px;
+
+  /* Mobile visual style (Gboard-inspired) */
+  --bboard-mobile-bg: #ede7f6;
+  --bboard-mobile-key-bg: #ffffff;
+  --bboard-mobile-action-bg: #d1c4e9;
+  --bboard-mobile-key-radius: 12px;
+  --bboard-mobile-key-color: #1a1a2e;
+  --bboard-mobile-hint-color: #b39ddb;
+
+  /* Row 4 fixed widths */
+  --bboard-mobile-r4-special-width: 72px;
+  --bboard-mobile-r4-space-width: 160px;
+  --bboard-mobile-r4-gap: 10px;
+  --bboard-mobile-space-label-color: #9e9e9e;
+  --bboard-mobile-space-label-size: 12px;
+  /* Dark-mode overrides for mobile tokens are in the @media (prefers-color-scheme: dark)
+     and .theme-dark blocks below. Override them there to support custom dark themes. */
 }
 
 /* Dark Theme Overrides */
@@ -75,6 +92,12 @@
     --bboard-color-focus-ring: #0a84ff;
     --bboard-color-status-error: #ff453a;
     --bboard-color-status-success: #32d74b;
+    --bboard-mobile-bg: #2c2c2e;
+    --bboard-mobile-key-bg: #3a3a3c;
+    --bboard-mobile-action-bg: #48484a;
+    --bboard-mobile-key-color: #ffffff;
+    --bboard-mobile-hint-color: #9ca3af;
+    --bboard-mobile-space-label-color: #6b7280;
   }
 }
 
@@ -96,4 +119,10 @@
   --bboard-color-focus-ring: #0a84ff;
   --bboard-color-status-error: #ff453a;
   --bboard-color-status-success: #32d74b;
+  --bboard-mobile-bg: #2c2c2e;
+  --bboard-mobile-key-bg: #3a3a3c;
+  --bboard-mobile-action-bg: #48484a;
+  --bboard-mobile-key-color: #ffffff;
+  --bboard-mobile-hint-color: #9ca3af;
+  --bboard-mobile-space-label-color: #6b7280;
 }

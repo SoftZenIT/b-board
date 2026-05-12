@@ -17,6 +17,8 @@ export interface MobileRenderState {
   longPressVisible: boolean;
   longPressSelectedIndex: number;
   widthBucket: 'xs' | 'sm' | 'md';
+  /** Derived from the active language; used as the space-bar label. Do not set manually. */
+  languageDisplayName: string;
 }
 
 export interface MobileRenderKey {
@@ -32,6 +34,8 @@ export interface MobileRenderKey {
   isToggle: boolean;
   hasLongPress: boolean;
   longPressChars: string[];
+  /** ID of the currently selected long-press option, or null if no popup is open for this key. */
+  activeDescendantId: string | null;
 }
 
 export interface MobileRenderRow {
@@ -101,7 +105,11 @@ export function createMobileRenderModel(
         const { baseKeyId, effectiveLayer } = resolveLayerKey(slot.keyId, state.activeLayer);
         const resolvedKey =
           resolvedLayout.keyMap.get(slot.keyId) ?? resolvedLayout.keyMap.get(baseKeyId as KeyId);
-        const primaryLabel = slot.label ?? resolvedKey?.layers[effectiveLayer]?.char ?? '';
+        const rawLabel = slot.label ?? resolvedKey?.layers[effectiveLayer]?.char ?? '';
+        const primaryLabel =
+          slot.keyId === 'key-space' || slot.keyId === 'key-space-shift'
+            ? state.languageDisplayName
+            : rawLabel;
         const hidden = state.hiddenKeys.has(slot.keyId);
         const disabled = state.disabledKeys.has(slot.keyId);
         const active = state.activeModifierKeyIds.has(slot.keyId);
@@ -114,6 +122,16 @@ export function createMobileRenderModel(
           tabStop = true;
           firstFocusableFound = true;
         }
+
+        const isLongPressAnchor =
+          state.longPressVisible &&
+          state.longPressKeyId === slot.keyId &&
+          longPressChars.length > 0;
+        const selectedIdx = Math.max(
+          0,
+          Math.min(state.longPressSelectedIndex, longPressChars.length - 1)
+        );
+        const activeDescendantId = isLongPressAnchor ? `lp-${slot.keyId}-${selectedIdx}` : null;
 
         return {
           keyId: slot.keyId,
@@ -128,6 +146,7 @@ export function createMobileRenderModel(
           isToggle: TOGGLE_KEY_IDS.has(slot.keyId),
           hasLongPress: longPressChars.length > 0,
           longPressChars,
+          activeDescendantId,
         };
       }),
     })) ?? [];

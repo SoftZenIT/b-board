@@ -8,7 +8,7 @@ import { AdapterBoundary } from './adapter-boundary.js';
 export const InsertionPipeline = {
   execute(adapter: TargetAdapter, operation: InputOperation): OperationResult {
     try {
-      // 1. Target Validation & Stale Detection (BBOARD-175, BBOARD-176)
+      // 1. Target Validation & Stale Detection
       const targetValidation = TargetValidation.validate(adapter.element);
       if (!targetValidation.isValid) {
         return {
@@ -27,15 +27,15 @@ export const InsertionPipeline = {
         };
       }
 
-      // 2. Operation Validation (BBOARD-177)
+      // 2. Operation Validation
       OperationValidator.validate(operation);
 
-      // 3. Output Validation (BBOARD-178)
+      // 3. Output Validation
       if (operation.type === 'insert' || operation.type === 'replace') {
         OutputValidator.validate(operation.text);
       }
 
-      // 4. Adapter Execution via Trust Boundary (BBOARD-179, BBOARD-180)
+      // 4. Adapter Execution via Trust Boundary
       return AdapterBoundary.execute(adapter, operation);
     } catch (err) {
       return {

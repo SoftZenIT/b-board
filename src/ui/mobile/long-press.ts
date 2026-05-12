@@ -1,6 +1,12 @@
 import { html, type TemplateResult } from 'lit';
 import type { LongPressPopupModel } from './render-model.js';
 
+/** Returns a visible label for a character in the long-press popup. */
+export function displayLabel(char: string): string {
+  if (char === ' ') return '⎵'; // non-breaking space — show visible symbol
+  return char;
+}
+
 export function renderLongPressPopup(popup: LongPressPopupModel): TemplateResult {
   return html`
     <div
@@ -12,13 +18,14 @@ export function renderLongPressPopup(popup: LongPressPopupModel): TemplateResult
       ${popup.items.map(
         (char, index) => html`
           <div
+            id="lp-${popup.anchorKeyId}-${index}"
             role="option"
             class="bboard-long-press-item ${index === popup.selectedIndex ? 'is-selected' : ''}"
             aria-selected=${index === popup.selectedIndex ? 'true' : 'false'}
             data-char=${char}
             data-index=${index}
           >
-            ${char}
+            ${displayLabel(char)}
           </div>
         `
       )}

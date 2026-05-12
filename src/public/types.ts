@@ -39,7 +39,12 @@ export function isKeyId(val: unknown): val is KeyId {
   return typeof val === 'string';
 }
 
-const LAYOUT_VARIANT_IDS = ['desktop-azerty', 'mobile-default'] as const;
+const LAYOUT_VARIANT_IDS = [
+  'desktop-azerty',
+  'desktop-azerty-windows',
+  'desktop-azerty-macos',
+  'mobile-default',
+] as const;
 /**
  * Identifies a keyboard layout variant.
  * @example const v: LayoutVariantId = 'desktop-azerty'

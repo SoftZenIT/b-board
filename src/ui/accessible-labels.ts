@@ -17,6 +17,10 @@ export const KEY_ACCESSIBLE_LABELS: Readonly<Record<string, string>> = {
   'key-win-right': 'Meta',
   'key-space': 'Space',
   'key-escape': 'Escape',
+  'key-cmd': 'Command',
+  'key-cmd-right': 'Command',
+  'key-option': 'Option',
+  'key-option-right': 'Option',
 };
 
 export function getAccessibleLabel(keyId: string, primaryLabel: string): string {

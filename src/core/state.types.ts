@@ -6,10 +6,20 @@ export const KEYBOARD_STATES = [
   'destroyed',
 ] as const;
 
-/** The top-level lifecycle state of the keyboard engine. */
+/**
+ * The top-level lifecycle state of the keyboard engine.
+ * - `uninitialized` — created but not yet initialized
+ * - `initializing` — `initialize()` called, async setup in progress
+ * - `ready` — fully operational
+ * - `error` — a recoverable error occurred; engine can be re-initialized
+ * - `destroyed` — engine torn down; create a new instance to reuse
+ */
 export type KeyboardState = (typeof KEYBOARD_STATES)[number];
 
-/** A point-in-time snapshot of the state machine. */
+/**
+ * A point-in-time snapshot of engine state and substates.
+ * Useful for serialization, debugging, and testing.
+ */
 export interface StateSnapshot {
   /** Current state. */
   state: KeyboardState;

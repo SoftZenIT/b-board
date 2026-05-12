@@ -58,6 +58,7 @@ export interface TargetAdapter {
   /** The underlying DOM element. Exposed for validation purposes. */
   readonly element: HTMLElement;
   getSelection(): NormalizedSelection | null;
+  getWordLengthBeforeCursor(): number;
   applyOperation(operation: InputOperation): OperationResult;
   focus(): void;
   blur(): void;

@@ -8,8 +8,10 @@ export interface MobileRenderState {
   activeModifierKeyIds: ReadonlySet<KeyId>;
   longPressKeyId: KeyId | null;
   longPressVisible: boolean;
+  longPressArmed: boolean;
   longPressSelectedIndex: number;
   widthBucket: 'xs' | 'sm' | 'md';
+  capsLocked: boolean;
 }
 
 export type MobileStateSnapshot = MobileRenderState;
@@ -22,8 +24,10 @@ export function createMobileState() {
   let widthBucket: 'xs' | 'sm' | 'md' = 'sm';
   let longPressKeyId: KeyId | null = null;
   let longPressVisible = false;
+  let longPressArmed = false;
   let longPressSelectedIndex = 0;
   let longPressTimer: ReturnType<typeof setTimeout> | null = null;
+  let capsLocked = false;
 
   return {
     snapshot(): MobileStateSnapshot {
@@ -35,8 +39,10 @@ export function createMobileState() {
         activeModifierKeyIds: new Set<KeyId>(),
         longPressKeyId,
         longPressVisible,
+        longPressArmed,
         longPressSelectedIndex,
         widthBucket,
+        capsLocked,
       };
     },
 
@@ -56,9 +62,11 @@ export function createMobileState() {
       if (longPressTimer !== null) clearTimeout(longPressTimer);
       longPressKeyId = keyId;
       longPressVisible = false;
+      longPressArmed = false;
       longPressSelectedIndex = 0;
       longPressTimer = setTimeout(() => {
         longPressTimer = null;
+        longPressArmed = true;
         onShow();
       }, 300);
     },
@@ -70,6 +78,7 @@ export function createMobileState() {
       }
       longPressKeyId = null;
       longPressVisible = false;
+      longPressArmed = false;
       longPressSelectedIndex = 0;
     },
 
@@ -87,8 +96,13 @@ export function createMobileState() {
         longPressTimer = null;
       }
       longPressVisible = false;
+      longPressArmed = false;
       longPressKeyId = null;
       longPressSelectedIndex = 0;
+    },
+
+    setCapsLock(locked: boolean) {
+      capsLocked = locked;
     },
   };
 }

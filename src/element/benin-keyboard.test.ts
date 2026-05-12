@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import './benin-keyboard.js';
+import type { BeninKeyboard as BeninKeyboardElement } from './benin-keyboard.js';
+import { InputElementAdapter } from '../adapters/input-adapter.js';
 
 describe('BeninKeyboard Custom Element', () => {
   it('registers <benin-keyboard> with the browser', () => {
@@ -32,6 +34,81 @@ describe('BeninKeyboard Custom Element', () => {
     expect(typeof el.detach).toBe('function');
 
     expect(() => el.attach(target)).not.toThrow();
+  });
+
+  it('attach() with an unsupported element throws', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const div = document.createElement('div');
+    expect(() => el.attach(div)).toThrow(
+      'attach() requires an <input>, <textarea>, or contenteditable element'
+    );
+  });
+
+  it('attach() registers an adapter and dispatches insert on key press', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    (el as any)._dispatchToAdapter('a');
+
+    expect(applySpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'insert', text: 'a' }));
+
+    applySpy.mockRestore();
+    document.body.removeChild(el);
+    document.body.removeChild(input);
+  });
+
+  it('attach() dispatches delete operation for backspace char', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    (el as any)._dispatchToAdapter('\b');
+
+    expect(applySpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'delete', length: 1 }));
+
+    applySpy.mockRestore();
+    document.body.removeChild(el);
+    document.body.removeChild(input);
+  });
+
+  it('detach() stops dispatch', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    el.detach();
+    (el as any)._dispatchToAdapter('a');
+
+    expect(applySpy).not.toHaveBeenCalled();
+
+    applySpy.mockRestore();
+    document.body.removeChild(el);
+    document.body.removeChild(input);
   });
 
   it('should render the canonical desktop layout row count', async () => {
@@ -148,6 +225,67 @@ describe('Physical keyboard output', () => {
     document.body.removeChild(el);
   });
 
+  it('calls e.preventDefault() for physical character keys (desktop variant)', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const event = new KeyboardEvent('keydown', {
+      code: 'KeyQ',
+      key: 'q',
+      bubbles: true,
+      cancelable: true,
+    });
+    const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+
+    window.dispatchEvent(event);
+
+    expect(preventDefaultSpy).toHaveBeenCalledOnce();
+
+    document.body.removeChild(el);
+  });
+
+  it('fires bboard-key-press with char "\\b" for physical Backspace key', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { code: 'Backspace', key: 'Backspace', bubbles: true })
+    );
+
+    expect(events).toHaveLength(1);
+    expect(events[0].detail.keyId).toBe('key-backspace');
+    expect(events[0].detail.char).toBe('\b');
+
+    document.body.removeChild(el);
+  });
+
+  it('fires bboard-key-press with char "\\n" for physical Enter key', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { code: 'Enter', key: 'Enter', bubbles: true })
+    );
+
+    expect(events).toHaveLength(1);
+    expect(events[0].detail.keyId).toBe('key-enter');
+    expect(events[0].detail.char).toBe('\n');
+
+    document.body.removeChild(el);
+  });
+
   it('does NOT fire bboard-key-press for physical keys in mobile layout variant', async () => {
     const el = document.createElement('benin-keyboard') as any;
     el.layoutVariant = 'mobile-default';
@@ -244,5 +382,256 @@ describe('Composition engine integration', () => {
       expect(events).toHaveLength(1);
       expect(events[0].detail.char).toBe('a');
     }
+  });
+});
+
+describe('OS-aware layout resolution', () => {
+  it('resolves desktop-azerty to desktop-azerty-windows on windows', async () => {
+    // detectOS() returns 'windows' in JSDOM (no Mac platform string)
+    const el = document.createElement('benin-keyboard') as BeninKeyboardElement;
+    el.setAttribute('language', 'yoruba');
+    el.setAttribute('layout-variant', 'desktop-azerty');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect((el as any)._resolveLayoutVariant('desktop-azerty')).toBe('desktop-azerty-windows');
+    document.body.removeChild(el);
+  });
+
+  it('resolves desktop-azerty-macos directly without change', async () => {
+    const el = document.createElement('benin-keyboard') as BeninKeyboardElement;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect((el as any)._resolveLayoutVariant('desktop-azerty-macos')).toBe('desktop-azerty-macos');
+    document.body.removeChild(el);
+  });
+
+  it('resolves mobile-default without change', async () => {
+    const el = document.createElement('benin-keyboard') as BeninKeyboardElement;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect((el as any)._resolveLayoutVariant('mobile-default')).toBe('mobile-default');
+    document.body.removeChild(el);
+  });
+});
+
+describe('Virtual capslock', () => {
+  it('toggles shift layer when virtual capslock key is clicked (desktop)', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    el.layoutVariant = 'desktop-azerty';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const events: CustomEvent[] = [];
+    el.addEventListener('bboard-key-press', (e: Event) => events.push(e as CustomEvent));
+
+    // Activate capslock virtual key
+    el._activateKey('key-capslock');
+    await el.updateComplete;
+
+    // Capslock itself should not fire a key-press event
+    expect(events).toHaveLength(0);
+
+    // Next key press should use shift layer (uppercase)
+    const keyAId = [...el._resolvedLayout.keyMap.entries()].find(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ([_key, v]: [any, any]) => v.layers?.base?.char === 'a'
+    )?.[0];
+    if (keyAId) {
+      el._activateKey(keyAId);
+      expect(events).toHaveLength(1);
+      expect(events[0].detail.char).toMatch(/[A-Z]/);
+    }
+
+    document.body.removeChild(el);
+  });
+});
+
+describe('auto mobile detection', () => {
+  function stubMatchMediaCoarse() {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: (query: string) => ({
+        matches: query === '(pointer: coarse)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }),
+    });
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('sets layout-variant to mobile-default on mobile devices', async () => {
+    vi.stubGlobal('navigator', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0)' });
+    stubMatchMediaCoarse();
+
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.layoutVariant).toBe('mobile-default');
+    document.body.removeChild(el);
+  });
+
+  it('does NOT override an explicitly set layout-variant', async () => {
+    vi.stubGlobal('navigator', { userAgent: 'Mozilla/5.0 (Android 14)' });
+    stubMatchMediaCoarse();
+
+    const el = document.createElement('benin-keyboard') as any;
+    el.setAttribute('layout-variant', 'desktop-azerty');
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.layoutVariant).toBe('desktop-azerty');
+    document.body.removeChild(el);
+  });
+
+  it('does NOT set mobile-default on desktop (pointer: fine)', async () => {
+    vi.stubGlobal('navigator', { userAgent: 'Mozilla/5.0 (Windows NT 10.0)' });
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: (query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }),
+    });
+
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.getAttribute('layout-variant')).toBeNull();
+    document.body.removeChild(el);
+  });
+});
+
+describe('native keyboard suppression', () => {
+  it('sets inputmode="none" on the target when attach() is called', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const input = document.createElement('input');
+    el.attach(input);
+    expect(input.getAttribute('inputmode')).toBe('none');
+  });
+
+  it('restores original inputmode on detach() when it was set', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const input = document.createElement('input');
+    input.setAttribute('inputmode', 'text');
+    el.attach(input);
+    expect(input.getAttribute('inputmode')).toBe('none');
+    el.detach();
+    expect(input.getAttribute('inputmode')).toBe('text');
+  });
+
+  it('removes inputmode attribute on detach() when it was absent', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const input = document.createElement('input');
+    el.attach(input);
+    el.detach();
+    expect(input.hasAttribute('inputmode')).toBe(false);
+  });
+
+  it('restores inputmode of first target when attach() is called on a second target', () => {
+    const el = document.createElement('benin-keyboard') as any;
+    const input1 = document.createElement('input');
+    const input2 = document.createElement('input');
+    input1.setAttribute('inputmode', 'numeric');
+    el.attach(input1);
+    el.attach(input2); // triggers implicit detach of input1
+    expect(input1.getAttribute('inputmode')).toBe('numeric');
+    expect(input2.getAttribute('inputmode')).toBe('none');
+    el.detach();
+    expect(input2.hasAttribute('inputmode')).toBe(false);
+  });
+});
+
+describe('long-press backspace deletes previous word', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('dispatches a delete operation covering the previous word after 300ms hold', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = document.createElement('input');
+    input.value = 'hello world';
+    document.body.appendChild(input);
+    // jsdom doesn't persist setSelectionRange until attached
+    input.focus();
+    input.setSelectionRange(11, 11);
+    el.attach(input);
+
+    const applySpy = vi
+      .spyOn(InputElementAdapter.prototype, 'applyOperation')
+      .mockReturnValue({ success: true });
+
+    const backspaceKeyId = 'key-backspace';
+    (el as any)._mobileState.startLongPress(backspaceKeyId, vi.fn());
+    vi.advanceTimersByTime(300);
+
+    (el as any)._handleTouchEnd();
+
+    expect(applySpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'delete', length: 5 }));
+
+    document.body.removeChild(el);
+    document.body.removeChild(input);
+  });
+});
+
+describe('long-press shift enables caps lock', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('sets capsLocked=true and activeLayer=shift after 300ms hold on key-shift', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const shiftKeyId = 'key-shift';
+    (el as any)._mobileState.startLongPress(shiftKeyId, () => {});
+    vi.advanceTimersByTime(300);
+    (el as any)._handleTouchEnd();
+
+    expect((el as any)._mobileState.snapshot().capsLocked).toBe(true);
+    expect((el as any)._mobileState.snapshot().activeLayer).toBe('shift');
+    document.body.removeChild(el);
+  });
+
+  it('disables caps lock when shift long-press is triggered again while locked', async () => {
+    const el = document.createElement('benin-keyboard') as any;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // Enable caps lock
+    (el as any)._mobileState.setCapsLock(true);
+    (el as any)._mobileState.setActiveLayer('shift');
+
+    // Long-press shift again
+    const shiftKeyId = 'key-shift';
+    (el as any)._mobileState.startLongPress(shiftKeyId, () => {});
+    vi.advanceTimersByTime(300);
+    (el as any)._handleTouchEnd();
+
+    expect((el as any)._mobileState.snapshot().capsLocked).toBe(false);
+    expect((el as any)._mobileState.snapshot().activeLayer).toBe('base');
+    document.body.removeChild(el);
   });
 });

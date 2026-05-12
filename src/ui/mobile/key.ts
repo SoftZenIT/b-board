@@ -25,6 +25,7 @@ export function renderMobileKey(key: MobileRenderKey): TemplateResult | null {
       aria-label=${getAccessibleLabel(key.keyId, key.primaryLabel)}
       aria-pressed=${key.isToggle ? key.active : nothing}
       aria-haspopup=${key.hasLongPress ? 'listbox' : 'false'}
+      aria-activedescendant=${key.activeDescendantId ?? nothing}
       ?disabled=${key.disabled}
       tabindex=${key.tabStop ? 0 : -1}
     >
