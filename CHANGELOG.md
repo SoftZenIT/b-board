@@ -1,3 +1,9 @@
+# [1.1.0](https://github.com/SoftZenIT/b-board/compare/v1.0.1...v1.1.0) (2026-05-12)
+
+### Features
+
+- **docs:** deploy VitePress docs to GitHub Pages ([5063759](https://github.com/SoftZenIT/b-board/commit/5063759b11d11a2e76b05f0927cd5707536a9580))
+
 ## [1.0.1](https://github.com/SoftZenIT/b-board/compare/v1.0.0...v1.0.1) (2026-05-12)
 
 ### Bug Fixes
